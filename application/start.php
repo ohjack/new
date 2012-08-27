@@ -28,7 +28,7 @@ ini_set('display_errors', 'On');
 
 Laravel\Event::listen(Laravel\Config::loader, function($bundle, $file)
 {
-	return Laravel\Config::file($bundle, $file);
+    return Laravel\Config::file($bundle, $file);
 });
 
 /*
@@ -59,7 +59,8 @@ Laravel\Autoloader::$aliases = $aliases;
 */
 
 Autoloader::map(array(
-	'Base_Controller' => path('app').'controllers/base.php',
+    'Base_Controller' => path('app').'controllers/base.php',
+    'PHPExcel' => path('app') . 'libraries/PHPExcel/PHPExcel.php'
 ));
 
 /*
@@ -74,9 +75,10 @@ Autoloader::map(array(
 */
 
 Autoloader::directories(array(
-	path('app').'models',
-	path('app').'libraries',
+    path('app').'models',
+    path('app').'libraries',
 ));
+
 
 /*
 |--------------------------------------------------------------------------
@@ -92,7 +94,7 @@ Autoloader::directories(array(
 
 Event::listen(View::loader, function($bundle, $view)
 {
-	return View::file($bundle, $view, Bundle::path($bundle).'views');
+    return View::file($bundle, $view, Bundle::path($bundle).'views');
 });
 
 /*
@@ -109,7 +111,7 @@ Event::listen(View::loader, function($bundle, $view)
 
 Event::listen(Lang::loader, function($bundle, $language, $file)
 {
-	return Lang::file($bundle, $language, $file);
+    return Lang::file($bundle, $language, $file);
 });
 
 /*
@@ -125,7 +127,7 @@ Event::listen(Lang::loader, function($bundle, $language, $file)
 
 if (Config::get('application.profiler'))
 {
-	Profiler::attach();
+    Profiler::attach();
 }
 
 /*
@@ -169,5 +171,5 @@ date_default_timezone_set(Config::get('application.timezone'));
 
 if ( ! Request::cli() and Config::get('session.driver') !== '')
 {
-	Session::load();
+    Session::load();
 }

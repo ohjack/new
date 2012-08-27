@@ -39,9 +39,12 @@ Route::get('/', function()
 
 Route::get('test', function()
 {
+    $obj = new PHPExcel();
 
     return View::make('test.index');
 });
+
+Route::controller('user');
 
 /*
 |--------------------------------------------------------------------------
