@@ -39,7 +39,93 @@ Route::get('/', function()
 
 Route::get('test', function()
 {
-    $obj = new PHPExcel();
+
+    $orderSpider = new SpiderOrders(new SpiderOrders_Amazon());
+
+    
+    /*
+    $option = [
+        'AWSAccessKeyId' => 'AKIAJGUMF5LENLIW6ZAQ',
+        'SellerId' => 'A3LMXTNFZ71A3Q',
+        'AmazonOrderId' => '002-5014842-6516264',
+        'Key' => 'jRa5CBIrZVTMm+GD9wwSNSQ+vwpyflw1eUn6aebL'
+        ];
+    $items = $order->getItems($option);
+    die;
+     */
+
+    $option = [
+        'AWSAccessKeyId' => 'AKIAJGUMF5LENLIW6ZAQ',
+        'SellerId' => 'A3LMXTNFZ71A3Q',
+        'MarketplaceId.Id.1' => 'ATVPDKIKX0DER',
+        'CreatedAfter' => '2012-08-25 00:00:00',
+        'OrderStatus.Status.1' => 'Unshipped',
+        'OrderStatus.Status.2' => 'PartiallyShipped',
+        'Key' => 'jRa5CBIrZVTMm+GD9wwSNSQ+vwpyflw1eUn6aebL',
+        ];
+
+    try {
+        $orders = $orderSpider->getOrders($option);
+    
+        foreach ($orders as $order) {
+
+            $order_id  = DB::table('orders')->where('entry_id', '=', $order['entry_id'])->only('id');
+            if ( !$order_id ) {
+                $order_id = DB::table('orders')->insert_get_id($order);
+            } else { // update
+                DB::table('orders')->where('id', '=', $order_id)->update($order);
+            }
+
+            $option = [
+                'AWSAccessKeyId' => 'AKIAJGUMF5LENLIW6ZAQ',
+                'SellerId' => 'A3LMXTNFZ71A3Q',
+                'AmazonOrderId' => $order['entry_id'],
+                'Key' => 'jRa5CBIrZVTMm+GD9wwSNSQ+vwpyflw1eUn6aebL'
+                ];
+
+            try {
+                $item = $orderSpider->getItems( $option );
+
+                //foreach ($items as $item) {
+                    $item['order_id'] = $order_id;
+
+                    $item_id = DB::table('items')->where('entry_id', '=', $item['entry_id'])->only('id');
+                    if ( !$item_id ) {
+                        DB::table('items')->insert($item);
+                    } else {
+                        DB::table('items')->where('id', '=', $item_id)->update($item);
+                    }
+                //}
+            } catch (CurlException $e) {
+            
+            } catch (AmazonException $e) {
+            
+            }
+            
+        }
+
+    } catch (CurlException $e) {
+        // log
+        echo 'Curl Error:<hr>';
+        echo $e->getError();
+    
+    } catch (AmazonException $e) {
+        // log
+        echo 'Amazon API Error:<hr>';
+        echo $e->getError();
+        /*
+        // LOG
+        $filename = '/var/www/new/api.log';
+        $contents = $e->getMessage();
+        if (is_writable($filename)) {
+            $handle = fopen($filename, 'w+');
+            fwrite($handle, $contents);
+            fclose($handle);
+        } else {
+            exit('API log file unable to write.');
+        }
+         */
+    }
 
     return View::make('test.index');
 });

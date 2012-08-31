@@ -77,7 +77,15 @@ Autoloader::map(array(
 Autoloader::directories(array(
     path('app').'models',
     path('app').'libraries',
+    path('app').'libraries/AmazonAPI',
 ));
+
+
+/*
+Autoloader::underscored(array(
+   'AmazoneAPI' => path('app') . 'libraries/AmazonAPI',
+));
+ */
 
 
 /*
@@ -173,3 +181,6 @@ if ( ! Request::cli() and Config::get('session.driver') !== '')
 {
     Session::load();
 }
+
+
+//set_include_path(get_include_path().PATH_SEPARATOR.path('app').'libraries/AmazonAPI');
