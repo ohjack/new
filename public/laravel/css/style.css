@@ -62,7 +62,7 @@ body
 
 .wrapper
 {
-    width:760px;
+    /*width:960px;*/
     margin:0 auto 5em auto;
 }
 
@@ -91,6 +91,8 @@ body
     letter-spacing: 2px;
 }
 
+/* ================ add =========================  */
+
 .wrapper ul 
 {
     list-style-type: none;
@@ -107,6 +109,76 @@ body
     margin: 25px;
 }
 
+.table {
+    border: #ccc solid 1px;
+    width: 100%;
+}
+
+.table tr {
+    border-bottom: #ccc solid 1px;
+}
+
+.table td {
+    padding: 10px;
+}
+
+.open {
+    display: inline-block;
+    border-width: 4px;
+    border-width: 4''px;
+    border-color: #566D5E transparent transparent transparent;
+    border-style: solid dashed dashed dashed;
+    width: 0;
+    height: 0;
+    font-size: 0;
+    line-height: 0;
+    margin-left: 10px;
+    vertical-align: middle;
+}
+.close {
+    display: inline-block;
+    border-width: 4px;
+    border-width: 4''px;
+    border-color: transparent transparent transparent #566D5E;
+    border-style: dashed dashed dashed solid;
+    width: 0;
+    height: 0;
+    font-size: 0;
+    line-height: 0;
+    margin-left: 10px;
+    vertical-align: middle;
+}
+
+.sku {
+    color: blue;
+    cursor: pointer;
+}
+
+#addSkuMap {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left:50%;
+    height:auto;
+    width: 250px;
+    margin: -125px;
+    background: #fff;
+    z-index:100;
+    padding: 5px 20px 5px 20px;
+    border: 1px #ccc solid;
+}
+
+#close {
+    float: right; 
+    cursor: pointer;
+}
+
+#skuTips {
+    padding: 0 10px;
+}
+
+
+/* ================ add end ========================= */
 .slogan
 {
     font-size:0.8em;

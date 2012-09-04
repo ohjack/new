@@ -25,7 +25,7 @@ class SpiderOrders_Amazon {
 
         $param = $this->_getParam($option);
 
-        $curl = new Curl();
+        $curl = new Amazon_Curl();
         $curl -> setParam($param);
         $data = $curl -> perform();
 
@@ -33,8 +33,8 @@ class SpiderOrders_Amazon {
         if( $data['httpcode'] == 200 ) {
             $listOrders = $this->_getOrdersDataFormat( $this->_getOrdersData($data) );
         } else if ( $data['httpcode'] == 501 or $data['httpcode'] == 503 ) {  // retry
-            AmazonRetry::setData( $param );
-            $listOrders = AmazonRetry::getOrders();
+            Amazon_Retry::setData( $param );
+            $listOrders = Amazon_Retry::getOrders();
         } else {
             $this->_error( $data );
         }
@@ -51,7 +51,7 @@ class SpiderOrders_Amazon {
         $option['Action'] = 'ListOrderItems';
         $param = $this->_getParam($option);
 
-        $curl = new Curl();
+        $curl = new Amazon_Curl();
         $curl -> setParam($param);
         $data = $curl -> perform();
 
@@ -59,8 +59,8 @@ class SpiderOrders_Amazon {
         if( $data['httpcode'] == 200 ) {
             $listItems = $this->_getItemsDataFormat( $this->_getItemsData($data) );
         } else if ( $data['httpcode'] == 501 or $data['httpcode'] == 503 ) {
-            AmazonRetry::setData( $param );
-            $listItems = AmazonRetry::getItems();
+            Amazon_Retry::setData( $param );
+            $listItems = Amazon_Retry::getItems();
         } else {
             $this->_error( $data );
         }
@@ -80,7 +80,7 @@ class SpiderOrders_Amazon {
 
         $param = $this->_getParam($option);
 
-        $curl = new Curl();
+        $curl = new Amazon_Curl();
         $curl -> setParam($param);
         $data = $curl -> perform();
 
@@ -88,8 +88,8 @@ class SpiderOrders_Amazon {
         if( $data['httpcode'] == 200 ) {
             $listOrders = $this->_getOrdersByTokenData( $data );
         } else if ( $data['httpcode'] == 501 or $data['httpcode'] == 503 ) {  // retry
-            AmazonRetry::setData( $param );
-            $listOrders = AmazonRetry::getOrdersByNextToken();
+            Amazon_Retry::setData( $param );
+            $listOrders = Amazon_Retry::getOrdersByNextToken();
         } else {
             $this->_error( $data );
         }
@@ -109,7 +109,7 @@ class SpiderOrders_Amazon {
 
         $param = $this->_getParam($option);
 
-        $curl = new Curl();
+        $curl = new Amazon_Curl();
         $curl -> setParam($param);
         $data = $curl -> perform();
 
@@ -117,15 +117,14 @@ class SpiderOrders_Amazon {
         if( $data['httpcode'] == 200 ) {
             $listItems = $this->_getItemsByTokenData( $data );
         } else if ( $data['httpcode'] == 501 or $data['httpcode'] == 503 ) {
-            AmazoneRetry::setData( $param );
-            $listItems = AmazonRetry::getItemsByNextToken();
+            Amazone_Retry::setData( $param );
+            $listItems = Amazon_Retry::getItemsByNextToken();
         } else {
             $this->_error( $data );
         }
 
         return $listItems;
     }
-
 
 
     private function _getOrdersData( $data ) {
@@ -295,7 +294,7 @@ class SpiderOrders_Amazon {
             $errorInfo .= '[' . $key . ']:' . $value . "\n";
         }
 
-        throw new AmazonException($errorInfo);
+        throw new Amazon_Exception($errorInfo);
     }
 
     private function _xml2Array( $xml ) {

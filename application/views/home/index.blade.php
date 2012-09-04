@@ -6,11 +6,12 @@
     <title>外贸电商交换机系统</title>
     <meta name="viewport" content="width=device-width">
     {{ HTML::style('laravel/css/style.css') }}
+
 </head>
 <body>
     <div class="wrapper">
         <ul>
-            <li>订单</li>
+            <li>{{ HTML::link('order', '订单');}}</li>
             <li>分析</li>
             <li>派送</li>
             <li>跟踪</li>

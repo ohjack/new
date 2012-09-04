@@ -34,6 +34,7 @@ class Create_Orders {
             $table->string('payment_method', 10);
             $table->string('from', 30);
             $table->string('status', 10);
+            $table->string('order_status', 10);
             $table->date('created_at');
         });
 

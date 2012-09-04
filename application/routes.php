@@ -32,28 +32,14 @@
 |
 */
 
-Route::get('/', function()
-{
+Route::get('/', function() {
     return View::make('home.index');
 });
 
-Route::get('test', function()
-{
+Route::get('test', function() {
 
     $orderSpider = new SpiderOrders(new SpiderOrders_Amazon());
-
     
-    /*
-    $option = [
-        'AWSAccessKeyId' => 'AKIAJGUMF5LENLIW6ZAQ',
-        'SellerId' => 'A3LMXTNFZ71A3Q',
-        'AmazonOrderId' => '002-5014842-6516264',
-        'Key' => 'jRa5CBIrZVTMm+GD9wwSNSQ+vwpyflw1eUn6aebL'
-        ];
-    $items = $order->getItems($option);
-    die;
-     */
-
     $option = [
         'AWSAccessKeyId' => 'AKIAJGUMF5LENLIW6ZAQ',
         'SellerId' => 'A3LMXTNFZ71A3Q',
@@ -127,10 +113,13 @@ Route::get('test', function()
          */
     }
 
-    return View::make('test.index');
+    return ;
 });
 
 Route::controller('user');
+Route::controller('order');
+Route::controller('item');
+Route::controller('sku_map');
 
 /*
 |--------------------------------------------------------------------------

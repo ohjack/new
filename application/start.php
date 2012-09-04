@@ -77,16 +77,13 @@ Autoloader::map(array(
 Autoloader::directories(array(
     path('app').'models',
     path('app').'libraries',
-    path('app').'libraries/AmazonAPI',
+    //path('app').'libraries/Amazon',
 ));
 
 
-/*
 Autoloader::underscored(array(
-   'AmazoneAPI' => path('app') . 'libraries/AmazonAPI',
+   'Amazon' => path('app') . 'libraries/Amazon',
 ));
- */
-
 
 /*
 |--------------------------------------------------------------------------
