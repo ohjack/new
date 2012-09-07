@@ -228,6 +228,7 @@ class SpiderOrders_Amazon {
                 'payment_method'           => $data['PaymentMethod'],
                 'from'                     => $data['SalesChannel'],
                 'status'                   => $data['OrderStatus'],
+                'order_status'             => 'unhandle',
                 'created_at'               => $data['PurchaseDate'],
                 ];
 

@@ -177,6 +177,10 @@ body
     padding: 0 10px;
 }
 
+.click  {
+    color: #00e;
+    cursor: pointer;
+}
 
 /* ================ add end ========================= */
 .slogan

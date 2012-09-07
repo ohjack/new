@@ -38,7 +38,7 @@ class Amazon_Curl {
 
         if( curl_errno( $this->ch ) ) {
             $error =  curl_error($this->ch) ;
-            throw new Exception( $error );
+            throw new Amazon_Curl_Exception( $error );
         }
 
         curl_close($this->ch);

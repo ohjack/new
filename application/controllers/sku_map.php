@@ -5,7 +5,11 @@ class Sku_Map_Controller extends Base_Controller {
     public $restful = true;
 
     public function get_index() {
-        echo 'map';
+
+        // 获取问题SKU
+        $items = Item::getNoSkuItems(10);
+
+        return View::make('sku_map.list')->with('items', $items);
     }
 
     public function post_index() {
@@ -24,18 +28,15 @@ class Sku_Map_Controller extends Base_Controller {
         if($validation->fails()) {
             $return = 'error';
         } else {
-            if(SkuMap::chkMap($datas)) {
+            if(SkuMap::chkMap($datas['original_sku'], $datas['logistics'])) {
                 $return = 'exists';
             } else {
                 SkuMap::saveMap($datas);
                 $return = 'ok';
             }
-
         }
 
-        echo json_encode($return);
-        return ;
-        
+        return Response::json($return);
     }
 }
 ?>

@@ -12,12 +12,13 @@ class SkuMap {
         DB::table('sku_map')->insert($data);
     }
 
-    public static function chkMap($data) {
-        $count = DB::table('sku_map')->where('original_sku', '=', $data['original_sku'])
-                                     ->where('logistics', '=', $data['logistics'])
+    public static function chkMap($sku, $logistics) {
+        $count = DB::table('sku_map')->where('original_sku', '=', $sku)
+                                     ->where('logistics', '=', $logistics)
                                      ->count();
 
         return $count;
     }
+
 }
 ?>

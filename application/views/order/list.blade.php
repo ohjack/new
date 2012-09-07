@@ -1,17 +1,9 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>外贸电商交换机系统</title>
-    <meta name="viewport" content="width=device-width">
-    {{ HTML::style('laravel/css/style.css') }}
-    {{ HTML::script('js/jquery.js') }}
-    {{ HTML::script('laravel/js/order.js') }}
-</head>
-<body>
-    <div class="nav">抓取订单->匹配物流->导出</div>
-    <div style="">{{ HTML::link('test', '抓取订单') }} {{ HTML::link('match', '重新匹配') }}</div>
+@layout('layout')
+@section('script')
+{{ HTML::script('js/jquery.js') }}
+{{ HTML::script('js/order.js') }}
+@endsection
+@section('content')
     <table class="table">
       <thead>
         <tr>
@@ -24,7 +16,7 @@
             <th>Payment Method</th>
             <th>Form</th>
             <th>Status</th>
-            <th>Action</th>
+            <!--th>Action</th-->
         </tr>
       </thead>
       <tbody>
@@ -53,10 +45,10 @@
           <td>{{$order->payment_method}}</td>
           <td>{{$order->from}}</td>
           <td>{{$order->status}}</td>
-          <td class="action"><a href="#">handle</a></td>
+          <!--td class="action"><a href="#">handle</a></td-->
         </tr>
         <tr style="display:none" id="items{{$order->id}}">
-            <td colspan="10">
+            <td colspan="9">
                 <table class="table">
                   <thead>
                     <tr>
@@ -77,13 +69,13 @@
       </tbody>
       <tfoot>
         <tr>
-          <td colspan="10">
+          <td colspan="9">
             <label><input type="checkbox" name="selectAll"> 全选</label>
             <select name="action">
                 <option>-请选择-</option>
-                <option>不处理</option>
+                <option>其他物流</option>
             </select>
-            <input type="button" value="提交" /> 
+            <input type="button" value="提交" />
             {{$orders->links()}}
           </td>
         </tr>
@@ -122,5 +114,4 @@
           </tfoot>
         </table>
     </div>
-</body>
-</html>
+@endsection
