@@ -35,6 +35,6 @@
 
 return array(
     'bob',
-    'docs' => array('handles' => 'docs'),
-
+    'docs'   => ['handles' => 'docs'],
+    'sentry' => ['auto' => true]
 );

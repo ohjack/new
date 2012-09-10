@@ -6,12 +6,11 @@ class Item_Controller extends Base_Controller {
 
     public function get_index() {
     
-        $order_id = $_GET['order_id'] ? $_GET['order_id'] : 0;
+        $order_id = Input::get('order_id', 0);
         $items = Order::getItems($order_id);
 
-        echo json_encode($items);
+        return Response::json($items);
 
-        return;
     }
 }
 ?>

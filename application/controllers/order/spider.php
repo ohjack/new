@@ -6,8 +6,115 @@ class Order_Spider_Controller extends Base_Controller {
 
     public function get_index() {
 
-        $orderSpider = new SpiderOrders(new SpiderOrders_Amazon());
+        $platforms = User::getPlatform(1);
+
+        $result = ['status' => 'success'];
+
+        foreach ($platforms as $platform) {
+            $tmp_name = explode('.', $platform->name);
+            $platform_name = $tmp_name[0];
+            $spider = 'SpiderOrders_' . $platform_name;
+
+            $option = array_merge(unserialize($platform->option), unserialize($platform->user_option));
+
+            $mark = md5(implode(',', $option));
+
+            $spider_log = SpiderLog::getLastSpider('order', $mark);
+
+            if(empty($spider_log->lasttime)) {
+                $lasttime = date('Y-m-d') . ' 00:00:00';
+            } else {
+                $lasttime = $spider_log->lasttime;
+            }
+
+            $option['CreatedAfter'] = $lasttime;
+            $option['OrderStatus.Status.1'] = 'Unshipped';
+            $option['OrderStatus.Status.2'] = 'PartiallyShipped';
+
+
+            $orderSpider = new SpiderOrders(new $spider());
+
+            try {
+                $orders = $orderSpider->getOrders($option);
+
+                foreach ($orders as $order) {
+
+                    $order_id  = DB::table('orders')->where('entry_id', '=', $order['entry_id'])->only('id');
+                    if ( !$order_id ) {
+                        $order_id = DB::table('orders')->insert_get_id($order);
+
+                        $option = [
+                            'AWSAccessKeyId' => $option['AWSAccessKeyId'],
+                            'SellerId'       => $option['SellerId'],
+                            'AmazonOrderId'  => $order['entry_id'],
+                            'Key'            => $option['Key'],
+                            'Interface'      => $option['Interface']
+                            ];
+
+                        try {
+                            $item = $orderSpider->getItems( $option );
+
+                            //foreach ($items as $item) {
+                            $item['order_id'] = $order_id;
+
+                            $item_id = DB::table('items')->where('entry_id', '=', $item['entry_id'])->only('id');
+                            if ( !$item_id ) {
+                                DB::table('items')->insert($item);
+                            } else {
+                                DB::table('items')->where('id', '=', $item_id)->update($item);
+                            }
+                            //}
+                        } catch (Amazon_Curl_Exception $e) {
+
+                            $result = [
+                                'status' => 'error', 
+                                'message' => $e->getError()
+                                ];
+
+                        } catch (Amazon_Exception $e) {
+
+                            $result = [
+                                'status' => 'error',
+                                'message' => $e->getError()
+                                ];
+
+                        }
+
+                    } else { // update
+                        unset($order['order_status']);
+                        DB::table('orders')->where('id', '=', $order_id)->update($order);
+                    }
+
+                }
+
+            } catch (Amazon_Curl_Exception $e) {
+                // log
+                $result = [
+                    'status' => 'error', 
+                    'message' => $e->getError()
+                    ];
+
+            } catch (Amazon_Exception $e) {
+
+                // log
+                $result = [
+                    'status' => 'error',
+                    'message' => $e->getError()
+                    ];
+            }
+
+            if( $result['status'] == 'success' ) {
+                if( !empty($spider_log->id) )
+                    SpiderLog::updateLastSpider( $spider_log->id );
+                else
+                    SpiderLog::insertLastSpider( 'order', $mark );
+            }
+
+        }
+
+
         
+        /*
         $option = [
             'AWSAccessKeyId' => 'AKIAJGUMF5LENLIW6ZAQ',
             'SellerId' => 'A3LMXTNFZ71A3Q',
@@ -17,78 +124,10 @@ class Order_Spider_Controller extends Base_Controller {
             'OrderStatus.Status.2' => 'PartiallyShipped',
             'Key' => 'jRa5CBIrZVTMm+GD9wwSNSQ+vwpyflw1eUn6aebL',
             ];
+        */
 
-        $result = [
-            'status' => 'success'
-            ];
 
-        try {
-            $orders = $orderSpider->getOrders($option);
-        
-            foreach ($orders as $order) {
 
-                $order_id  = DB::table('orders')->where('entry_id', '=', $order['entry_id'])->only('id');
-                if ( !$order_id ) {
-                    $order_id = DB::table('orders')->insert_get_id($order);
-
-                    $option = [
-                        'AWSAccessKeyId' => 'AKIAJGUMF5LENLIW6ZAQ',
-                        'SellerId' => 'A3LMXTNFZ71A3Q',
-                        'AmazonOrderId' => $order['entry_id'],
-                        'Key' => 'jRa5CBIrZVTMm+GD9wwSNSQ+vwpyflw1eUn6aebL'
-                        ];
-
-                    try {
-                        $item = $orderSpider->getItems( $option );
-
-                        //foreach ($items as $item) {
-                            $item['order_id'] = $order_id;
-
-                            $item_id = DB::table('items')->where('entry_id', '=', $item['entry_id'])->only('id');
-                            if ( !$item_id ) {
-                                DB::table('items')->insert($item);
-                            } else {
-                                DB::table('items')->where('id', '=', $item_id)->update($item);
-                            }
-                        //}
-                    } catch (Amazon_Curl_Exception $e) {
-
-                        $result = [
-                            'status' => 'error', 
-                            'message' => $e->getError()
-                            ];
-                    
-                    } catch (Amazon_Exception $e) {
-
-                        $result = [
-                            'status' => 'error',
-                            'message' => $e->getError()
-                            ];
-                    
-                    }
-
-                } else { // update
-                    unset($order['order_status']);
-                    DB::table('orders')->where('id', '=', $order_id)->update($order);
-                }
-                
-            }
-
-        } catch (Amazon_Curl_Exception $e) {
-            // log
-            $result = [
-                'status' => 'error', 
-                'message' => $e->getError()
-                ];
-        
-        } catch (Amazon_Exception $e) {
-
-            // log
-            $result = [
-                'status' => 'error',
-                'message' => $e->getError()
-                ];
-        }
 
         return Response::json($result);
     }

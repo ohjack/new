@@ -12,14 +12,17 @@ class SpiderOrders_Amazon {
     private $_AWSAccessKeyId;
     private $_SellerId;
     private $_Key;
+    private $_Url;
 
-    const URL = 'https://mws.amazonservices.com/Orders/2011-01-01';
+    //const URL = 'https://mws.amazonservices.com/Orders/2011-01-01';
 
     public function getOrders( $option ) {
 
         $this->_AWSAccessKeyId = $option['AWSAccessKeyId'];
         $this->_SellerId = $option['SellerId'];
         $this->_Key = $option['Key'];
+        $this->_Url = $option['Interface'];
+        unset($option['Interface']);
 
         $option['Action'] =  'ListOrders';
 
@@ -47,6 +50,8 @@ class SpiderOrders_Amazon {
         $this->_AWSAccessKeyId = $option['AWSAccessKeyId'];
         $this->_SellerId = $option['SellerId'];
         $this->_Key = $option['Key'];
+        $this->_Url = $option['Interface'];
+        unset($option['Interface']);
     
         $option['Action'] = 'ListOrderItems';
         $param = $this->_getParam($option);
@@ -132,7 +137,7 @@ class SpiderOrders_Amazon {
 
         $listOrders = array();
         if( isset($order['ListOrdersResult']) ) {
-            if( isset($order['ListOrdersResult']['Orders']) ) {
+            if( isset($order['ListOrdersResult']['Orders']['Order']) ) {
                 $listOrders = $order['ListOrdersResult']['Orders']['Order'];
             }
 
@@ -151,7 +156,7 @@ class SpiderOrders_Amazon {
 
         $listItems = array();
         if( isset($item['ListOrderItemsResult']) ) {
-            if( isset($item['ListOrderItemsResult']['OrderItems']) ) {
+            if( isset($item['ListOrderItemsResult']['OrderItems']['OrderItem']) ) {
                 $listItems = $item['ListOrderItemsResult']['OrderItems']['OrderItem'];
             }
 
@@ -277,11 +282,11 @@ class SpiderOrders_Amazon {
     private function _getParam( $option ) {
     
         $amazon = new Amazon();
-        $amazon -> setData( $option, self::URL );
+        $amazon -> setData( $option, $this->_Url );
         $data = $amazon -> combine();
 
         $param = [
-            'url' => self::URL, 
+            'url' => $this->_Url, 
             'query' => $data,    
             ];
     
