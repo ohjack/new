@@ -34,7 +34,7 @@ $(function(){
         // ajax submit
         $.ajax({
             type: "POST",
-            url: "/sku_map",
+            url: "/skumap",
             data: options,
             dataType: "json",
             beforeSend: function() {

@@ -3,7 +3,7 @@ $(function(){
     $('#getOrders').click(function() {
         $.ajax({
             type: "GET",
-            url: "/spider/order",
+            url: "/order/spider",
             dataType: "json",
             beforeSend: function() {
                 $('#tips').html('<img src="/img/loading.gif" /><font style="color: blue">Loading...</font>');
