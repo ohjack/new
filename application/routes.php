@@ -33,16 +33,16 @@
 */
 
 Route::get('/', function() {
-    return View::make('home.index');
+    return Redirect::to('skumap', 301);
 });
 
 
 Route::controller('user');
-Route::controller('order.spider');
+Route::controller('spider.order');
 Route::controller('order');
 Route::controller('item.logistics');
 Route::controller('item');
-Route::controller('sku_map');
+Route::controller('skumap');
 
 /*
 |--------------------------------------------------------------------------

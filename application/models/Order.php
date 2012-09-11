@@ -2,11 +2,11 @@
 
 class Order {
     
-    public static function getOrders($per_page) {
+    public static function getOrders( $per_page ) {
 
         $orders = DB::table('orders')->where('order_status', '=', 'unhandle')
                                      ->order_by('shipment_level', 'ASC')
-                                     ->paginate($per_page);
+                                     ->paginate( $per_page );
 
         return $orders;
     

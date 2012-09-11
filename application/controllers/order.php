@@ -6,7 +6,7 @@ class Order_Controller extends Base_Controller {
 
     public function get_index() {
 
-        $orders = Order::getOrders(1);
+        $orders = Order::getOrders(5);
 
         return View::make('order.list')->with('orders', $orders);
     

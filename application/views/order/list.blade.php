@@ -1,6 +1,5 @@
 @layout('layout')
 @section('script')
-{{ HTML::script('js/jquery.js') }}
 {{ HTML::script('js/order.js') }}
 @endsection
 @section('content')
@@ -76,7 +75,7 @@
                 <option>其他物流</option>
             </select>
             <input type="button" value="提交" />
-            {{$orders->links()}}
+            {{ $orders->links() }}
           </td>
         </tr>
       </tfoot>

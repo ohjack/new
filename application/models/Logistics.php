@@ -62,14 +62,14 @@ class Logistics {
         header('Pragma:public');
 
         $first_row = [
-            'coolsystem' => '订单备注;Sellerrecord;下单时间;Ebay账户名;交易号(交易号相同订单，自动合并);EbayitemNo(为空自动生成);物品SKU;物品名称;数量;销售单价;校验码（绝对不能重复，否则无法导入订单）;运费;交易手续费;总计;币种;买家ID;收件人;地址1;地址2;state(必须为2位字母);city;邮编;国家;Coutrycode（为空默认US）;电话;E-mail',
-                'birdsystem' => '',
+                'coolsystem' => '订单备注;Sellerrecord,下单时间,Ebay账户名,交易号(交易号相同订单，自动合并),EbayitemNo(为空自动生成),物品SKU,物品名称,数量,销售单价,校验码（绝对不能重复，否则无法导入订单）,运费,交易手续费,总计;币种,买家ID,收件人,地址1,地址2,state(必须为2位字母),city,邮编,国家,Coutrycode（为空默认US）,电话,E-mail',
+                'birdsystem' => 'order-id,order-item-id,purchase-date,payments-date,reporting-date,promise-date,days-past-promise,buyer-email,buyer-name,buyer-phone-number,sku,product-name,quantity-purchased,quantity-shipped,quantity-to-ship,ship-service-level,recipient-name,ship-address-1,ship-address-2,ship-address-3,ship-city,ship-state,ship-postal-code,ship-country,sales-channel',
                 'other' => '',
             ];
 
         $fields = [
             'coolsystem' => [
-                'orders.entry_id', 
+                'orders.entry_id as order_id', 
                 'sku_map.target_sku as sku', 
                 'items.quantity', 
                 'orders.shipping_name', 
@@ -82,6 +82,28 @@ class Logistics {
                 'orders.shipping_country',
                 'orders.shipping_phone'
                 ],
+            'birdsystem' => [
+                'orders.entry_id as order_id',
+                'items.entry_id as item_id',
+                'orders.created_at',
+                'orders.shipment_level',
+                'orders.email',
+                'orders.name',
+                'orders.shipping_phone as phone',
+                'sku_map.target_sku as sku',
+                'items.name as product_name',
+                'items.quantity',
+                'orders.shipment_level',
+                'orders.shipping_name',
+                'orders.shipping_address1',
+                'orders.shipping_address2',
+                'orders.shipping_address3',
+                'orders.shipping_city',
+                'orders.shipping_state_or_region',
+                'orders.shipping_postal_code',
+                'orders.shipping_country',
+                'orders.from'
+                ]
             ];
 
         echo $first_row[$system] . "\n";
@@ -94,7 +116,7 @@ class Logistics {
         if($system == 'coolsystem') {
             foreach ($items as $item) {
                 $address2 = trim("{$item->shipping_address3} {$item->shipping_address2}");
-                echo ",,,,{$item->entry_id},," . 
+                echo ",,,,{$item->order_id},," . 
                      "{$item->sku},," . 
                      "{$item->quantity},,,,,,," . 
                      "{$item->entry_id}," . 
@@ -107,7 +129,34 @@ class Logistics {
                      "{$item->shipping_country}," . 
                      "{$item->shipping_phone},\n";
             }
-        
+        } else if ($system == 'birdsystem') {
+            foreach($items as $item) {
+                echo "{$item->order_id}," .
+                     "{$item->item_id}," .
+                     "{$item->created_at}," .
+                     "{$item->created_at}," .
+                     "{$item->created_at}," .
+                     "{$item->created_at},," .
+                     "{$item->email}," .
+                     "{$item->name}," .
+                     "{$item->phone}," .
+                     "{$item->sku}," .
+                     "\"{$item->product_name}\"," .
+                     "{$item->quantity}," .
+                     "{$item->quantity}," .
+                     "0," .
+                     "{$item->quantity}," .
+                     "{$item->shipment_level}," .
+                     "{$item->shipping_name}," .
+                     "{$item->shipping_address1}," .
+                     "{$item->shipping_address2}," .
+                     "{$item->shipping_address3}," .
+                     "{$item->shipping_city}," .
+                     "{$item->shipping_state_or_region}," .
+                     "{$item->shipping_postal_code}," .
+                     "{$item->shipping_country}," .
+                     "{$item->from}\n"; 
+            }
         }
     
     }

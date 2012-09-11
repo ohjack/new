@@ -16,7 +16,7 @@ class Item {
                                            ->where_not_null('sku_map.target_sku')
                                            ->get(['items.id']);
 
-        $not_in = [];
+        $not_in = [0];
         foreach ($had_sku_items as $item) {
             $not_in[] = $item->id;
         }

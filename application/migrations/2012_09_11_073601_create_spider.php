@@ -1,6 +1,6 @@
 <?php
 
-class Create_Mapping {
+class Create_Spider {
 
     /**
      * Make changes to the database.
@@ -9,12 +9,13 @@ class Create_Mapping {
      */
     public function up()
     {
-        // mapping
-        Schema::create('sku_map', function($table) {
+        // spider_log
+        Schema::create('spider_log', function($table) {
             $table->increments('id');
-            $table->string('original_sku', 60);
-            $table->string('target_sku', 60);
-            $table->string('logistics', 20);
+            $table->string('type', 20);
+            $table->string('mark', 32);
+            $table->date('lasttime');
+            $table->date('prevtime');
         });
     }
 
@@ -26,7 +27,7 @@ class Create_Mapping {
     public function down()
     {
         // reset
-        Schema::drop('sku_map');
+        // Schema::drop('spider_log');
     }
 
 }

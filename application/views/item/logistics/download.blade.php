@@ -1,6 +1,6 @@
 @layout('layout')
 @section('script')
-    {{ HTML::script('laravel/js/download.js') }}
+    {{ HTML::script('js/download.js') }}
 @endsection
 @section('content')
         <ul>
