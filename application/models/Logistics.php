@@ -2,6 +2,14 @@
 
 class Logistics {
 
+    /**
+     * 所有产品匹配物流
+     *
+     * 将所有未处理的的订单通过产品sku进行物流匹配操作
+     *
+     * return void
+     *
+     */
     public static function allHandle () {
 
         $rules = [
@@ -32,6 +40,11 @@ class Logistics {
         }
     }
 
+    /**
+     * 将所有的订单匹配给其他物流
+     *
+     * return void
+     */
     public static function allOther() {
 
         $option = [
@@ -43,6 +56,11 @@ class Logistics {
     
     }
 
+    /**
+     * 将选中的订单匹配给其他物流
+     *
+     * return void
+     */
     public static function listToOther($order_ids) {
 
         $option = [
@@ -53,6 +71,11 @@ class Logistics {
                            ->update( $option );
     }
 
+    /**
+     * 导出已经匹配好物流的订单
+     *
+     * return void
+     */
     public static function getCSV($system) {
 
         header('Content-Type: text/csv');
@@ -119,42 +142,43 @@ class Logistics {
                 echo ",,,,{$item->order_id},," . 
                      "{$item->sku},," . 
                      "{$item->quantity},,,,,,," . 
-                     "{$item->entry_id}," . 
+                     "{$item->order_id}," . 
                      "{$item->shipping_name}," . 
-                     "{$item->shipping_address1}," . 
+                     "\"{$item->shipping_address1}\"," . 
                      "{$address2}," . 
-                     "{$item->shipping_state_or_region}," . 
-                     "{$item->shipping_city}," . 
+                     "\"{$item->shipping_state_or_region}\"," . 
+                     "\"{$item->shipping_city}\"," . 
                      "{$item->shipping_postal_code},," . 
                      "{$item->shipping_country}," . 
                      "{$item->shipping_phone},\n";
             }
         } else if ($system == 'birdsystem') {
             foreach($items as $item) {
+                $time = new DateTime($item->created_at);
+                $time = $time->format( DateTime::ISO8601 );
                 echo "{$item->order_id}," .
                      "{$item->item_id}," .
-                     "{$item->created_at}," .
-                     "{$item->created_at}," .
-                     "{$item->created_at}," .
-                     "{$item->created_at},," .
+                     "{$time}," .
+                     "{$time}," .
+                     "{$time}," .
+                     "{$time},," .
                      "{$item->email}," .
                      "{$item->name}," .
                      "{$item->phone}," .
                      "{$item->sku}," .
                      "\"{$item->product_name}\"," .
                      "{$item->quantity}," .
-                     "{$item->quantity}," .
                      "0," .
                      "{$item->quantity}," .
                      "{$item->shipment_level}," .
                      "{$item->shipping_name}," .
-                     "{$item->shipping_address1}," .
-                     "{$item->shipping_address2}," .
-                     "{$item->shipping_address3}," .
-                     "{$item->shipping_city}," .
-                     "{$item->shipping_state_or_region}," .
+                     "\"{$item->shipping_address1}\"," .
+                     "\"{$item->shipping_address2}\"," .
+                     "\"{$item->shipping_address3}\"," .
+                     "\"{$item->shipping_city}\"," .
+                     "\"{$item->shipping_state_or_region}\"," .
                      "{$item->shipping_postal_code}," .
-                     "{$item->shipping_country}," .
+                     "\"{$item->shipping_country}\"," .
                      "{$item->from}\n"; 
             }
         }

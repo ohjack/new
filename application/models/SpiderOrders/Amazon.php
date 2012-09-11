@@ -14,8 +14,6 @@ class SpiderOrders_Amazon {
     private $_Key;
     private $_Url;
 
-    //const URL = 'https://mws.amazonservices.com/Orders/2011-01-01';
-
     public function getOrders( $option ) {
 
         $this->_AWSAccessKeyId = $option['AWSAccessKeyId'];

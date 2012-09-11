@@ -118,23 +118,6 @@ class Spider_Order_Controller extends Base_Controller {
 
         }
 
-
-        
-        /*
-        $option = [
-            'AWSAccessKeyId' => 'AKIAJGUMF5LENLIW6ZAQ',
-            'SellerId' => 'A3LMXTNFZ71A3Q',
-            'MarketplaceId.Id.1' => 'ATVPDKIKX0DER',
-            'CreatedAfter' => '2012-08-30 00:00:00',
-            'OrderStatus.Status.1' => 'Unshipped',
-            'OrderStatus.Status.2' => 'PartiallyShipped',
-            'Key' => 'jRa5CBIrZVTMm+GD9wwSNSQ+vwpyflw1eUn6aebL',
-            ];
-        */
-
-
-
-
         return Response::json($result);
     }
 }
