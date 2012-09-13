@@ -114,6 +114,8 @@ class Spider_Order_Controller extends Base_Controller {
                     SpiderLog::updateLastSpider( $spider_log->id );
                 else
                     SpiderLog::insertLastSpider( 'order', $mark );
+
+                Session::put('step', 'mapSetting');
             }
 
         }

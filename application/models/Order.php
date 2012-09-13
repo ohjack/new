@@ -51,5 +51,13 @@ class Order {
                            ->update( $option );
     }
 
+    /**
+     * 统计每个物流订单 
+     *
+     */
+    public static function countLogistics( $logistics ) {
+    
+        return DB::table('orders')->where('order_status', '=', $logistics)->count();
+    }
 }
 ?>

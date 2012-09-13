@@ -179,5 +179,19 @@ if ( ! Request::cli() and Config::get('session.driver') !== '')
     Session::load();
 }
 
+$current_step = Session::get('step', 'spiderOrder');
+foreach(Config::get('application.steps') as $step => $item) {
+    if($current_step != $step) {
+        $new_item = [
+            'name'  => $item['name'],
+            'link'  => 'javascript:;',
+            'class' => 'cantclick',
+            'id'    => ''
+            ];
+    } else {
+        $new_item = $item;
+    }
 
-//set_include_path(get_include_path().PATH_SEPARATOR.path('app').'libraries/AmazonAPI');
+    $new_steps[$step] = $new_item;
+}
+Config::set('application.steps', $new_steps);

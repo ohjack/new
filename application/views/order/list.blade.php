@@ -22,7 +22,7 @@
         @foreach($orders->results as $order)
         <tr class="order">
           <td>
-                <input type="checkbox" name="id[]" value="{{$order->id}}">
+                <!--input type="checkbox" name="id[]" value="{{$order->id}}"-->
                 #{{$order->id}}<br />
           </td>
           <td>{{$order->created_at}}</td>
@@ -43,7 +43,7 @@
           <td>{{$order->ship_level}}</td>
           <td>{{$order->payment_method}}</td>
           <td>{{$order->from}}</td>
-          <td>{{$order->status}}</td>
+          <td>{{$order->order_status}}</td>
           <!--td class="action"><a href="#">handle</a></td-->
         </tr>
         <tr style="display:none" id="items{{$order->id}}">
@@ -69,48 +69,15 @@
       <tfoot>
         <tr>
           <td colspan="9">
-            <label><input type="checkbox" name="selectAll"> 全选</label>
+            <!--label><input type="checkbox" name="selectAll"> 全选</label>
             <select name="action">
                 <option>-请选择-</option>
                 <option>其他物流</option>
             </select>
-            <input type="button" value="提交" />
+            <input type="button" value="提交" /-->
             {{ $orders->links() }}
           </td>
         </tr>
       </tfoot>
     </table>
-    <div id="addSkuMap">
-        <table style="width:100%">
-          <thead>
-            <tr>
-              <th colspan="2">添加SKU映射<span id="close">X</span></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>原SKU:</td>
-              <td><input type="text" name="original_sku"></td>
-            </tr>
-            <tr>
-              <td>目标SKU:</td>
-              <td><input type="text" name="target_sku"></td>
-            </tr>
-            <tr>
-              <td>物流系统:</td>
-              <td>
-                <select name="logistics">
-                  <option value="coolsystem">酷系统</option>
-                  <option value="birdsystem">鸟系统</option>
-                </select>
-              </td>
-            </tr>
-          </tbody>
-          <tfoot>
-            <tr>
-              <td colspan="2"><input id="skuMapSubmit" type="button" value="提交" /><span id="skuTips"></span></td>
-            </tr>
-          </tfoot>
-        </table>
-    </div>
 @endsection

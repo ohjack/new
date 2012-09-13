@@ -185,6 +185,33 @@ return array(
         'coolsystem' => '酷系统',
         'birdsystem' => '鸟系统',
         'micaosystem' => '米巢系统',
+    ],
+    'steps' => [
+        'spiderOrder' => [
+            'name'   => '抓取订单',
+            'link'   => 'javascript:;',
+            'id'     => 'spiderOrders',
+            'class'  => 'click'
+        ],
+        'mapSetting' => [
+            'name'   => '产品设置',
+            'link'   => '/skumap',
+            'id'     => '',
+            'class'  => 'click'
+        ],
+        'matchLogistics' => [
+            'name'   => '匹配物流',
+            'link'   => 'javascript:;',
+            'id'     => 'matchLogistics',
+            'class'  => 'click'
+            ],
+        'handleLogistics' => [
+            'name'   => '物流处理',
+            'link'   => '/order/logistics',
+            'id'     => '',
+            'class'  => 'click'
+        ]
+    
     ]
 
 );

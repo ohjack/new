@@ -34,14 +34,6 @@ $(function(){
 
             $('#show_items_' + id).html(html);
 
-            // add sku map
-            $('.sku').click(function() {
-                $('#addSkuMap').fadeIn();
-                $('input[name="original_sku"]').attr('value', $(this).text());
-                $('input[name="target_sku"]').attr('value', '');
-                $('select[name="logistics"]').children('option').removeAttr('selected');
-                $('#skuTips').html('');
-            });
         });
 
     });

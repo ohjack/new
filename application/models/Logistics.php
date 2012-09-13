@@ -168,7 +168,7 @@ class Logistics {
                      "{$time}\t" .
                      "{$time}\t\t" .
                      "{$item->email}\t" .
-                     "{$item->name}\t" .
+                     "\"{$item->name}\"\t" .
                      "{$item->phone}\t" .
                      "{$item->sku}\t" .
                      "\"{$item->product_name}\"\t" .

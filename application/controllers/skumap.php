@@ -7,7 +7,12 @@ class Skumap_Controller extends Base_Controller {
     public function get_index() {
 
         // 获取问题SKU
-        $items = Item::getNoSkuItems(10);
+        $items = Item::getNoSkuItems();
+        if(empty($items)) {
+            $current_step = Session::get('step');
+            if($current_step != 'handleLogistics')
+                Session::put('step', 'matchLogistics');
+        }
 
         return View::make('skumap.list')->with('items', $items);
     }
@@ -39,6 +44,13 @@ class Skumap_Controller extends Base_Controller {
                     SkuMap::saveMap($data);
                 }
             }
+        }
+
+
+        // 获取问题SKU 出来完成允许下一步
+        $items = Item::getNoSkuItems();
+        if(empty($items)) {
+            Session::put('step', 'matchLogistics');
         }
 
         return Redirect::to('skumap');

@@ -8,13 +8,8 @@ class Order_Logistics_Controller extends Base_Controller {
 
         $action = Input::get('action');
 
-        if($action == 'allOrder') {
-            Logistics::allHandle();
-        } else if($action == 'allOther') {
-            Logistics::allOther();
-        } else if($action == 'listOrder') {
-            Logistics::listToOther( Input::get('ids') );
-        }
+        Logistics::allHandle();
+        Session::put('step', 'handleLogistics');
 
         return Response::json('ok');
     }
@@ -26,26 +21,27 @@ class Order_Logistics_Controller extends Base_Controller {
         $systems = [
             'coolsystem',
             'birdsystem',
-            'other'
             ];
 
         if(in_array($system, $systems)) {
             Logistics::getCSV($system);
+        }else if($system == 'micaosystem') {
+            exit('micaosystem');
         }else {
-            return View::make('order.logistics.download');
+            
+            $coolsystem_count = Order::countLogistics('coolsystem');
+            $birdsystem_count = Order::countLogistics('birdsystem');
+            $micaosystem_count = Order::countLogistics('micaosystem');
+
+            if($coolsystem_count + $birdsystem_count + $micaosystem_count == 0) {
+                Session::put('step', 'spiderOrder'); 
+                return Redirect::to('order');
+            }
+
+            return View::make('order.logistics.download')->with('coolsystem_count', $coolsystem_count)
+                                                         ->with('birdsystem_count', $birdsystem_count)
+                                                         ->with('micaosystem_count', $micaosystem_count);
         }
     }
-
-    public function put_index() {
-    
-        $maps = [
-
-            ];
-
-        DB::table('sku_map')->insert($maps);
-        echo 'OK';
-
-    }
-
 }
 ?>
