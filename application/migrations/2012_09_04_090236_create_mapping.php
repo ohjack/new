@@ -14,6 +14,8 @@ class Create_Mapping {
             $table->increments('id');
             $table->string('original_sku', 60);
             $table->string('target_sku', 60);
+            $table->string('product_name', 60);      // 品名
+            $tbale->decimal('product_price', 10, 2); // 价值
             $table->string('logistics', 20);
         });
     }

@@ -173,7 +173,7 @@ class SpiderOrders_Amazon {
         $order = $this->_xml2Array( $data['data'] );
 
         $listOrders = array();
-        if( isset($order['ListOrdersByNextTokenResult']) ) {
+        if( isset($order['ListOrdersByNextTokenResult']['Orders']['Order']) ) {
             $listOrders = $order['ListOrdersByNextTokenResult']['Orders']['Order'];
         }
 
@@ -191,7 +191,7 @@ class SpiderOrders_Amazon {
         $item = $this->_xml2Array( $data['data'] );
 
         $listItems = array();
-        if( isset($item['ListOrderItemsByNextTokenResult']) ) {
+        if( isset($item['ListOrderItemsByNextTokenResult']['OrderItems']['OrderItem']) ) {
             $listItems = $item['ListOrderItemsByNextTokenResult']['OrderItems']['OrderItem'];
         }
 

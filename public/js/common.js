@@ -32,7 +32,7 @@ $(function(){
 
         $.ajax({
             type: "POST",
-            url: "/item/logistics",
+            url: "/order/logistics",
             dataType: "json",
             data: option,
             beforeSend: function() {

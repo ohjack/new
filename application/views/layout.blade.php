@@ -11,13 +11,17 @@
     {{ HTML::script('js/common.js') }}
 </head>
 @section('dashboard')
+  <div>
+       {{ HTML::link('order', '订单列表') }}
+  </div>
+  <div>
   <!--{{ HTML::link('order', '订单列表') }}-->
   <span class="click" id="getOrders">抓取订单</span>
   {{ HTML::link('skumap', '产品设置') }}
-  <span class="click" id="logistics">重新匹配物流</span>
-  <span class="click" id="allOther">全部其他物流</span>
-  {{ HTML::link('/item/logistics', '下载表单') }}
+  <span class="click" id="logistics">匹配物流</span>
+  {{ HTML::link('order/logistics', '物流处理') }}
   <span id="tips"></span>
+  </div>
 @endsection
 <body>
     <div>

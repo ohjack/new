@@ -39,9 +39,10 @@ Route::get('/', function() {
 
 Route::controller('user');
 Route::controller('spider.order');
+Route::controller('order.logistics');
 Route::controller('order');
-Route::controller('item.logistics');
 Route::controller('item');
+Route::controller('skumap.manage');
 Route::controller('skumap');
 
 /*

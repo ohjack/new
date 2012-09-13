@@ -16,33 +16,37 @@ class Item {
     public static function getNoSkuItems($per_page) {
 
         $fields = [
-            'items.id',
             'items.sku',
             'items.name',
+            'orders.shipping_country',
             'orders.from',
-            DB::raw('count(items.id) as count')
         ];
 
-        $had_sku_items = DB::table('items')->left_join('sku_map', 'items.sku', '=', 'sku_map.original_sku')
-                                           ->where_not_null('sku_map.target_sku')
-                                           ->get(['items.id']);
 
-        $not_in = [0];
-        foreach ($had_sku_items as $item) {
-            $not_in[] = $item->id;
-        }
-
-        // 待整理
         $items = DB::table('items')->left_join('orders', 'items.order_id', '=', 'orders.id')
-                                   ->where_not_in('items.id', $not_in)
-                                   ->where(DB::raw("((orders.shipping_country"), '=', 'US')
-                                   ->where('orders.from', '=', DB::raw("'Amazon.com')"))
-                                   ->or_where(DB::raw("(orders.from"), '=', DB::raw("'Amazon.co.uk'))"))
+                                   //->where_not_in('items.sku', DB::table('sku_map')->lists('original_sku'))
                                    ->group_by('items.sku')
                                    ->group_by('orders.from')
+                                   //->paginate($per_page, $fields);
                                    ->get($fields);
 
-        return $items;
+        // 按照简单规则匹配物流
+        $items_unhandled = [];
+        foreach ($items as $item) {
+            if( $item->shipping_country == 'US' && $item->from == 'Amazon.com' )
+                $item->logistics = 'coolsystem';
+            elseif ($item->from == 'Amazon.co.uk')
+                $item->logistics = 'birdsystem';
+            else
+                $item->logistics = 'micaosystem';
+
+            if( !SkuMap::chkMap($item->sku, $item->logistics) ) {
+                $items_unhandled[] = $item;
+            }
+        }
+
+        return $items_unhandled;
+
     }
 
 }

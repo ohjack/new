@@ -13,8 +13,9 @@ class Logistics {
     public static function allHandle () {
 
         $rules = [
-                'coolsystem' => ['orders.shipping_country' => 'US'],
-                'birdsystem' => []
+                'coolsystem'  => ['orders.shipping_country' => 'US', 'orders.from' => 'Amazon.com'],
+                'birdsystem'  => ['orders.from' => 'Amazon.co.uk'],
+                'micaosystem' => []
             ];
 
         $handled = array();
@@ -48,7 +49,7 @@ class Logistics {
     public static function allOther() {
 
         $option = [
-                'order_status' => 'other'
+                'order_status' => 'micaosystem'
             ];
 
         DB::table('orders')->where('order_status', '=', 'unhandle')
@@ -78,20 +79,20 @@ class Logistics {
      */
     public static function getCSV($system) {
 
-        header('Content-Type: text/csv');
+        header('Content-Type: text/csv; chartset=utf8');
         header('Content-Disposition: attachment; filename=' . $system . date('_Y_m_d') . '.csv');
         header('Cache-Control:must-revalidate,post-check=0,pre-check=0');
         header('Expires:0');
         header('Pragma:public');
 
         $first_row = [
-                'coolsystem' => '订单备注;Sellerrecord,下单时间,Ebay账户名,交易号(交易号相同订单，自动合并),EbayitemNo(为空自动生成),物品SKU,物品名称,数量,销售单价,校验码（绝对不能重复，否则无法导入订单）,运费,交易手续费,总计;币种,买家ID,收件人,地址1,地址2,state(必须为2位字母),city,邮编,国家,Coutrycode（为空默认US）,电话,E-mail',
-                'birdsystem' => 'order-id,order-item-id,purchase-date,payments-date,reporting-date,promise-date,days-past-promise,buyer-email,buyer-name,buyer-phone-number,sku,product-name,quantity-purchased,quantity-shipped,quantity-to-ship,ship-service-level,recipient-name,ship-address-1,ship-address-2,ship-address-3,ship-city,ship-state,ship-postal-code,ship-country,sales-channel',
-                'other' => '',
+                'coolsystem' => '订单备注,Sellerrecord,下单时间,Ebay账户名,交易号(交易号相同订单，自动合并),EbayitemNo(为空自动生成),物品SKU,物品名称,数量,销售单价,校验码（绝对不能重复，否则无法导入订单）,运费,交易手续费,总计,币种,买家ID,收件人,地址1,地址2,state(必须为2位字母),city,邮编,国家,Coutrycode（为空默认US）,电话,E-mail',
+                'birdsystem' => 'order-id'."\t".'order-item-id'."\t".'purchase-date'."\t".'payments-date'."\t".'reporting-date'."\t".'promise-date'."\t".'days-past-promise'."\t".'buyer-email'."\t".'buyer-name'."\t".'buyer-phone-number'."\t".'sku'."\t".'product-name'."\t".'quantity-purchased'."\t".'quantity-shipped'."\t".'quantity-to-ship'."\t".'ship-service-level'."\t".'recipient-name'."\t".'ship-address-1'."\t".'ship-address-2'."\t".'ship-address-3'."\t".'ship-city'."\t".'ship-state'."\t".'ship-postal-code'."\t".'ship-country'."\t".'sales-channel',
             ];
 
         $fields = [
             'coolsystem' => [
+                'orders.id',
                 'orders.entry_id as order_id', 
                 'sku_map.target_sku as sku', 
                 'items.quantity', 
@@ -106,6 +107,7 @@ class Logistics {
                 'orders.shipping_phone'
                 ],
             'birdsystem' => [
+                'orders.id',
                 'orders.entry_id as order_id',
                 'items.entry_id as item_id',
                 'orders.created_at',
@@ -136,8 +138,10 @@ class Logistics {
                                    ->where('orders.order_status', '=', $system)
                                    ->get($fields[$system]);
 
+        $order_handled = [0];
         if($system == 'coolsystem') {
             foreach ($items as $item) {
+                $order_handled[] = $item->id;
                 $address2 = trim("{$item->shipping_address3} {$item->shipping_address2}");
                 echo ",,,,{$item->order_id},," . 
                      "{$item->sku},," . 
@@ -154,34 +158,39 @@ class Logistics {
             }
         } else if ($system == 'birdsystem') {
             foreach($items as $item) {
+                $order_handled[] = $item->id;
                 $time = new DateTime($item->created_at);
                 $time = $time->format( DateTime::ISO8601 );
-                echo "{$item->order_id}," .
-                     "{$item->item_id}," .
-                     "{$time}," .
-                     "{$time}," .
-                     "{$time}," .
-                     "{$time},," .
-                     "{$item->email}," .
-                     "{$item->name}," .
-                     "{$item->phone}," .
-                     "{$item->sku}," .
-                     "\"{$item->product_name}\"," .
-                     "{$item->quantity}," .
-                     "0," .
-                     "{$item->quantity}," .
-                     "{$item->shipment_level}," .
-                     "{$item->shipping_name}," .
-                     "\"{$item->shipping_address1}\"," .
-                     "\"{$item->shipping_address2}\"," .
-                     "\"{$item->shipping_address3}\"," .
-                     "\"{$item->shipping_city}\"," .
-                     "\"{$item->shipping_state_or_region}\"," .
-                     "{$item->shipping_postal_code}," .
-                     "\"{$item->shipping_country}\"," .
+                echo "{$item->order_id}\t" .
+                     "{$item->item_id}\t" .
+                     "{$time}\t" .
+                     "{$time}\t" .
+                     "{$time}\t" .
+                     "{$time}\t\t" .
+                     "{$item->email}\t" .
+                     "{$item->name}\t" .
+                     "{$item->phone}\t" .
+                     "{$item->sku}\t" .
+                     "\"{$item->product_name}\"\t" .
+                     "{$item->quantity}\t" .
+                     "0\t" .
+                     "{$item->quantity}\t" .
+                     "{$item->shipment_level}\t" .
+                     "{$item->shipping_name}\t" .
+                     "\"{$item->shipping_address1}\"\t" .
+                     "\"{$item->shipping_address2}\"\t" .
+                     "\"{$item->shipping_address3}\"\t" .
+                     "\"{$item->shipping_city}\"\t" .
+                     "\"{$item->shipping_state_or_region}\"\t" .
+                     "{$item->shipping_postal_code}\t" .
+                     "\"{$item->shipping_country}\"\t" .
                      "{$item->from}\n"; 
             }
         }
+
+        // 更新订单为处理状态
+        DB::table('orders')->where_in('id', $order_handled)
+                          ->update(['order_status' => 'handled']);
     
     }
 

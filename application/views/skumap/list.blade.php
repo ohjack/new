@@ -3,40 +3,45 @@
 {{ HTML::script('js/skumap.js') }}
 @endsection
 @section('content')
+<div><a href="{{ URL::to('skumap/manage') }}"  style="float: right; margin-right: 10px">产品设置管理</a></div>
+{{ Form::open('skumap', 'POST') }}
     <table class="table">
       <thead>
         <tr>
           <th width="10%">SKU</th>
-          <th width="5%">数量</th>
           <th>名称</th>
-          <th width="10%">来源</th>
-          <th width="20%">SKU设置</th>
+          <th width="10">国家</th>
+          <th width="10">来源</th>
+          <th width="20%">品名</th>
+          <th width="5%">价值</th>
+          <th width="15%">映射SKU</th>
+          <th width="5%">物流</th>
         </tr>
       </thead>
       <tbody>
         @foreach($items as $item)
-        <tr id="item{{$item->id}}">
-          <td>{{$item->sku}}</td>
-          <td>{{$item->count}}</td>
-          <td>{{$item->name}}</td>
-          <td>{{$item->from}}</td>
+        <tr>
+          <td>{{ $item->sku }}</td>
+          <td>{{ $item->name }}</td>
+          <td>{{ $item->shipping_country }}</td>
+          <td>{{ $item->from }}</td>
+          <td>{{ Form::text('product_name[]') }}</td>
+          <td>{{ Form::text('product_price[]') }}</td>
           <td>
-            <input type="hidden" name="original_sku{{$item->id}}" value="{{$item->sku}}">
-            <input type="text" name="target_sku{{$item->id}}">
-            <select name="system{{$item->id}}">
-              <option value="coolsystem" @if($item->from == 'Amazon.com') selected="true" @endif>酷系统</option>
-              <option value="birdsystem" @if($item->from == 'Amazon.co.uk') selected="true" @endif>鸟系统</option>
-            </select>
-            <input class="sku_map_submit" key="{{$item->id}}" type="button" value="提交" />
-            <span id="tips{{$item->id}}"></span>
+              {{ Form::hidden('original_sku[]', $item->sku) }}
+              {{ Form::text('target_sku[]') }}
+          </td>
+          <td>
+              {{ Form::select('logistics[]', Config::get('application.logistics'), $item->logistics) }}
           </td>
         </tr>
         @endforeach
       </tbody>
       <tfoot>
         <tr>
-          <td colspan="5"></td>
+          <td colspan="8"><input type="submit" value="保存" style="float: right; margin-right: 20px"/></td>
         </tr>
       </tfoot>
     </table>
+{{ Form::close() }}
 @endsection

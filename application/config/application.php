@@ -181,5 +181,10 @@ return array(
         'Validator'     => 'Laravel\\Validator',
         'View'          => 'Laravel\\View',
     ),
+    'logistics' => [
+        'coolsystem' => '酷系统',
+        'birdsystem' => '鸟系统',
+        'micaosystem' => '米巢系统',
+    ]
 
 );
