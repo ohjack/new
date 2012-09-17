@@ -3,21 +3,27 @@
 class User {
 
     /**
-     * 通过用户ID获取用户销售平台
+     * 通过用户ID获取用户可抓取销售平台配置
      *
      * @param: $user_id integer 用户ID
      *
-     * return $platform object
+     * return array
      */
-    public static function getPlatform($user_id) {
+    public static function getPlatforms($user_id) {
 
-        $fields = ['platform.name', 'platform.option', 'users_platform.option as user_option'];
+        $fields = [
+            'p.type',
+            'p.name', 
+            'p.option', 
+            'up.id',
+            'up.option as user_option'
+            ];
 
-        $platform = DB::table('users_platform')->left_join('platform', 'users_platform.platform_id', '=', 'platform.id')
-                                               ->where('users_platform.user_id', '=', $user_id)
-                                               ->get($fields);
+        $platforms = DB::table('platform as p')->left_join('users_platform as up', 'p.id', '=', 'up.platform_id')
+                                            ->where('up.user_id', '=', $user_id)
+                                            ->get( $fields );
 
-        return $platform;
+        return $platforms;
     
     }
 }

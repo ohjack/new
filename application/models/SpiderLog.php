@@ -19,19 +19,23 @@ class SpiderLog {
      * 每次抓取都从上上次的时间到当前时间段进行抓取
      * 为了防止漏抓,每段时间的订单都会抓取两次
      * spider表中lasttime就是上上次抓取时间,prevtime是上次抓取时间
+     * 如果抓取时间短与2分钟返回空
      * 
-     * @param: $type string  抓取类型
-     * @param: $mark hash    标识 由API的配置md5生成
+     * @param: $type         string  抓取类型
+     * @param: $flatform_id  integer 用户平台ID
      *
-     * return $lasttime  最后抓取时间
+     * return dateline or false 最后抓取时间
      */
-    public static function getLastSpider( $type, $mark ) {
+    public static function getLastSpider( $type, $platform_id ) {
 
-        $lasttime = DB::table('spider_log')->where('mark', '=', $mark)
+        $lasttime = DB::table('spider_log')->where('platform_id', '=', $platform_id)
                                            ->where('type', '=', $type)
-                                           ->first(['id', 'lasttime']);
+                                           ->only('lasttime');
 
-        return $lasttime;
+        // 如果为空则新增
+        if(empty($lasttime)) $lasttime = static::insertLastSpider( $type, $platform_id );
+
+        return time() - strtotime($lasttime) < 120 ? false : $lasttime;
     
     }
 
@@ -41,13 +45,15 @@ class SpiderLog {
      * 将上次抓取时间更新成上上次更新时间放在lasttime字段
      * 将当前时间储存在上次抓取时间prevtime字段
      *
-     * @param: $id integer 目标记录id
+     * @param: $type        integer 类型
+     * @param: $platform_id integer 平台ID
      *
      * return void
      */
-    public static function updateLastSpider( $id ) {
+    public static function updateLastSpider( $type, $platform_id ) {
 
-        $prevtime = DB::table('spider_log')->where('id', '=', $id)
+        $prevtime = DB::table('spider_log')->where('type', '=', $type)
+                                           ->where('platform_id', '=', $platform_id)
                                            ->only('prevtime');
 
         $data = [
@@ -55,7 +61,8 @@ class SpiderLog {
             'prevtime' => date('Y-m-d H:i:s')
             ];
 
-        DB::table('spider_log')->where('id', '=', $id)
+        DB::table('spider_log')->where('type', '=', $type)
+                               ->where('platform_id', '=', $platform_id)
                                ->update($data);
     
     }
@@ -65,21 +72,25 @@ class SpiderLog {
      *
      * 记录抓取时间以便以后从这个时间段进行抓取
      *
-     * @param: $type string  抓取类型
-     * @param: $mark hash    标识 由API的配置md5生成
+     * @param: $type         string   抓取类型
+     * @param: $platform_id  integer  平台ID
      *
-     * return void
+     * return datetime
      */
-    public static function insertLastSpider( $type, $mark ) {
+    public static function insertLastSpider( $type, $platform_id ) {
+
+        $datetime = date('Y-m-d' . '00:00:00');
 
         $data = [
-            'type' => $type,
-            'mark' => $mark,
-            'prevtime' => date('Y-m-d H:i:s'),
-            'lasttime' => date('Y-m-d H:i:s')
+            'type'        => $type,
+            'platform_id' => $platform_id,
+            'prevtime'    => $datetime,
+            'lasttime'    => $datetime
             ];
 
         DB::table('spider_log')->insert($data);
+
+        return $datetime;
     
     }
 }

@@ -33,13 +33,15 @@
 */
 
 Route::get('/', function() {
-    return Redirect::to('skumap', 301);
+    return Redirect::to('order', 301);
 });
 
 
 Route::controller('user');
 Route::controller('spider.order');
+Route::controller('spider.item');
 Route::controller('order.logistics');
+Route::controller('order.ajax');
 Route::controller('order');
 Route::controller('item');
 Route::controller('skumap.manage');

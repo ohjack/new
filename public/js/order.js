@@ -1,43 +1,71 @@
 $(function(){
 
-    // ajax get items
-    $('.openItem').click(function(){
+    $('.order').dblclick(function(){
         var id = $(this).attr('key');
-        var items = $('#items' + id);
-
-        if(items.css('display') == 'none') {
-            items.fadeIn();
-            $(this).children('.open').removeClass('open').addClass('close');
-        } else {
-            items.fadeOut();
-            $(this).children('.close').removeClass('close').addClass('open');
-        }
-
         $.ajax({
-            type: "GET",
-            url: "/item?order_id=" + id,
-            dataType: "json",
+            type: 'GET',
+            url:  '/order/ajax/info?order_id=' + id,
+            dataType: 'json',
             beforeSend: function() {
-                $('#show_items_' +id).html('<tr><td colspan="6" style="text-align:center;"><img src="/img/loading.gif" />Loading...</td></tr>');
-            }
-        }).done(function(data){
-            var html = '<tr>';
-            for(var i = 0; i < data.length; i++) {
-                html += '<td>#' + data[i].id + '</td>' +
-                        '<td>' + data[i].name + '</td>' +
-                        '<td class="sku">' + data[i].sku + '</td>' + 
-                        '<td>' + data[i].price + '</td>' +
-                        '<td>' + data[i].quantity + '</td>' +
-                        '<td>' + data[i].shipping_price + '</td>'
-            }
-            html + '<tr>';
+                $('.mask').fadeIn();
+                $('.loading').fadeIn();
+            },
+            success: function( data ) {
+                $('.loading').hide();
+                $('.order_detail').fadeIn();
 
-            $('#show_items_' + id).html(html);
+                // 订单信息
+                $('#order_info td').each(function() {
+                    var field = ($(this).attr('field'));
+                    if(field == 'shipping_address') {
+                        $(this).html(eval('data.shipping_address3 + \' \' + data.shipping_address2 + \' \' + data.shipping_address1'));
+                    } else if (field == 'total') {
+                        $(this).html(eval('data.currency + \' \' + data.total'));
+                    } else {
+                        $(this).html(eval('data.'+ field));
+                    }
+                });
 
+                // 产品列表
+                var items_count = data.items.length;
+                var item_row = '';
+                if( items_count > 0) {
+                    for (var i = 0; i < items_count; i++) {
+                        item_row += '<tr>' + 
+                                    '<td>' + data.items[i].entry_id + '</td>' + 
+                                    '<td>' + data.items[i].name + '</td>' + 
+                                    '<td>' + data.items[i].sku + '</td>' + 
+                                    '<td>' + data.items[i].currency + ' ' + data.items[i].price + '</td>' + 
+                                    '<td>' + data.items[i].quantity + '</td>' + 
+                                    '<td>' + data.items[i].shipping_currency + ' ' + data.items[i].shipping_price + '</td>' + 
+                                    '</tr>';
+                    };
+                } else {
+                    item_row = '<tr><td colspan="6">没有产品</td></tr>';
+                }
+                $('#items_list > tbody').html(item_row);
+
+                // 关闭
+                $('.order_detail > .title').children('em').click(function(){
+                    $('.mask').fadeOut();
+                    $('.order_detail').fadeOut();
+                });
+            },
+            error: function () {
+                $('.loading').html('<span style="color: red"><em class="click">[ 关闭 ]</em>请求数据时发生错误! </span>');
+            }
         });
-
+        
     });
 
+    $('#search_order').click(function(){
+        $('.mask').fadeIn();
+        $('.search_order').fadeIn();
+        $('.search_order > .title').children('em').click(function(){
+            $('.mask').fadeOut();
+            $('.search_order').fadeOut();
+        });
+    });
 
     // select all
     $('input[name="selectAll"]').click(function(){
@@ -109,10 +137,6 @@ $(function(){
             }
         });
     });
-
-
-    
-
 });
 
 function closeSkuMap() {

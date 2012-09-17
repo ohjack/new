@@ -10,11 +10,12 @@ class Skumap_Controller extends Base_Controller {
         $items = Item::getNoSkuItems();
         if(empty($items)) {
             $current_step = Session::get('step');
-            if($current_step != 'handleLogistics')
+            if($current_step == 'mapSetting')
                 Session::put('step', 'matchLogistics');
         }
 
-        return View::make('skumap.list')->with('items', $items);
+        return View::make('skumap.list')->with('items', $items)
+                                        ->with('title', '产品设置');
     }
 
     public function post_index() {

@@ -1,4 +1,11 @@
 <?php
+/**
+ * 抓取订单
+ *
+ * @author: weelion <weelion@qq.com>
+ * @copyright: Copyright (c) 2012 EMIO Tech All Rights Reserved.
+ * @version: $Id:order.php  2012年09月17日 星期一 17时10分19秒Z $
+ */
 
 class Spider_Order_Controller extends Base_Controller {
     
@@ -6,10 +13,13 @@ class Spider_Order_Controller extends Base_Controller {
 
     public function get_index() {
 
-        $platforms = User::getPlatform(1);
+        $user_platforms = User::getPlatforms(1);
 
-        $result = ['status' => 'success'];
+        $result = Order::spiderOrders( $user_platforms );
 
+        return Response::json($result);
+
+        /*
         foreach ($platforms as $platform) {
             $tmp_name = explode('.', $platform->name);
             $platform_name = $tmp_name[0];
@@ -34,19 +44,19 @@ class Spider_Order_Controller extends Base_Controller {
 
             // 只抓取spider log记录的时间以后的订单
             $option['CreatedAfter'] = $lasttime;
-            $option['OrderStatus.Status.1'] = 'Unshipped';
-            $option['OrderStatus.Status.2'] = 'PartiallyShipped';
 
             $orderSpider = new SpiderOrders(new $spider());
 
             try {
                 $orders = $orderSpider->getOrders($option);
 
+                $result['message']['total'] += count($orders);
 
                 foreach ($orders as $order) {
 
                     $order_id  = DB::table('orders')->where('entry_id', '=', $order['entry_id'])->only('id');
                     if ( !$order_id ) {
+                        $result['message']['insert']++;
                         $order_id = DB::table('orders')->insert_get_id($order);
 
                         $option = [
@@ -88,6 +98,7 @@ class Spider_Order_Controller extends Base_Controller {
 
                     } else { // update
                         unset($order['order_status']);
+                        $result['message']['update']++;
                         DB::table('orders')->where('id', '=', $order_id)->update($order);
                     }
 
@@ -119,8 +130,7 @@ class Spider_Order_Controller extends Base_Controller {
             }
 
         }
-
-        return Response::json($result);
+         */
     }
 }
 ?>

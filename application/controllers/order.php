@@ -6,7 +6,14 @@ class Order_Controller extends Base_Controller {
 
     public function get_index() {
 
-        $orders = Order::getOrders(5);
+        Session::put('step', 'spiderOrder');
+
+        // 获取订单列表
+        $options = [
+            
+            ];
+
+        $orders = Order::getOrders(15, $options);
 
         $logistics = array_keys(Config::get('application.logistics'));
 
@@ -20,7 +27,8 @@ class Order_Controller extends Base_Controller {
             }
         }
 
-        return View::make('order.list')->with('orders', $orders);
+        return View::make('order.list')->with('orders', $orders)
+                                       ->with('title', '订单列表');
     
     }
 

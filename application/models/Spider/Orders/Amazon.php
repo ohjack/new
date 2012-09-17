@@ -1,13 +1,13 @@
 <?php
 /**
- * Amazon Order
+ * Amazon 抓取订单类
  *
  * @author: weelion <weelion@qq.com>
  * @copyright: Copyright (c) 2012 EMIO Tech All Rights Reserved.
  * @version: $Id:AmazonOrder.php  2012年08月28日 星期二 10时58分15秒Z $
  */
 
-class SpiderOrders_Amazon {
+class Spider_Orders_Amazon {
 
     private $_AWSAccessKeyId;
     private $_SellerId;
@@ -16,13 +16,12 @@ class SpiderOrders_Amazon {
 
     public function getOrders( $option ) {
 
+
         $this->_AWSAccessKeyId = $option['AWSAccessKeyId'];
         $this->_SellerId = $option['SellerId'];
         $this->_Key = $option['Key'];
-        $this->_Url = $option['Interface'];
-        unset($option['Interface']);
-
-        $option['Action'] =  'ListOrders';
+        $this->_Url = $option['Server'] . 'Orders/2011-01-01';
+        unset($option['Server']);
 
         $param = $this->_getParam($option);
 
@@ -48,10 +47,9 @@ class SpiderOrders_Amazon {
         $this->_AWSAccessKeyId = $option['AWSAccessKeyId'];
         $this->_SellerId = $option['SellerId'];
         $this->_Key = $option['Key'];
-        $this->_Url = $option['Interface'];
-        unset($option['Interface']);
+        $this->_Url = $option['Server'] . 'Orders/2011-01-01';
+        unset($option['Server']);
     
-        $option['Action'] = 'ListOrderItems';
         $param = $this->_getParam($option);
 
         $curl = new Amazon_Curl();
@@ -211,30 +209,30 @@ class SpiderOrders_Amazon {
             foreach ($datas as $data) {
 
                 $newData = [
-                    'entry_id'                 => $data['AmazonOrderId'],
-                    'name'                     => $data['BuyerName'],
-                    'email'                    => $data['BuyerEmail'],
-                    'market_id'                => $data['MarketplaceId'],
-                    'total'                    => $data['OrderTotal']['Amount'],
-                    'currency'                 => $data['OrderTotal']['CurrencyCode'],
-                    'shipping_name'            => $data['ShippingAddress']['Name'],
-                    'shipping_phone'           => $data['ShippingAddress']['Phone'],
+                    'entry_id'                 => isset($data['AmazonOrderId']) ? $data['AmazonOrderId'] : '',
+                    'name'                     => isset($data['BuyerName']) ? $data['BuyerName'] : '',
+                    'email'                    => isset($data['BuyerEmail']) ? $data['BuyerEmail'] : '',
+                    'market_id'                => isset($data['MarketplaceId']) ? $data['MarketplaceId'] : '',
+                    'total'                    => isset($data['OrderTotal']['Amount']) ? $data['OrderTotal']['Amount'] : '',
+                    'currency'                 => isset($data['OrderTotal']['CurrencyCode']) ? $data['OrderTotal']['CurrencyCode'] : '',
+                    'shipping_name'            => isset($data['ShippingAddress']['Name']) ? $data['ShippingAddress']['Name'] : '',
+                    'shipping_phone'           => isset($data['ShippingAddress']['Phone']) ? $data['ShippingAddress']['Phone'] : '',
                     'shipping_country'         => isset($data['ShippingAddress']['CountryCode']) ? $data['ShippingAddress']['CountryCode'] : '',
                     'shipping_state_or_region' => isset($data['ShippingAddress']['StateOrRegion']) ? $data['ShippingAddress']['StateOrRegion'] : '',
                     'shipping_city'            => isset($data['ShippingAddress']['City']) ? $data['ShippingAddress']['City'] : '',
                     'shipping_address1'        => isset($data['ShippingAddress']['AddressLine1']) ? $data['ShippingAddress']['AddressLine1'] : '',
                     'shipping_address2'        => isset($data['ShippingAddress']['AddressLine2']) ? $data['ShippingAddress']['AddressLine2'] : '',
                     'shipping_address3'        => isset($data['ShippingAddress']['AddressLine3']) ? $data['ShippingAddress']['AddressLine3'] : '',
-                    'shipping_postal_code'     => $data['ShippingAddress']['PostalCode'],
-                    'ship_level'               => $data['ShipServiceLevel'],
-                    'shipment_level'           => $data['ShipmentServiceLevelCategory'],
-                    'fulfillment'              => $data['FulfillmentChannel'],
-                    'shipped_by_amazon_tfm'    => $data['ShippedByAmazonTFM'] ? 1 : 0,
-                    'payment_method'           => $data['PaymentMethod'],
-                    'from'                     => $data['SalesChannel'],
-                    'status'                   => $data['OrderStatus'],
+                    'shipping_postal_code'     => isset($data['ShippingAddress']['PostalCode']) ? $data['ShippingAddress']['PostalCode'] : '',
+                    'ship_level'               => isset($data['ShipServiceLevel']) ? $data['ShipServiceLevel'] : '',
+                    'shipment_level'           => isset($data['ShipmentServiceLevelCategory']) ? $data['ShipmentServiceLevelCategory'] : '',
+                    'fulfillment'              => isset($data['FulfillmentChannel']) ? $data['FulfillmentChannel'] : '',
+                    'shipped_by_amazon_tfm'    => isset($data['ShippedByAmazonTFM']) ? $data['ShippedByAmazonTFM'] : '',
+                    'payment_method'           => isset($data['PaymentMethod']) ? $data['PaymentMethod'] : '',
+                    'from'                     => isset($data['SalesChannel']) ? $data['SalesChannel'] : '',
+                    'status'                   => isset($data['OrderStatus']) ? $data['OrderStatus'] : '',
                     'order_status'             => 'unhandle',
-                    'created_at'               => $data['PurchaseDate'],
+                    'created_at'               => isset($data['PurchaseDate']) ? $data['PurchaseDate'] : '',
                     ];
 
                 $newDatas[] = $newData;
@@ -242,30 +240,30 @@ class SpiderOrders_Amazon {
         } else if( !empty($datas) ){
 
           $newDatas[0] = [
-                    'entry_id'                 => $datas['AmazonOrderId'],
-                    'name'                     => $datas['BuyerName'],
-                    'email'                    => $datas['BuyerEmail'],
-                    'market_id'                => $datas['MarketplaceId'],
-                    'total'                    => $datas['OrderTotal']['Amount'],
-                    'currency'                 => $datas['OrderTotal']['CurrencyCode'],
-                    'shipping_name'            => $datas['ShippingAddress']['Name'],
-                    'shipping_phone'           => $datas['ShippingAddress']['Phone'],
+                    'entry_id'                 => isset($datas['AmazonOrderId']) ? $datas['AmazonOrderId'] : '',
+                    'name'                     => isset($datas['BuyerName']) ? $datas['BuyerName'] : '',
+                    'email'                    => isset($datas['BuyerEmail']) ? $datas['BuyerEmail'] : '',
+                    'market_id'                => isset($datas['MarketplaceId']) ? $datas['MarketplaceId'] : '',
+                    'total'                    => isset($datas['OrderTotal']['Amount']) ? $datas['OrderTotal']['Amount'] : '',
+                    'currency'                 => isset($datas['OrderTotal']['CurrencyCode']) ? $datas['OrderTotal']['CurrencyCode'] : '',
+                    'shipping_name'            => isset($datas['ShippingAddress']['Name']) ? $datas['ShippingAddress']['Name'] : '',
+                    'shipping_phone'           => isset($datas['ShippingAddress']['Phone']) ? $datas['ShippingAddress']['Phone'] : '',
                     'shipping_country'         => isset($datas['ShippingAddress']['CountryCode']) ? $datas['ShippingAddress']['CountryCode'] : '',
                     'shipping_state_or_region' => isset($datas['ShippingAddress']['StateOrRegion']) ? $datas['ShippingAddress']['StateOrRegion'] : '',
                     'shipping_city'            => isset($datas['ShippingAddress']['City']) ? $datas['ShippingAddress']['City'] : '',
                     'shipping_address1'        => isset($datas['ShippingAddress']['AddressLine1']) ? $datas['ShippingAddress']['AddressLine1'] : '',
                     'shipping_address2'        => isset($datas['ShippingAddress']['AddressLine2']) ? $datas['ShippingAddress']['AddressLine2'] : '',
                     'shipping_address3'        => isset($datas['ShippingAddress']['AddressLine3']) ? $datas['ShippingAddress']['AddressLine3'] : '',
-                    'shipping_postal_code'     => $datas['ShippingAddress']['PostalCode'],
-                    'ship_level'               => $datas['ShipServiceLevel'],
-                    'shipment_level'           => $datas['ShipmentServiceLevelCategory'],
-                    'fulfillment'              => $datas['FulfillmentChannel'],
-                    'shipped_by_amazon_tfm'    => $datas['ShippedByAmazonTFM'] ? 1 : 0,
-                    'payment_method'           => $datas['PaymentMethod'],
-                    'from'                     => $datas['SalesChannel'],
-                    'status'                   => $datas['OrderStatus'],
+                    'shipping_postal_code'     => isset($datas['ShippingAddress']['PostalCode']) ? $datas['ShippingAddress']['PostalCode'] : '',
+                    'ship_level'               => isset($datas['ShipServiceLevel']) ? $datas['ShipServiceLevel'] : '',
+                    'shipment_level'           => isset($datas['ShipmentServiceLevelCategory']) ? $datas['ShipmentServiceLevelCategory'] : '',
+                    'fulfillment'              => isset($datas['FulfillmentChannel']) ? $datas['FulfillmentChannel'] : '',
+                    'shipped_by_amazon_tfm'    => isset($datas['ShippedByAmazonTFM']) ? $datas['ShippedByAmazonTFM'] : '',
+                    'payment_method'           => isset($datas['PaymentMethod']) ? $datas['PaymentMethod'] : '',
+                    'from'                     => isset($datas['SalesChannel']) ? $datas['SalesChannel'] : '',
+                    'status'                   => isset($datas['OrderStatus']) ? $datas['OrderStatus'] : '',
                     'order_status'             => 'unhandle',
-                    'created_at'               => $datas['PurchaseDate'],
+                    'created_at'               => isset($datas['PurchaseDate']) ? $datas['PurchaseDate'] : '',
                     ];
         
         }

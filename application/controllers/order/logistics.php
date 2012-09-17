@@ -40,7 +40,8 @@ class Order_Logistics_Controller extends Base_Controller {
 
             return View::make('order.logistics.download')->with('coolsystem_count', $coolsystem_count)
                                                          ->with('birdsystem_count', $birdsystem_count)
-                                                         ->with('micaosystem_count', $micaosystem_count);
+                                                         ->with('micaosystem_count', $micaosystem_count)
+                                                         ->with('title', '物流处理');
         }
     }
 }

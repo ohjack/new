@@ -94,12 +94,14 @@ body
 
 /* ================ add =========================  */
 
+em {
+    font-style:normal ;
+}
 .header {
-    height: 80px;
 }
 
 .dashboard {
-    padding: 30px;
+    padding: 15px 15px 0 15px;
 }
 
 .wrapper ul 
@@ -163,12 +165,144 @@ body
     cursor: pointer;
 }
 
+em.click {
+    color: #666;
+    float: right;
+    cursor: pointer;
+    margin-left: 20px;
+}
+
 .cantclick {
     color: #666;
 }
 
 .cantclick:hover{
     color: #666;
+}
+
+.step {
+    border: 1px solid #ccc;
+    float: left;
+    margin: 5px;
+    padding: 5px;
+}
+
+.order_detail {
+    display: none;
+    width: 900px;
+    height: 500px;
+    position:fixed;
+    top: 60px;
+    left:50%;
+    margin-left: -450px;
+    border: 5px solid #ccc;
+    z-index: 100;
+    padding: 10px;
+    background: #fff;
+}
+
+.order_detail > .title, .search_order > .title {
+    background: #333;
+    color: #fff;
+    padding: 0 10px 0 10px;
+    margin-bottom: 5px;
+    
+}
+.order_detail > .title em, .search_order > .title em {
+    float: right;
+    padding: 0px 8px 0 8px;
+    cursor: pointer;
+}
+.order_detail > .detail {
+    height: 430px;
+    overflow-y:auto
+}
+
+.detail table tbody th {
+    width: 80px;
+    text-align: right;
+}
+
+
+.loading {
+    display:none;
+    position:fixed;
+    top: 200px;
+    left: 50%;
+    margin-left: -75px;
+    border: 5px solid #ccc;
+    padding: 5px 20px 5px 20px;
+    background: #fff;
+    z-index: 999;
+}
+
+.mask {
+    position:fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color:#000;
+    filter:alpha(opacity=30);
+    opacity:0.3;
+    z-index:2;
+    display:none;
+    cursor:not-allowed;
+}
+
+.f_l {
+    float: left;
+}
+.f_r {
+    float: right;
+}
+.m_l_15 {
+    margin-left: 15px;
+}
+
+.m_r_15 {
+    margin-right: 15px;
+}
+
+.search_order {
+    display:none;
+    position:fixed;
+    left: 50%;
+    padding: 10px;
+    width: 500px;
+    margin-left: -250px;
+    border: 5px solid #ccc;
+    background: #fff;
+    z-index: 100;
+}
+
+.tab ul {
+    list-style-type: none;
+    margin: 5px 0 5px 0;
+    padding: 0;
+    overflow:auto; 
+    zoom:1;
+}
+
+.tab ul > li {
+    border: 2px solid #ccc;
+    padding: 5px 15px 5px 15px;
+    margin: 0 5px 0 5px;
+    float: left;
+    cursor: pointer;
+}
+
+.tab ul > li:hover {
+    border: 2px solid #888;
+}
+
+.tab .tab_current {
+    border: 2px solid #000;
+}
+
+.footer {
+    text-align: center;
+    height: 60px
 }
 /* ================ add end ========================= */
 .slogan
@@ -206,7 +340,9 @@ div.home>h2 {
 {
     border-collapse:collapse
     border: 1px solid #eee;
-    width:100%;
+    width:98%;
+    margin: auto;
+    margin-bottom: 10px;
     line-height:1.5em;
 }
 

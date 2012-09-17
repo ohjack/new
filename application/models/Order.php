@@ -5,32 +5,72 @@ class Order {
     /**
      * 获取订单
      *
+     * @param: $order_id
+     *
+     * return array
+     */
+    public static function getOrder( $order_id ) {
+
+        $order = DB::table('orders')->find( $order_id );
+        $order->items = Item::getItems( $order_id );
+
+        return $order;
+    }
+
+    /**
+     * 获取订单列表
+     *
      * @param: $per_page integer 每页记录数
      *
      * reutrn object
      */
-    public static function getOrders( $per_page ) {
+    public static function getOrders( $per_page, $options ) {
 
-        $orders = DB::table('orders')->order_by('shipment_level', 'ASC')
-                                     ->paginate( $per_page );
+        $table = DB::table('orders');
+        foreach ($options as $key => $option) {
+            $table = $table->where($key, '=', $option);
+        }
+
+        $orders = $table->order_by('orders.shipment_level', 'ASC')
+                        ->order_by('orders.id', 'DESC')
+                        ->paginate( $per_page );
+
+        foreach ($orders->results as $order) {
+            $skus = DB::table('items')->where('order_id', '=', $order->id)->lists('sku');
+
+            $sku_format = '';
+            foreach(array_count_values($skus) as $sku => $count) {
+                $sku_format = sprintf('%s x %u<br/>', $sku, $count); 
+            }
+
+            $order->skus = $sku_format;
+        }
 
         return $orders;
     
     }
 
     /**
-     * 通过订单ID获取订单下的产品
+     * 保存订单数据
+     *
+     * @param: $data array 订单数据
+     *
+     * return integer 订单ID
+     */
+    public static function saveOrder( $data ) {
+        return DB::table('orders')->insert_get_id( $data );
+    } 
+
+    /**
+     * 更新订单数据
      *
      * @param: $order_id integer 订单ID
+     * @param: $data array 需更新的订单数据
      *
-     * return object
+     * return void
      */
-    public static function getItems($order_id) {
-
-        $items = DB::table('items')->where('order_id', '=', $order_id)->get();
-
-        return $items;
-    
+    public static function updateOrder( $order_id, $data ) {
+        DB::table('orders')->where('id', '=', $order_id)->update($data);
     }
 
     /**
@@ -43,12 +83,9 @@ class Order {
      */
     public static function setLogistics( $order_id, $logistics ) {
 
-        $option = [
-            'order_status' => $logistics
-            ];
+        $option = [ 'order_status' => $logistics ];
     
-        DB::table('orders')->where('id', '=', $order_id)
-                           ->update( $option );
+        DB::table('orders')->where('id', '=', $order_id)->update( $option );
     }
 
     /**
@@ -56,8 +93,90 @@ class Order {
      *
      */
     public static function countLogistics( $logistics ) {
-    
         return DB::table('orders')->where('order_status', '=', $logistics)->count();
+    }
+
+    /**
+     * 根据第三方ID获取订单ID
+     *
+     * @param: $entry_id integer 第三方ID
+     *
+     * return integer
+     */
+    public static function getIdByEntryId( $entry_id ) {
+        return DB::table('orders')->where('entry_id', '=', $entry_id)->only('id');
+    }
+
+    /**
+     * 获取未抓取的订单
+     *
+     * return array 订单IDs
+     */
+    public static function getUnspiderOrders() {
+        return DB::table('orders')->where_null('crawled_at')->get(['id', 'entry_id', 'from']);
+    }
+
+    /**
+     * 抓取订单
+     *
+     * @param: $platforms array 用户销售平台
+     *
+     * return array 抓取结果
+     */
+    public static function spiderOrders( $user_platforms ) {
+
+        // 初始化返回
+        $result = [
+            'status'  => 'success',
+            'message' => [ 'total' => 0, 'insert' => 0, 'update' => 0 ]
+            ];
+
+        // 遍历平台进行抓取
+        foreach ($user_platforms as $user_platform) {
+
+            // 获取平台配置
+            $platform_name = 'Platform_' . $user_platform->type;
+            $platform = new Platform( new $platform_name() );
+            $base_option = array_merge(unserialize($user_platform->option), unserialize($user_platform->user_option));
+            $option = $platform->getOrderOption( $user_platform->id, $base_option );
+
+            if(empty($option)) continue; // 如果为空跳过抓取
+
+            // 实例化API
+            $spider_name = 'Spider_Orders_' . $user_platform->type;
+            $order_spider = new Spider_Orders( new $spider_name() );
+
+            // 抓取订单
+            try {
+                $orders = $order_spider->getOrders($option);
+            } catch (Amazon_Curl_Exception $e) {
+                $result = [ 'status' => 'error', 'message' => 'Curl Error: ' . $e->getError() ];
+                return $result;
+            } catch (Amazon_Exception $e) {
+                $result = [ 'status' => 'error', 'message' => 'Amazone API Error: ' . $e->getError() ];
+                return $result;
+            }
+
+            // 订单入库
+            foreach ($orders as $order) {
+                $order_id = static::getIdByEntryId($order['entry_id']);
+                if( empty($order_id) ) {
+                    $result['message']['insert']++;
+                    $order_id = static::saveOrder($order);
+                } else {
+                    $result['message']['update']++;
+                    static::updateOrder($order_id, $order);
+                }
+
+                $result['message']['total']++;
+            }
+
+            // 更新抓取日志
+            SpiderLog::updateLastSpider('order', $user_platform->id);
+
+            return $result;
+        }
+    
     }
 }
 ?>

@@ -19,7 +19,8 @@ class Skumap_Manage_Controller extends Base_Controller {
 
         return View::make('skumap.manage.list')->with('maps', $maps)
                                                ->with('options', $options)
-                                               ->with('logistics', $logistics);
+                                               ->with('logistics', $logistics)
+                                               ->with('title', ' 产品设置管理');
     }
 
     public function put_index() {
