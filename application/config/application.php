@@ -207,8 +207,8 @@ return array(
             ],
         'handleLogistics' => [
             'name'   => '物流处理',
-            'link'   => '/order/logistics',
-            'id'     => '',
+            'link'   => 'javascript:;',
+            'id'     => 'handleLogistics',
             'class'  => 'click'
         ]
     

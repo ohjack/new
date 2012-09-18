@@ -180,6 +180,7 @@ if ( ! Request::cli() and Config::get('session.driver') !== '')
 }
 
 $current_step = Session::get('step', 'spiderOrder');
+//$current_step = 'spiderOrder';
 foreach(Config::get('application.steps') as $step => $item) {
     if($current_step != $step) {
         $new_item = [

@@ -60,7 +60,6 @@ body
     line-height: 25px;
 }
 
-
 .wrapper
 {
     /*width:960px;*/
@@ -205,7 +204,6 @@ em.click {
     background: #333;
     color: #fff;
     padding: 0 10px 0 10px;
-    margin-bottom: 5px;
     
 }
 .order_detail > .title em, .search_order > .title em {
@@ -215,6 +213,7 @@ em.click {
 }
 .order_detail > .detail {
     height: 430px;
+    border: 1px solid #ccc;
     overflow-y:auto
 }
 
@@ -276,12 +275,55 @@ em.click {
     z-index: 100;
 }
 
+.tab {
+    float: left;
+}
+.mark {
+    float: right;
+    margin: 5px;
+}
+
 .tab ul {
     list-style-type: none;
     margin: 5px 0 5px 0;
     padding: 0;
     overflow:auto; 
     zoom:1;
+}
+
+.mark ul {
+    list-style-type: none;
+    float:right;
+    padding: 0;
+    margin: 0;
+}
+
+.mark ul > li {
+    float: right;
+    border: 1px solid #ccc;
+    padding: 3px 13px 3px 13px;
+    margin: 3px 5px 3px 5px;
+    position: relative;
+}
+
+.mark ul > li > a {
+    color: #FA8072;
+    position: absolute;
+    top: -1px;
+    right: -1px;
+    display: block;
+    background: #fff;
+    border: 1px solid #FA8072;
+    height: 10px;
+    padding: 0 2px 0 2px;
+    font-size: 2px;
+    line-height:8px;
+    z-index: 2
+}
+
+.mark span {
+    float: right;
+    line-height: 34px;
 }
 
 .tab ul > li {

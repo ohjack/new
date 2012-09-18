@@ -10,7 +10,7 @@ class SkuMap {
 
         $obj = DB::table('sku_map');
         foreach ($options as $key => $option) {
-            if(!empty($option))
+            if(trim($option))
                 $obj = $obj->where($key, '=', $option);
         }
 

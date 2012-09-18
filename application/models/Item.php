@@ -92,6 +92,8 @@ class Item {
             'message' => [ 'total' => 0, 'insert' => 0, 'update' => 0 ]
             ];
 
+        //return $result;
+
 
         // 整理平台
         $platforms = [];
@@ -145,6 +147,9 @@ class Item {
                 
                 $result['message']['total']++;
             }
+
+            // 标记订单已经抓取状态
+            DB::table('orders')->where('id', '=', $order->id)->update(['crawled_at' => date('Y-m-d H:i:s')]);
 
         }
 

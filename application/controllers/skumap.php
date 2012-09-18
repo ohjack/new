@@ -54,7 +54,7 @@ class Skumap_Controller extends Base_Controller {
             Session::put('step', 'matchLogistics');
         }
 
-        return Redirect::to('skumap');
+        return Redirect::to('order/handle');
     }
 }
 ?>

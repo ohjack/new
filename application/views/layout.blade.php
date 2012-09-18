@@ -13,20 +13,11 @@
 @section('dashboard')
   <div>
        {{ HTML::link('order', '订单列表') }}
+       {{ HTML::link('order/handle', '处理订单') }}
        {{ HTML::link('skumap/manage', '产品设置管理') }}
-       {{ HTML::link('#', '处理订单') }}
        {{ HTML::link('#','平台设置') }}
        {{ HTML::link('#','系统概况') }}
        {{ HTML::link('#','销售数据') }}
-  </div>
-  <div>
-  @foreach(Config::get('application.steps') as $step)
-    <div class="step">
-        <a href="{{ $step['link'] }}" id="{{ $step['id'] }}" class="{{ $step['class'] }}">{{ $step['name'] }}</a>
-    </div>
-  @endforeach
-  <span id="tips"></span>
-  <div style="clear: both"></div>
   </div>
 @endsection
 <body>

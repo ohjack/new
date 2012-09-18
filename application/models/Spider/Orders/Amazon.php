@@ -277,14 +277,14 @@ class Spider_Orders_Amazon {
         if ( isset( $datas[0] ) && is_array($datas[0]) ) {
             foreach ($datas as $data) {
                 $newData = [
-                    'entry_id'          => $data['OrderItemId'],
-                    'name'              => $data['Title'],
-                    'sku'               => $data['SellerSKU'],
-                    'price'             => $data['ItemPrice']['Amount'],
-                    'currency'          => $data['ItemPrice']['CurrencyCode'],
-                    'quantity'          => $data['QuantityOrdered'],
-                    'shipping_price'    => $data['ShippingPrice']['Amount'],
-                    'shipping_currency' => $data['ShippingPrice']['CurrencyCode']
+                    'entry_id'          => isset($data['OrderItemId']) ? $data['OrderItemId'] : '',
+                    'name'              => isset($data['Title']) ? $data['Title'] : '',
+                    'sku'               => isset($data['SellerSKU']) ? $data['SellerSKU'] : '',
+                    'price'             => isset($data['ItemPrice']['Amount']) ? $data['ItemPrice']['Amount'] : '',
+                    'currency'          => isset($data['ItemPrice']['CurrencyCode']) ? $data['ItemPrice']['CurrencyCode'] : '',
+                    'quantity'          => isset($data['QuantityOrdered']) ? $data['QuantityOrdered'] : '',
+                    'shipping_price'    => isset($data['ShippingPrice']['Amount']) ? $data['ShippingPrice']['Amount'] : '',
+                    'shipping_currency' => isset($data['ShippingPrice']['CurrencyCode']) ? $data['ShippingPrice']['CurrencyCode'] : ''
                     ];
 
                 $newDatas[] = $newData;
@@ -292,14 +292,14 @@ class Spider_Orders_Amazon {
 
         } else {
             $newDatas[0] = [
-                'entry_id'          => $datas['OrderItemId'],
-                'name'              => $datas['Title'],
-                'sku'               => $datas['SellerSKU'],
-                'price'             => $datas['ItemPrice']['Amount'],
-                'currency'          => $datas['ItemPrice']['CurrencyCode'],
-                'quantity'          => $datas['QuantityOrdered'],
-                'shipping_price'    => $datas['ShippingPrice']['Amount'],
-                'shipping_currency' => $datas['ShippingPrice']['CurrencyCode']
+                    'entry_id'          => isset($datas['OrderItemId']) ? $datas['OrderItemId'] : '',
+                    'name'              => isset($datas['Title']) ? $datas['Title'] : '',
+                    'sku'               => isset($datas['SellerSKU']) ? $datas['SellerSKU'] : '',
+                    'price'             => isset($datas['ItemPrice']['Amount']) ? $datas['ItemPrice']['Amount'] : '',
+                    'currency'          => isset($datas['ItemPrice']['CurrencyCode']) ? $datas['ItemPrice']['CurrencyCode'] : '',
+                    'quantity'          => isset($datas['QuantityOrdered']) ? $datas['QuantityOrdered'] : '',
+                    'shipping_price'    => isset($datas['ShippingPrice']['Amount']) ? $datas['ShippingPrice']['Amount'] : '',
+                    'shipping_currency' => isset($datas['ShippingPrice']['CurrencyCode']) ? $datas['ShippingPrice']['CurrencyCode'] : ''
                 ];
         }
         return $newDatas;

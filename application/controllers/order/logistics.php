@@ -8,10 +8,11 @@ class Order_Logistics_Controller extends Base_Controller {
 
         $action = Input::get('action');
 
-        Logistics::allHandle();
+        $result = Logistics::allHandle();
+
         Session::put('step', 'handleLogistics');
 
-        return Response::json('ok');
+        return Response::json($result);
     }
 
     public function get_index() {

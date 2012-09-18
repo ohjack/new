@@ -1,5 +1,6 @@
 $(function(){
 
+    // 订单详情
     $('.order').dblclick(function(){
         var id = $(this).attr('key');
         $.ajax({
@@ -30,7 +31,7 @@ $(function(){
                 var items_count = data.items.length;
                 var item_row = '';
                 if( items_count > 0) {
-                    for (var i = 0; i < items_count; i++) {
+                    for ( var i = 0; i < items_count; i++ ) {
                         item_row += '<tr>' + 
                                     '<td>' + data.items[i].entry_id + '</td>' + 
                                     '<td>' + data.items[i].name + '</td>' + 
@@ -45,6 +46,19 @@ $(function(){
                 }
                 $('#items_list > tbody').html(item_row);
 
+                // 产品标识
+                var marks_count = data.marks.length;
+                var marks_row = '';
+                if( marks_count > 0) {
+                    for ( var i = 0; i < marks_count; i++ ) {
+                        marks_row += '<li mark_id="' + data.marks[i].id + '" style="color: ' + data.marks[i].color + '">' + data.marks[i].name + '<a href="javascript:;">x</a></li>';
+                    }
+                }
+                $('#mark').html(marks_row);
+
+                // 赋值Order ID
+                $('#add_mark').attr('order_id', id);
+
                 // 关闭
                 $('.order_detail > .title').children('em').click(function(){
                     $('.mask').fadeOut();
@@ -58,6 +72,81 @@ $(function(){
         
     });
 
+
+    // 添加订单标识
+    $('#add_mark').click(function(){
+        var mark_select = $(this).prev();
+        var mark_id = mark_select.val();
+        var order_id = $('#add_mark').attr('order_id');
+        var mark_color = mark_select.children(':selected').attr('color');
+        var mark_name = mark_select.children(':selected').html();
+
+        var data = {
+            mark_id: mark_id,
+            order_id: order_id
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "/order/ajax/addmark", 
+            dataType: "json",
+            data: data,
+            beforeSend: function() {
+                $('.mask').fadeIn();
+                $('.loading').fadeIn();
+            },
+            success: function( data ) {
+                if( data == 'ok' ) {
+                    $('#mark').prepend('<li mark_id="' + mark_id + '" style="color:' + mark_color + '">' + mark_name + '<a href="javascript:;">x</a></li>');
+                    $('.loading').fadeOut();
+                }
+                $('.mask').fadeOut();
+            },
+            error: function() {
+                $('.loading').html('<span style="color: red">请求数据时发生错误! </span>');
+                $('.loading').fadeOut();
+            }
+
+        });
+
+    });
+
+    // 删除订单标识
+    $('#mark a').live('click', function() {
+
+        var li = $(this).parent();
+        var mark_id  = li.attr('mark_id');
+        var order_id = $('#add_mark').attr('order_id');
+
+        var data = {
+            mark_id: mark_id,
+            order_id: order_id
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "/order/ajax/delmark",
+            dataType: "json",
+            data: data,
+            beforeSend: function() {
+                $('.mask').fadeIn();
+                $('.loading').fadeIn();
+            },
+            success: function( data ) {
+                if( data == 'ok') {
+                    li.remove();
+                    $('.loading').fadeOut();
+                }
+                $('.mask').fadeOut();
+            },
+            error: function() {
+                $('.loading').html('<span style="color: red">请求数据时发生错误! </span>');
+                $('.loading').fadeOut();
+            }
+        });
+    });
+
+    // 订单搜索框
     $('#search_order').click(function(){
         $('.mask').fadeIn();
         $('.search_order').fadeIn();

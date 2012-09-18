@@ -7,10 +7,15 @@ class Logistics {
      *
      * 将所有未处理的的订单通过产品sku进行物流匹配操作
      *
-     * return void
+     * return array 匹配结果
      *
      */
     public static function allHandle () {
+
+        $result = [
+            'status'  => 'success',
+            'message' => ['total' => 0]
+            ];
 
         $rules = [
                 'coolsystem'  => ['orders.shipping_country' => 'US', 'orders.from' => 'Amazon.com'],
@@ -35,10 +40,12 @@ class Logistics {
                 if( $exsits && !in_array($item->order_id, $handled) ) {
                     Order::setLogistics($item->order_id, $system);
                     $handled[] = $item->order_id;
+                    $result['message']['total']++;
                 }
             }
-
         }
+
+        return $result;
     }
 
     /**

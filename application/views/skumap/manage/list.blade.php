@@ -3,7 +3,7 @@
 {{ HTML::script('js/skumap.js') }}
 @endsection
 @section('content')
-<div><a href="{{ URL::to('skumap') }}"  style="float: right; margin-right: 10px">返回产品设置</a></div>
+<div><a href="{{ URL::to('order/handle') }}"  style="float: right; margin-right: 10px">返回</a></div>
 <div id="search">
     {{ Form::open('skumap/manage', 'GET') }}
     <table>

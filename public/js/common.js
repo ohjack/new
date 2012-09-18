@@ -3,6 +3,32 @@ function reload() {
     window.location.reload(); 
 }
 
+/**
+ * 构造加载提示
+ *
+ * param text string  提示文字
+ * param mask boolean 是否启用遮罩
+ *
+ */
+function show_tips(text, mask) {
+
+    clear_all_tips();
+
+    var loading_box = '<div class="loading"><img src="/img/loading.gif">' + text + '</div>';
+    var mask_box    = '<div class="mask"></div>';
+
+    var container = !mask ? loading_box : mask_box + loading_box;
+    
+    $('body').append(container); 
+    $('.mask, .loading').fadeIn();
+
+}
+
+// 清除所有交互提示
+function clear_all_tips() {
+    $('.loading, .tips, .mask').remove();
+}
+
 // 抓取产品
 function spiderItems() {
     $.ajax({
@@ -33,7 +59,6 @@ function spiderItems() {
         }
     });
 };
-
 
 $(function(){
 
@@ -75,11 +100,10 @@ $(function(){
             success: function(data) {
                 if( data.status == 'success' ) {
                     var message = data.message;
-                    var tips = '';
                     if(message.total == 0) {
-                        tips = '<br/>没有抓取到任何订单。<br/>没有新订单或者与上次抓取间隔间隔不到两分钟。';
+                        var tips = '<br/>没有抓取到任何订单。<br/>没有新订单或者与上次抓取间隔间隔不到两分钟。';
                     } else {
-                        tips = '<br/>抓取订单:' + message.total + '个<br/>新增订单:' +message.insert+ '个<br/>更新订单:' + message.update + '个';
+                        var tips = '<br/>抓取订单:' + message.total + '个<br/>新增订单:' +message.insert+ '个<br/>更新订单:' + message.update + '个';
                     }
                     $('.loading').html('<span style="color: green"><em class="click">[ 关闭 ]</em>订单抓取成功!' + tips+ '</span>' + '<br / ><img src="/img/loading.gif"> 继续产品抓取中... ');
                     spiderItems();
@@ -103,15 +127,46 @@ $(function(){
             dataType: "json",
             data: option,
             beforeSend: function() {
-                $('#tips').html('<img src="/img/loading.gif" /><font style="color: blue">Loading...</font>');
+                $('.mask').fadeIn();
+                $('.loading').fadeIn();
             },
             success: function(data) {
-                if(data == 'ok') {
-                    $('#tips').html('<font style="color: green">匹配成功!</font>');
+                if(data.status == 'success') {
+                    var message = data.message;
+                    if(message.total == '0') {
+                        var tips = '<br/>没有匹配到的订单';
+                    } else {
+                        var tips = '<br/>共匹配' + message.total +'个';
+                    }
+                    $('.loading').html('<span style="color: green"><em class="click">[ 关闭 ]</em>匹配成功!' + tips+ '</span>');
                 }
             },
             error: function() {
-                $('#tips').html('<img src="/img/loading.gif" /><font style="color: blue">Loading...</font>');
+                $('.loading').html('<span style="color: red"><em class="click">[ 关闭 ]</em>请求数据时发生错误! </span>');
+            }
+        });
+    });
+
+    $('#handleLogistics').click(function() {
+
+        var option = {};
+
+        $.ajax({
+            type: "GET",
+            url: '/order/logistics',
+            dataType: 'json',
+            data: option,
+            beforeSend: function() {
+                $('.mask').fadeIn();
+                $('.loading').fadeIn();
+            },
+            success: function(data) {
+                if(data.status == 'success') {
+                
+                }
+            },
+            error: function() {
+                $('.loading').html('<span style="color: red"><em class="click">[ 关闭 ]</em>请求数据时发生错误! </span>');
             }
         });
     });

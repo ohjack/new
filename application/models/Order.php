@@ -13,6 +13,7 @@ class Order {
 
         $order = DB::table('orders')->find( $order_id );
         $order->items = Item::getItems( $order_id );
+        $order->marks = Mark::getByOrderId( $order_id );
 
         return $order;
     }
@@ -21,29 +22,46 @@ class Order {
      * 获取订单列表
      *
      * @param: $per_page integer 每页记录数
+     * @param: $option   array   搜索参数
      *
      * reutrn object
      */
     public static function getOrders( $per_page, $options ) {
 
+        $fields = [
+            'orders.id', 'orders.created_at', 'orders.entry_id', 'orders.currency',
+            'orders.total', 'orders.shipment_level', 'orders.order_status', 'orders.shipping_name',
+            'shipping_name', 'shipping_address1', 'shipping_address2', 'shipping_address3',
+            'shipping_city', 'shipping_state_or_region', 'shipping_country', 'shipping_postal_code',
+            'shipping_phone', 'payment_method', 'from'
+             ];
+
         $table = DB::table('orders');
         foreach ($options as $key => $option) {
-            $table = $table->where($key, '=', $option);
+            if(trim($option)) {
+                if($key == 'mark_id') {
+                    $table = $table->left_join('orders_mark', 'orders.id', '=', 'orders_mark.order_id');
+                }
+                $table = $table->where($key, '=', $option);
+            }
         }
 
         $orders = $table->order_by('orders.shipment_level', 'ASC')
                         ->order_by('orders.id', 'DESC')
-                        ->paginate( $per_page );
+                        ->paginate( $per_page , $fields);
 
+
+        // 整理列表需要的数据 Sku 标识等
         foreach ($orders->results as $order) {
             $skus = DB::table('items')->where('order_id', '=', $order->id)->lists('sku');
 
-            $sku_format = '';
+            $order->skus = '';
             foreach(array_count_values($skus) as $sku => $count) {
-                $sku_format = sprintf('%s x %u<br/>', $sku, $count); 
+                $order->skus .= sprintf('%s x %u<br/>', $sku, $count); 
             }
 
-            $order->skus = $sku_format;
+            $order->marks = Mark::getByOrderId( $order->id );
+
         }
 
         return $orders;
@@ -130,6 +148,8 @@ class Order {
             'status'  => 'success',
             'message' => [ 'total' => 0, 'insert' => 0, 'update' => 0 ]
             ];
+
+        //return $result;
 
         // 遍历平台进行抓取
         foreach ($user_platforms as $user_platform) {

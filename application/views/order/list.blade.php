@@ -15,11 +15,18 @@
               <tbody>
                 <tr>
                   <th width="80em">订单ID:</th>
-                  <td>{{ Form::text('entry_id') }}</td>
+                  <td>{{ Form::text('order_id') }}</td>
                 </tr>
                 <tr>
-                  <th>订单状态:</th>
-                  <td>{{ Form::select('order_status') }}</td>
+                  <th>订单标识:</th>
+                  <td>
+                       <select name="mark_id">
+                           <option value=''>--请选择--</option>
+                           @foreach($marks as $mark)
+                           <option value="{{ $mark->id }}">{{ $mark->name }}</option>
+                           @endforeach
+                       </select>
+                  </td>
                 </tr>
                 <tr>
                   <td colspan="2">{{ Form::submit('搜索') }}</td>
@@ -30,11 +37,11 @@
     </div>
     <table class="table">
       <thead>
-        <tr><td colspan="8">订单列表</td></tr>
         <tr>
-            <th>标识</th>
-            <th>订单ID</th>
-            <th>购买时间</th>
+            <th>{{ Form::checkbox('select_all') }}全选</th>
+            <th width="80px">标识</th>
+            <th width="130px">订单ID</th>
+            <th width="120px">购买时间</th>
             <!--th>Shipping Address</th-->
             <th>订单总金额</th>
             <th>快递级别</th>
@@ -48,7 +55,14 @@
       <tbody>
         @foreach($orders->results as $order)
         <tr class="order" title="双击查看订单详情" key="{{ $order->id }}">
-          <td></td>
+          <td>
+              {{ Form::checkbox('order_id') }}
+          </td>
+          <td>
+              @foreach($order->marks as $mark)
+                  {{ HTML::link('order?mark_id=' . $mark->id, $mark->name, 'style="color:' . $mark->color . '"') }}
+              @endforeach
+          </td>
           <td>
                 <!--input type="checkbox" name="id[]" value="{{$order->id}}"-->
                 {{$order->entry_id}}<br />
@@ -82,18 +96,33 @@
                 <option>其他物流</option>
             </select>
             <input type="button" value="提交" /-->
-            {{ $orders->links() }}
+            {{ $orders->appends($options)->links() }}
           </td>
         </tr>
       </tfoot>
     </table>
     <div class="order_detail">
         <div class="title"><em>X</em>订单详情：</div>
-        <div class="tab">
-            <ul>
-                <li panel="order_info" class="tab_current">订单详情</li>
-                <li panel="items_list">产品列表</li>
-            </ul>
+        <div style="overflow: auto;zoom:1">
+            <div class="tab">
+                <ul>
+                    <li panel="order_info" class="tab_current">订单详情</li>
+                    <li panel="items_list">产品列表</li>
+                </ul>
+            </div>
+            <div class="mark">
+                <span>
+                  <select name="mark">
+                  @foreach($marks as $mark)
+                      <option value="{{ $mark->id }}" color="{{ $mark->color }}">{{ $mark->name }}</option>
+                  @endforeach
+                  </select>
+                  <a href="javascript:;" id="add_mark">添加</a>
+                </span>
+                <ul id="mark">
+                </ul>
+                <span>标识:</span>
+            </div>
         </div>
         <div class="detail">
             <table style="width: 100%" id="order_info">

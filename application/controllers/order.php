@@ -2,15 +2,13 @@
 
 class Order_Controller extends Base_Controller {
 
-    public $restful = true;
 
-    public function get_index() {
+    public function action_index() {
 
-        Session::put('step', 'spiderOrder');
-
-        // 获取订单列表
+        // 搜索字段
         $options = [
-            
+            'entry_id' => Input::get('order_id'),
+            'mark_id'  => Input::get('mark_id'),
             ];
 
         $orders = Order::getOrders(15, $options);
@@ -27,13 +25,30 @@ class Order_Controller extends Base_Controller {
             }
         }
 
+        // 载入用户mark
+        $marks = Mark::getByUserId( 1 );
+
+        // view
         return View::make('order.list')->with('orders', $orders)
+                                       ->with('marks', $marks)
+                                       ->with('options', $options)
                                        ->with('title', '订单列表');
     
     }
 
-    public function post_orders() {
+    public function action_handle() {
+        //Session::put('step', 'spiderOrder');
 
+        $step = Session::get('step');
+        if($step == 'mapSetting') {
+        
+            if(!count(Item::getNoSkuItems())) {
+                Session::put('step', 'matchLogistics'); 
+            }
+        }
+
+
+        return View::make('order.handle')->with('title', '处理订单');
     }
 }
 ?>
