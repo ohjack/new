@@ -146,6 +146,15 @@ $(function(){
         });
     });
 
+    // 订单列表页弹出批量订单标识设置
+    $('#mark_setting_button').toggle(function(){
+        $(this).removeClass('close').addClass('open');
+        $('#mark_setting').slideDown();
+    }, function(){
+        $(this).removeClass('open').addClass('close');
+        $('#mark_setting').slideUp();
+    });
+
     // 订单搜索框
     $('#search_order').click(function(){
         $('.mask').fadeIn();
@@ -156,8 +165,8 @@ $(function(){
         });
     });
 
-    // select all
-    $('input[name="selectAll"]').click(function(){
+    // 全选
+    $('input[name="select_all"]').click(function(){
        if($(this).attr('checked') == 'checked') {
             $('input[name="id[]"]').attr('checked', 'checked');
        } else {

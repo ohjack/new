@@ -101,7 +101,7 @@ class Order {
      */
     public static function setLogistics( $order_id, $logistics ) {
 
-        $option = [ 'order_status' => $logistics ];
+        $option = [ 'logistics' => $logistics , 'order_status' => 'matched' ];
     
         DB::table('orders')->where('id', '=', $order_id)->update( $option );
     }
@@ -111,7 +111,7 @@ class Order {
      *
      */
     public static function countLogistics( $logistics ) {
-        return DB::table('orders')->where('order_status', '=', $logistics)->count();
+        return DB::table('orders')->where('logistics', '=', $logistics)->count();
     }
 
     /**

@@ -16,7 +16,8 @@ class Spider_Item_Controller extends Base_Controller {
 
         $result = Item::spiderItems( $user_platforms );
 
-        if($result['status'] == 'success' && Session::get('step', 'spiderOrder') == 'spiderOrder') Session::put('step', 'mapSetting');
+        if($result['status'] == 'success' && Session::get('step', 'spiderOrder') == 'spiderOrder')
+            Session::put('step', 'mapSetting');
 
         return Response::json($result);
     }

@@ -133,7 +133,6 @@ class Item {
                 return $result;
             }
 
-
             // 产品入库
             foreach ($items as $item) {
                 $item_id = static::getIdByEntryId( $item['entry_id'] );

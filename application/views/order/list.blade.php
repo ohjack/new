@@ -4,14 +4,15 @@
 @endsection
 @section('content')
     <div>
-        {{ HTML::link('#', '搜索订单', ['class' => 'f_r m_r_15', 'id' => 'search_order']) }}
-        {{ HTML::link('order', '重置搜索', ['class' => 'f_r m_r_15']) }}
-        {{ HTML::link('#', '列表设置', ['class' => 'f_r m_r_15', 'id' => 'list_setttings']) }}
+        <a href="javascript:;" class="f_r m_r_15" id="search_order">搜索订单</a>
+        <a href="/order" class="f_r m_r_15">重置搜索</a>
+        <a href="javascript:;" class="f_r m_r_15" id="confirm_order">订单确认</a>
+        <!--a href="javascript:;" class="f_r m_r_15" id="list_setttings">列表设置</a-->
     </div>
     <div class="search_order">
         <div class="title"><em>X</em>订单搜索</div>
         {{ Form::open('order', 'GET') }}
-            <table>
+            <table style="width: 500px">
               <tbody>
                 <tr>
                   <th width="80em">订单ID:</th>
@@ -29,6 +30,28 @@
                   </td>
                 </tr>
                 <tr>
+                  <th>物流:</th>
+                  <td>
+                      <select name="logistics">
+                          <option value=''>--请选择--</option>
+                          @foreach(Config::get('application.logistics') as $code => $name)
+                          <option value="{{ $code }}">{{ $name }}</option>
+                          @endforeach
+                      </select>
+                  </td>
+                </tr>
+                <tr>
+                  <th>状态:</th>
+                  <td>
+                      <select name="order_status">
+                          <option value=''>--请选择--</option>
+                          @foreach(Config::get('application.order_status') as $code => $name)
+                          <option value="{{ $code }}">{{ $name }}</option>
+                          @endforeach
+                      </select>
+                  </td>
+                </tr>
+                <tr>
                   <td colspan="2">{{ Form::submit('搜索') }}</td>
                 </tr>
               </tbody>
@@ -38,8 +61,21 @@
     <table class="table">
       <thead>
         <tr>
-            <th>{{ Form::checkbox('select_all') }}全选</th>
-            <th width="80px">标识</th>
+            <th width="40px"><label>{{ Form::checkbox('select_all', '') }}全选</label></th>
+            <th width="80px">
+                <label for="mark_setting_button">
+                标识
+                </label>
+                <span class="close click" id="mark_setting_button" title="选中订单进行批量设置标识"></span>
+                <div id="mark_setting">
+                    <ul>
+                      @foreach($marks as $mark)
+                        <li><label>{{ Form::checkbox('mark_id') }} <span style="color: {{ $mark->color}}">{{ $mark->name }}</span><label></li>
+                      @endforeach
+                    <li><input type="button" value="确定" style="text-align: center"/></li>
+                    </ul>
+                </div>
+            </th>
             <th width="130px">订单ID</th>
             <th width="120px">购买时间</th>
             <!--th>Shipping Address</th-->
@@ -56,7 +92,7 @@
         @foreach($orders->results as $order)
         <tr class="order" title="双击查看订单详情" key="{{ $order->id }}">
           <td>
-              {{ Form::checkbox('order_id') }}
+              {{ Form::checkbox('id[]', $order->id, '', ['style' => 'margin-left: 10px;']) }}
           </td>
           <td>
               @foreach($order->marks as $mark)
@@ -64,7 +100,6 @@
               @endforeach
           </td>
           <td>
-                <!--input type="checkbox" name="id[]" value="{{$order->id}}"-->
                 {{$order->entry_id}}<br />
           </td>
           <td>{{$order->created_at}}</td>
@@ -80,23 +115,15 @@
             {{$order->shipment_level}}
           </td>
           <td>{{$order->skus}}</td>
-          <!--td>{{$order->payment_method}}</td-->
           <td>{{$order->from}}</td>
-          <td>{{$order->order_status}}</td>
-          <!--td class="action"><a href="#">handle</a></td-->
+          <td>{{ Config::get('application.order_status')[$order->order_status] }}</td>
         </tr>
         @endforeach
       </tbody>
       <tfoot>
         <tr>
           <td colspan="8">
-            <!--label><input type="checkbox" name="selectAll"> 全选</label>
-            <select name="action">
-                <option>-请选择-</option>
-                <option>其他物流</option>
-            </select>
-            <input type="button" value="提交" /-->
-            {{ $orders->appends($options)->links() }}
+            {{ $orders->appends($options)->links() }} 总订单：{{ $orders->total }}个 每页：{{ $orders->per_page }}个
           </td>
         </tr>
       </tfoot>

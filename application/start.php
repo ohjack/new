@@ -60,7 +60,7 @@ Laravel\Autoloader::$aliases = $aliases;
 
 Autoloader::map(array(
     'Base_Controller' => path('app').'controllers/base.php',
-    'PHPExcel' => path('app') . 'libraries/PHPExcel/PHPExcel.php'
+    //'PHPExcel' => path('app') . 'libraries/PHPExcel/PHPExcel.php'
 ));
 
 /*
@@ -178,21 +178,3 @@ if ( ! Request::cli() and Config::get('session.driver') !== '')
 {
     Session::load();
 }
-
-$current_step = Session::get('step', 'spiderOrder');
-//$current_step = 'spiderOrder';
-foreach(Config::get('application.steps') as $step => $item) {
-    if($current_step != $step) {
-        $new_item = [
-            'name'  => $item['name'],
-            'link'  => 'javascript:;',
-            'class' => 'cantclick',
-            'id'    => ''
-            ];
-    } else {
-        $new_item = $item;
-    }
-
-    $new_steps[$step] = $new_item;
-}
-Config::set('application.steps', $new_steps);

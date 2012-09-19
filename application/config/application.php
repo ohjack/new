@@ -181,11 +181,25 @@ return array(
         'Validator'     => 'Laravel\\Validator',
         'View'          => 'Laravel\\View',
     ),
+
+    /**
+     *
+     * 物流系统
+     *
+     */
     'logistics' => [
         'coolsystem' => '酷系统',
         'birdsystem' => '鸟系统',
         'micaosystem' => '米巢系统',
     ],
+
+
+    /**
+     * 
+     * 订单处理流程
+     *
+     *
+     */
     'steps' => [
         'spiderOrder' => [
             'name'   => '抓取订单',
@@ -211,7 +225,16 @@ return array(
             'id'     => 'handleLogistics',
             'class'  => 'click'
         ]
-    
-    ]
+    ],
 
+
+    /**
+     * 系统订单状态
+     *
+     */
+    'order_status' => [
+        'unhandle'  => '等待处理',
+        'matched'   => '已分配物流',
+        'exported'  => '物流已导出',
+    ]
 );

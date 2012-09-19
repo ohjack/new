@@ -15,9 +15,9 @@
        {{ HTML::link('order', '订单列表') }}
        {{ HTML::link('order/handle', '处理订单') }}
        {{ HTML::link('skumap/manage', '产品设置管理') }}
-       {{ HTML::link('#','平台设置') }}
+       <!--{{ HTML::link('#','平台设置') }}
        {{ HTML::link('#','系统概况') }}
-       {{ HTML::link('#','销售数据') }}
+       {{ HTML::link('#','销售数据') }} -->
   </div>
 @endsection
 <body>

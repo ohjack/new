@@ -147,6 +147,7 @@ $(function(){
         });
     });
 
+    // 物流处理
     $('#handleLogistics').click(function() {
 
         var option = {};
@@ -162,6 +163,19 @@ $(function(){
             },
             success: function(data) {
                 if(data.status == 'success') {
+                    var tips = '';
+                    var message = data.message;
+                    var total = message.length;
+                    if( total > 0) {
+                        tips = '目前此次操作有' + total + '个物流文件';
+                        for (var i = 0; i < total; i++) {
+                            tips += '<br /><a target="_blank" href="/data/logistics_file/' + message[i].filename +'">' + message[i].name + '点击下载 [ ' + message[i].total + '条记录 ] </a>';
+                        };
+                    } else {
+                        tips = '没有需要处理的物流';
+                    }
+
+                    $('.loading').html('<span style="color: green"><em class="click">[ 关闭 ]</em>' + tips + '</span>');
                 
                 }
             },
