@@ -1,7 +1,7 @@
 $(function(){
 
     // 订单详情
-    $('.order').dblclick(function(){
+    $('.order').dblclick(function() {
         var id = $(this).attr('key');
         $.ajax({
             type: 'GET',
@@ -71,6 +71,43 @@ $(function(){
         });
         
     });
+
+    // 确认订单
+    $('#confirm_order').click(function() {
+        $('.mask').fadeIn();
+        $('.confirm_order').fadeIn();
+
+        // 关闭
+        $('.confirm_order > .title').children('em').click(function(){
+            $('.mask').fadeOut();
+            $('.confirm_order').fadeOut();
+        });
+    });
+
+    // 确认订单提交
+    $('#confirm_order_submit').click(function() {
+
+        $.ajax({
+            type: 'POST',
+            url: '/order/ajax/confirm',
+            success: function( data ) {
+                console.log(data);
+            }
+        
+        });
+    });
+
+    // 添加物流信息
+    $('#addLogisticsInfo').click(function() {
+        load_add_logistics_info_form();
+        // 关闭
+        $('.add_logistics_info > .title').children('em').click(function(){
+            $('.mask').fadeOut();
+            $('.add_logistics_info').fadeOut();
+        });
+    });
+
+    
 
 
     // 添加订单标识
@@ -153,6 +190,42 @@ $(function(){
     }, function(){
         $(this).removeClass('open').addClass('close');
         $('#mark_setting').slideUp();
+    });
+
+    // 批量添加标识
+    $('#add_marks').click(function() {
+        var mark_ids = new Array();
+        $("input[name='mark_id[]']:checked").each(function() {
+            var val = $(this).val();
+            mark_ids.push(val);
+        });
+
+        if(mark_ids.length < 1) {
+            alert('请先选择标识');
+            return;
+        } 
+
+        var order_ids = new Array();
+        $("input[name='id[]']:checked").each(function() {
+            var val = $(this).val();
+            order_ids.push(val);
+        });
+
+        if( order_ids.length < 1) {
+            alert('请先选择订单');
+            return;
+        }
+    
+        var data = {order_ids: order_ids, mark_ids: mark_ids};
+        $.ajax({
+            type: 'POST',
+            url: '/order/ajax/setmarks',
+            data: data,
+            success: function( data ) { 
+                if( data == 'ok') reload();
+            }
+        });
+    
     });
 
     // 订单搜索框
@@ -241,5 +314,29 @@ function closeSkuMap() {
     setTimeout(function(){
         $('#addSkuMap').fadeOut();
     }, 1000);
+}
+
+function load_add_logistics_info_form () {
+    $('.mask').fadeIn();
+    $('.add_logistics_info').fadeIn();
+
+
+    var option = {};
+
+    $.ajax({
+        type: 'GET',
+        url: '/order/ajax/matched',
+        data: option,
+        beforeSend: function() {
+        
+        },
+        success: function() {
+        
+        },
+        error: function() {
+            alert('error');
+        }
+    });
+
 }
 

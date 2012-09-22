@@ -19,7 +19,7 @@
                   <td>{{ Form::text('order_id') }}</td>
                 </tr>
                 <tr>
-                  <th>订单标识:</th>
+                  <th>标识:</th>
                   <td>
                        <select name="mark_id">
                            <option value=''>--请选择--</option>
@@ -70,9 +70,9 @@
                 <div id="mark_setting">
                     <ul>
                       @foreach($marks as $mark)
-                        <li><label>{{ Form::checkbox('mark_id') }} <span style="color: {{ $mark->color}}">{{ $mark->name }}</span><label></li>
+                        <li><label>{{ Form::checkbox('mark_id[]', $mark->id) }} <span style="color: {{ $mark->color}}">{{ $mark->name }}</span><label></li>
                       @endforeach
-                    <li><input type="button" value="确定" style="text-align: center"/></li>
+                    <li><input id="add_marks" type="button" value="确定" style="text-align: center"/></li>
                     </ul>
                 </div>
             </th>
@@ -233,6 +233,12 @@
               <tbody>
               </tbody>
             </table>
+        </div>
+    </div>
+    <div class="confirm_order">
+        <div class="title"><em>X</em>确认订单：</div>
+        <div>
+              <input type="button" value="确认" id="confirm_order_submit"/>
         </div>
     </div>
 @endsection

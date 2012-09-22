@@ -11,7 +11,7 @@ class Step {
                     'name'  => $item['name'],
                     'link'  => 'javascript:;',
                     'class' => 'cantclick',
-                    'id'    => ''
+                    'id'    => $item['id'],
                     ];
             } else {
                 $new_item = $item;

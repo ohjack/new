@@ -14,14 +14,18 @@ class Spider_Orders_Amazon {
     private $_Key;
     private $_Url;
 
+    const SERVER_VERSION = '2011-01-01';
+
     public function getOrders( $option ) {
 
 
         $this->_AWSAccessKeyId = $option['AWSAccessKeyId'];
         $this->_SellerId = $option['SellerId'];
         $this->_Key = $option['Key'];
-        $this->_Url = $option['Server'] . 'Orders/2011-01-01';
+        $this->_Url = $option['Server'] . 'Orders/' . self::SERVER_VERSION;
         unset($option['Server']);
+
+        $option['Version'] = self::SERVER_VERSION;
 
         $param = $this->_getParam($option);
 
@@ -47,7 +51,7 @@ class Spider_Orders_Amazon {
         $this->_AWSAccessKeyId = $option['AWSAccessKeyId'];
         $this->_SellerId = $option['SellerId'];
         $this->_Key = $option['Key'];
-        $this->_Url = $option['Server'] . 'Orders/2011-01-01';
+        $this->_Url = $option['Server'] . 'Orders/' . self::SERVER_VERSION;
         unset($option['Server']);
     
         $param = $this->_getParam($option);

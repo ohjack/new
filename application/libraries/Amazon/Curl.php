@@ -10,6 +10,7 @@ class Amazon_Curl {
 
          $postData[CURLOPT_URL] = $param['url']; 
          $postData[CURLOPT_POSTFIELDS] = $param['query'];
+         if(isset($param['content_md5'])) $postData[CURLOPT_HTTPHEADER] = ['Content-MD5: ' . $param['content_md5']];
          $this->param = $postData;
     }
 
@@ -21,7 +22,7 @@ class Amazon_Curl {
             CURLOPT_HEADER => false,       //不显示header
             CURLOPT_SSL_VERIFYPEER => true,
             // CURLOPT_HTTPHEADER => ['Content-Type: text/xml'],
-            CURLOPT_USERAGENT => 'Plato/1.0 (Language=PHP)',
+            CURLOPT_USERAGENT => 'Plato/1.0 (Language=PHP5.4)',
             
         ];
         $this->param += $option;

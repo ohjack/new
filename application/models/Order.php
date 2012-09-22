@@ -107,11 +107,25 @@ class Order {
     }
 
     /**
-     * 统计每个物流订单 
+     * 统计指定物流订单 
      *
      */
     public static function countLogistics( $logistics ) {
         return DB::table('orders')->where('logistics', '=', $logistics)->count();
+    }
+
+    /**
+     * 批量设置mark
+     */
+    public static function setMarks($mark_ids, $order_ids) {
+        DB::table('orders_mark')->where_in('order_id', $order_ids)->delete();
+
+        foreach($mark_ids as $mark_id) {
+            foreach($order_ids as $order_id) {
+                $data = [ 'order_id' => $order_id, 'mark_id' => $mark_id ];
+                DB::table('orders_mark')->insert($data);
+            }
+        }
     }
 
     /**
@@ -128,10 +142,26 @@ class Order {
     /**
      * 获取未抓取的订单
      *
-     * return array 订单IDs
+     * return array 订单ID 第三方ID 来源
      */
     public static function getUnspiderOrders() {
         return DB::table('orders')->where_null('crawled_at')->get(['id', 'entry_id', 'from']);
+    }
+
+
+    /**
+     * 确认订单
+     */
+    public static function confirmOrders( $user_platforms ) {
+
+        $submiter_name = 'Rsync_Orders_Amazon';
+
+        $confirm_submuter = new Rsync_Orders( new $submiter_name );
+
+        $rs = $confirm_submuter->confirmOrders( [] );
+
+        return $rs;
+    
     }
 
     /**

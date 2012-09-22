@@ -92,9 +92,10 @@ class Logistics {
         $fields = [
             'coolsystem' => [
                 'orders.id', 'orders.entry_id as order_id', 'sku_map.target_sku as sku', 'items.quantity', 
-                'orders.shipping_name', 'orders.shipping_address1', 'orders.shipping_address2', 
-                'orders.shipping_address3', 'orders.shipping_state_or_region', 'orders.shipping_city',
-                'orders.shipping_postal_code', 'orders.shipping_country', 'orders.shipping_phone'
+                'orders.shipping_name', 'items.entry_id as item_id', 'orders.shipping_address1', 
+                'orders.shipping_address2', 'orders.shipping_address3', 'orders.shipping_state_or_region', 
+                'orders.shipping_city', 'orders.shipping_postal_code', 'orders.shipping_country', 
+                'orders.shipping_phone'
                 ],
             'birdsystem' => [
                 'orders.id', 'orders.entry_id as order_id', 'items.entry_id as item_id',
@@ -138,7 +139,7 @@ class Logistics {
                     if($system == 'coolsystem') {
                         $rows = [
                             '', '', '', '', $item->order_id, '',
-                            $item->sku, '', $item->quantity, '', '', '', '', '', '',
+                            $item->sku, '', $item->quantity, '', $item->item_id, '', '', '', '',
                             $item->order_id, $item->shipping_name, $item->shipping_address1,
                             $item->shipping_address3 . ' ' . $item->shipping_address2,
                             $item->shipping_state_or_region, $item->shipping_city,

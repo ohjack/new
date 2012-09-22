@@ -60,7 +60,6 @@ Laravel\Autoloader::$aliases = $aliases;
 
 Autoloader::map(array(
     'Base_Controller' => path('app').'controllers/base.php',
-    //'PHPExcel' => path('app') . 'libraries/PHPExcel/PHPExcel.php'
 ));
 
 /*
@@ -77,7 +76,6 @@ Autoloader::map(array(
 Autoloader::directories(array(
     path('app').'models',
     path('app').'libraries',
-    //path('app').'libraries/Amazon',
 ));
 
 
