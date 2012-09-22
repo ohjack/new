@@ -114,7 +114,11 @@
           <td @if($order->shipment_level == 'Expedited') style="color:red" @endif>
             {{$order->shipment_level}}
           </td>
-          <td>{{$order->skus}}</td>
+          <td>
+            @foreach($order->items as $item)
+                {{ $item->sku }} x {{ $item->quantity}}<br />
+            @endforeach
+          </td>
           <td>{{$order->from}}</td>
           <td>{{ Config::get('application.order_status')[$order->order_status] }}</td>
         </tr>

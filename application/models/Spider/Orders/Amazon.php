@@ -14,6 +14,7 @@ class Spider_Orders_Amazon {
     private $_Key;
     private $_Url;
 
+    const ORDER_UNHANDLE = 0;
     const SERVER_VERSION = '2011-01-01';
 
     public function getOrders( $option ) {
@@ -235,7 +236,7 @@ class Spider_Orders_Amazon {
                     'payment_method'           => isset($data['PaymentMethod']) ? $data['PaymentMethod'] : '',
                     'from'                     => isset($data['SalesChannel']) ? $data['SalesChannel'] : '',
                     'status'                   => isset($data['OrderStatus']) ? $data['OrderStatus'] : '',
-                    'order_status'             => 'unhandle',
+                    'order_status'             => self::ORDER_UNHANDLE,
                     'created_at'               => isset($data['PurchaseDate']) ? $data['PurchaseDate'] : '',
                     ];
 
@@ -266,7 +267,7 @@ class Spider_Orders_Amazon {
                     'payment_method'           => isset($datas['PaymentMethod']) ? $datas['PaymentMethod'] : '',
                     'from'                     => isset($datas['SalesChannel']) ? $datas['SalesChannel'] : '',
                     'status'                   => isset($datas['OrderStatus']) ? $datas['OrderStatus'] : '',
-                    'order_status'             => 'unhandle',
+                    'order_status'             => self::ORDER_UNHANDLE,
                     'created_at'               => isset($datas['PurchaseDate']) ? $datas['PurchaseDate'] : '',
                     ];
         

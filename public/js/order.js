@@ -247,64 +247,41 @@ $(function(){
        }
     }); 
 
-    // sku map form hide
-    $('#close').click(function(){
-        $('#addSkuMap').fadeOut();
+
+    // 物流公司切换联动运输方式
+    $('.logistic_company').live('change', function(){
+        var option = '<option value>--请选择--</option>';
+
+        if($(this).val()) {
+            var company = $(this).children('option:selected').attr('key');
+            var method = logistic[company].method;
+
+            for (var index in method) {
+                option += '<option value="' + index + '">' + method[index] + '</option>';
+
+            };
+        }
+
+        $(this).parent().next().children('select').html(option);
     });
 
-    // sku map submit
-    $('#skuMapSubmit').click(function(){
-        
-        // check
-        var original_sku = $('input[name="original_sku"]').val();
-        var target_sku = $('input[name="target_sku"]').val();
-        var logistics = $('select[name="logistics"] option:selected').val();
+    // 提交物流信息
+    $('#logistic_submit').click(function(){
+        var data = $('#logistic_form').serialize();
 
-        if(original_sku.length < 1) {
-            $('#skuTips').html('<font style="color: red">请填写原sku</font>');
-            return false;
-        }
-
-        if(target_sku.length < 1) {
-            $('#skuTips').html('<font style="color: red">请填写目标sku</font>');
-            return false;
-        }
-
-        if(logistics.length < 1) {
-            $('#skuTips').html('<font style="color: red">请选择系统</font>');
-            return false;
-        } 
-
-        var options = {
-            original_sku: original_sku,
-            target_sku: target_sku,
-            logistics: logistics
-        };
-
-        // ajax submit
         $.ajax({
-            type: "POST",
-            url: "/skumap",
-            data: options,
-            dataType: "json",
+            type: 'POST',
+            url: '',
+            data: data,
+            dataType: 'json',
             beforeSend: function() {
-                $('#skuTips').html('<img src="/img/loading.gif" /><font style="color: blue">Loading...</font>');
+            
             },
-            success: function(data){
-                if(data == 'ok') {
-                    $('#skuTips').html('<font style="color: green;">映射成功!</font>');
-                    closeSkuMap();
-                } else if(data == 'exists') {
-                    $('#skuTips').html('<font style="color: red">映射已存在</font>');
-                    closeSkuMap();
-                } else if(data == 'error') {
-                    $('#skuTips').html('<font style="color: red">错误请检查提交内容</font>');
-                } else {
-                    $('#skuTips').html('<font style="color: red">未知错误</font>');
-                }
+            success: function() {
+            
             },
             error: function() {
-                $('#skuTips').html('<font style="color: red">提交错误</font>');
+            
             }
         });
     });
@@ -320,18 +297,71 @@ function load_add_logistics_info_form () {
     $('.mask').fadeIn();
     $('.add_logistics_info').fadeIn();
 
-
     var option = {};
 
     $.ajax({
         type: 'GET',
         url: '/order/ajax/matched',
         data: option,
+        dataType: "json",
         beforeSend: function() {
         
         },
-        success: function() {
-        
+        success: function( data ) {
+            if( data.status == 'success') {
+                var message = data.message;
+                logistic = data.logistic;
+                var total = message.length;
+
+                // 物流公司
+                var logistic_company = '<option value>--请选择--</option>';
+                for (var i = 0; i < logistic.length; i++) {
+                    logistic_company += '<option value="' + logistic[i].name + '" key="' + i + '">' + logistic[i].name + '</option>';
+                };
+
+                // 运输方式
+                var logistic_method = '<option value>--请选择--</option>';
+                var order_list = '';
+                for (var i = 0; i < total; i++) {
+                    var id = message[i].id;
+                    var items = message[i].items;
+                    var item_list = '';
+                    for (var j = 0; j < items.length; j++) {
+                        item_list += '<tr>' +
+                                        '<td>' + items[j].entry_id + '</td>' +
+                                        '<td><input name="logistic[' + id + '][items][' + items[j].id + '][ship_quantity]" style="width:50px" type="text" value="' + items[j].quantity + '" /></td>' +
+                                        '<td><select name="logistic[' + id + '][items][' + items[j].id + '][company]" style="width:80px" class="logistic_company">' + logistic_company + '</select></td>' +
+                                        '<td><select name="logistic[' + id + '][items][' + items[j].id + '][method]" style="width:80px" class="logistic_method">' + logistic_method + '</select></td>' +
+                                        '<td><input name="logistic[' + id + '][items][' + items[j].id + '][tracking_no]" type="text" /><input name="logistic[' + id + '][items][' + items[j].id + '][quantity]" type="hidden"></td>' + 
+                                     '</tr>';
+                    };
+                    order_list += '<tr key="' + id + '">' +
+                                    '<td>' + message[i].entry_id+ '</td>' +
+                                    '<td>' +
+                                        '<select style="width: 80px" name="logistic[' + id + '][company]" class="logistic_company">' + logistic_company + '</select>' +
+                                    '</td>' + 
+                                    '<td><select style="width: 80px" name="logistic['+ id +'][method]" class="logistic_method">' + logistic_method + '</select></td>' + 
+                                    '<td><input name="logistic[' + id + '][tracking_no]" type="text"/></td>' +
+                                    '<td><input name="logistic[' + id + '][ship_first]" type="checkbox"></td>' +
+                                 '</tr>' + 
+                                 '<tr>' +
+                                    '<td colspan="5">' +
+                                        '<table>' +
+                                            '<thead>' +
+                                                '<tr>' +
+                                                    '<th>产品ID</th>' +
+                                                    '<th style="width:30px">发货数量</th>' +
+                                                    '<th>物流公司</th>' +
+                                                    '<th>物流方式</th>' +
+                                                    '<th>跟踪号</th>' +
+                                            '</thead>' +
+                                            '<tbody>' + item_list + '</tbody>' +
+                                        '</table>' +
+                                    '</td>' +
+                                 '</tr>';
+                };
+                $('#add_logistics > tbody').html(order_list);
+            }
         },
         error: function() {
             alert('error');

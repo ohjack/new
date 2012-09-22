@@ -79,14 +79,28 @@ class Order_Ajax_Controller extends Base_Controller {
     // 获取已匹配物流的订单
     public function action_matched() {
 
-        $options = Input::get('option');
+        // 系统的运输方式
+        $logistic_company = Config::get('application.logistic_company');
+        $logistics = [];
+        foreach ($logistic_company as $company => $value) {
+            $logistics[] = [
+                'name' => $company,
+                'method' => $value['method'],
+                ];
+        }
 
         $result = [
             'status'  => 'success',
-            'message' => []
+            'message' => [],
+            'logistic' => $logistics,
             ];
 
-        $orders = Order::getMatched( 10, $options );
+        // 翻页参数
+        $options = Input::get('option');
+        // 已经匹配物流的订单
+        $options['order_status'] = 1;
+
+        $orders = Order::getOrders( 1, $options );
 
         $result['message'] = $orders->results;
 
