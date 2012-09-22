@@ -187,7 +187,7 @@ em.click {
     padding: 5px;
 }
 
-.order_detail {
+.order_detail, .confirm_order {
     display: none;
     width: 900px;
     height: 500px;
@@ -201,13 +201,13 @@ em.click {
     background: #fff;
 }
 
-.order_detail > .title, .search_order > .title {
+.order_detail > .title, .search_order > .title, .confirm_order > .title, .add_logistics_info > .title {
     background: #333;
     color: #fff;
     padding: 0 10px 0 10px;
     
 }
-.order_detail > .title em, .search_order > .title em {
+.order_detail > .title em, .search_order > .title em, .confirm_order > .title em , .add_logistics_info > .title em {
     float: right;
     padding: 0px 8px 0 8px;
     cursor: pointer;
@@ -271,6 +271,18 @@ em.click {
     padding: 10px;
     width: 500px;
     margin-left: -250px;
+    border: 5px solid #ccc;
+    background: #fff;
+    z-index: 100;
+}
+
+.add_logistics_info {
+    display: none;
+    position: fixed;
+    left: 50%;
+    padding: 10px;
+    width: 960px;
+    margin-left: -480px;
     border: 5px solid #ccc;
     background: #fff;
     z-index: 100;

@@ -6,12 +6,9 @@ class Amazon {
     private $url = null; 
     private $key = null;
 
-    const SERVER_VERSION = '2011-01-01';
-
     public function setData( $data , $url ){
 
         $this->data = [
-                'Version' => self::SERVER_VERSION,
                 'SignatureMethod' => 'HmacSHA256',
                 'SignatureVersion' => '2',
                 'Timestamp' => $this->_getTimeFormat('now'),
@@ -23,7 +20,7 @@ class Amazon {
         unset( $this->data['Key'] );
 
         if(isset($this->data['CreatedAfter']))
-            $this->data['CreatedAfter'] = $this-> _getTimeFormat( $this->data['CreatedAfter'] );
+            $this->data['CreatedAfter'] = $this-> _getTimeFormat( '2012-01-01 00:00:00' );
          
     }
 

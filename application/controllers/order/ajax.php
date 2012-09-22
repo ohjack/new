@@ -2,12 +2,6 @@
 
 class Order_Ajax_Controller extends Base_Controller {
 
-
-    public function action_index() {
-    
-    
-    }
-
     // 获取订单详情
     public function action_info() {
         if( !Request::ajax() ) {
@@ -50,6 +44,53 @@ class Order_Ajax_Controller extends Base_Controller {
         Mark::delOrderMark( $order_id, $mark_id );
 
         return Response::json('ok');
+    }
+
+    // 批量标识订单
+    public function action_setmarks() {
+        if( !Request::ajax() ) {
+            return Response::error('404');
+        }
+
+
+        $order_ids = Input::get('order_ids');
+        $mark_ids = Input::get('mark_ids');
+        
+        // 验证
+
+        //入库
+        Order::setMarks($mark_ids, $order_ids);
+
+        return Response::json('ok');
+    }
+
+    // 确认订单提交
+    public function action_confirm() {
+    
+        $result = 'ok';
+    
+        $user_platforms = User::getPlatforms(1);
+
+        $result = Order::confirmOrders( $user_platforms );
+
+        return Response::json( $result );
+    }
+
+    // 获取已匹配物流的订单
+    public function action_matched() {
+
+        $options = Input::get('option');
+
+        $result = [
+            'status'  => 'success',
+            'message' => []
+            ];
+
+        $orders = Order::getMatched( 10, $options );
+
+        $result['message'] = $orders->results;
+
+        return Response::json( $result );
     }
 }
 ?>
