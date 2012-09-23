@@ -12,8 +12,9 @@
 </div>
 <div class="add_logistics_info">
     <div class="title"><em>x</em>添加物流信息</div>
-    <div><span style="float: right;">订单号：<input name="keyword" value=''/> <input type="button" value="搜索"></span>导入文件<input name="import_file" type="file"/><input type="button" value="上传"> <a href="#">下载导入模板</a> </div>
-    <table style="width: 960px">
+    <div><span style="float: right;">订单号：<input name="keyword" value=''/> <input id="logistic_search" type="button" value="搜索"></span>导入文件<input name="import_file" type="file"/><input type="button" value="上传"> <a href="#">下载导入模板</a> </div>
+    <form id="logistic_form">
+    <table id="add_logistics" style="width: 960px">
         <thead>
             <tr>
               <th>订单ID</th>
@@ -25,18 +26,15 @@
         </thead>
         <tbody>
             <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td colspan="5">没有产品</td>
             </tr>
         </tbody>
         <tfoot>
             <tr>
-              <td colspan="8"><input type="button" value="提交" /></td>
+              <td colspan="8"><div class="pagination"></div><input type="button" value="提交" id="logistic_submit" /></td>
             </tr>
         </tfoot>
     </table>
+    </form>
 </div>
 @endsection  

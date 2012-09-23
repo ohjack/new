@@ -2,6 +2,8 @@
 
 class Order_Ajax_Controller extends Base_Controller {
 
+    const METCHED_SHIPMENT = 1;
+
     // 获取订单详情
     public function action_info() {
         if( !Request::ajax() ) {
@@ -79,14 +81,34 @@ class Order_Ajax_Controller extends Base_Controller {
     // 获取已匹配物流的订单
     public function action_matched() {
 
-        $options = Input::get('option');
+        // 系统的运输方式
+        $logistic_company = Config::get('application.logistic_company');
+        $logistics = [];
+        foreach ($logistic_company as $company => $value) {
+            $logistics[] = [
+                'name' => $company,
+                'method' => $value['method'],
+                ];
+        }
 
+        // 初始化返回
         $result = [
             'status'  => 'success',
-            'message' => []
+            'message' => [],
+            'logistic' => $logistics,
             ];
 
-        $orders = Order::getMatched( 10, $options );
+        $options = [
+            'entry_id' => Input::get('entry_id'),
+            'order_status'  => self::METCHED_SHIPMENT,   
+            ];
+
+        $orders = Order::getOrders( 5, $options );
+
+        // 分页用
+        $result['per_page'] = $orders->per_page;
+        $result['page']     = $orders->page;
+        $result['total']    = $orders->total;
 
         $result['message'] = $orders->results;
 

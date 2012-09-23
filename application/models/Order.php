@@ -46,19 +46,18 @@ class Order {
             }
         }
 
-        $orders = $table->order_by('orders.shipment_level', 'ASC')
-                        ->order_by('orders.id', 'DESC')
+        $orders = $table->order_by('orders.id', 'DESC')
+                        ->order_by('orders.order_status', 'ASC')
                         ->paginate( $per_page , $fields);
 
 
-        // 整理列表需要的数据 Sku 标识等
+        // 整理列表需要的产品 标识等数据
         foreach ($orders->results as $order) {
-            $skus = DB::table('items')->where('order_id', '=', $order->id)->lists('sku');
 
-            $order->skus = '';
-            foreach(array_count_values($skus) as $sku => $count) {
-                $order->skus .= sprintf('%s x %u<br/>', $sku, $count); 
-            }
+            $fields = [ 'id', 'sku', 'entry_id', 'name', 'quantity' ];
+            $items = DB::table('items')->where('order_id', '=', $order->id)->get( $fields );
+
+            $order->items = $items;
 
             $order->marks = Mark::getByOrderId( $order->id );
 
