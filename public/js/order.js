@@ -278,7 +278,7 @@ $(function(){
 
         $.ajax({
             type: 'POST',
-            url: '',
+            url: '/shipping',
             data: data,
             dataType: 'json',
             beforeSend: function() {
