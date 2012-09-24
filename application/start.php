@@ -81,6 +81,7 @@ Autoloader::directories(array(
 
 Autoloader::underscored(array(
    'Amazon' => path('app') . 'libraries/Amazon',
+   'Task'   => path('app') . 'tasks',
 ));
 
 /*

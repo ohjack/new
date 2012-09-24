@@ -16,6 +16,7 @@ class User {
             'p.name', 
             'p.option', 
             'up.id',
+            'up.user_id',
             'up.option as user_option'
             ];
 

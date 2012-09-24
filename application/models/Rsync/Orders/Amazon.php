@@ -6,27 +6,57 @@ class Rsync_Orders_Amazon {
     
     const SERVER_VERSION = '2009-01-01';
     
-    public function confirmOrders( $option ) {
+    public function confirmOrders( $options, $order_id) {
+
         $option = [
-            'AWSAccessKeyId' => 'AKIAJGUMF5LENLIW6ZAQ',
-            'Merchant'       => 'A3LMXTNFZ71A3Q',
-            'Key'            => 'jRa5CBIrZVTMm+GD9wwSNSQ+vwpyflw1eUn6aebL',
-            'Version'        => self::SERVER_VERSION,
-            'Action'         => 'SubmitFeed',
-            'FeedType'       => '_POST_FLAT_FILE_ORDER_ACKNOWLEDGEMENT_DATA_',
-            'MarketplaceIdList.Id.1' => 'ATVPDKIKX0DER',
-            'PurgeAndReplace' => 'false',
+            'AWSAccessKeyId'         => $options['AWSAccessKeyId'],
+            'Merchant'               => $options['SellerId'],
+            'Key'                    => $options['Key'],
+            'Version'                => self::SERVER_VERSION,
+            'Action'                 => 'SubmitFeed',
+            'FeedType'               => '_POST_FLAT_FILE_ORDER_ACKNOWLEDGEMENT_DATA_',
+            'MarketplaceIdList.Id.1' => $options['MarketplaceId.Id.1'],
+            'PurgeAndReplace'        => 'false',
         ];
 
-        $this->_Url = 'https://mws.amazonservices.com/';
+        $this->_Url = $options['Server'];
+        unset($options['Server']);
 
         $param = $this->_getParam( $option );
-        $body = '<?xml version="1.0" encoding="utf-8"?>';
-        $fh = fopen('php://memory', 'rw+');
-        fwrite($fh, $body);
-        $param['content_md5'] = base64_encode(md5(stream_get_contents($fh), true));
-        fclose($fh);
-        //echo $body;
+
+        $feed = <<<EOD
+<?xml version="1.0" encoding="UTF-8"?>
+<AmazonEnvelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="amzn-envelope.xsd">
+    <Header>
+        <DocumentVersion>1.01</DocumentVersion>
+        <MerchantIdentifier>My Store</MerchantIdentifier>
+    </Header>
+    <MessageType>OrderFulfillment</MessageType>
+    <Message>
+        <MessageID>1</MessageID>
+        <OrderFulfillment>
+            <MerchantOrderID>1234567</MerchantOrderID>
+            <MerchantFulfillmentID>1234567</MerchantFulfillmentID>
+            <FulfillmentDate>2002-05-01T15:36:33-08:00</FulfillmentDate>
+            <FulfillmentData>
+                <CarrierCode>UPS</CarrierCode>
+                <ShippingMethod>Second Day</ShippingMethod>
+                <ShipperTrackingNumber>1234567890</ShipperTrackingNumber>
+            </FulfillmentData>
+            <Item>
+                <MerchantOrderItemID>1234567</MerchantOrderItemID>
+                <MerchantFulfillmentItemID>1234567</MerchantFulfillmentItemID>
+                <Quantity>2</Quantity>
+            </Item>
+        </OrderFulfillment>
+    </Message>
+</AmazonEnvelope>
+EOD;
+        $filename = path('public') . 'data/rsync/' . md5(time() . rand(0,1000)) . '.xml';
+        file_put_contents($filename, $feed);
+        chmod($filename, 0755);  
+        $param['content_md5'] = base64_encode(md5_file($filename, true));
+        $param['filename'] = $filename;
 
         $curl = new Amazon_Curl();
         $curl -> setParam( $param );
