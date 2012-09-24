@@ -6,7 +6,7 @@ class Rsync_Orders_Amazon {
     
     const SERVER_VERSION = '2009-01-01';
     
-    public function confirmOrders( $options, $order_id) {
+    public function confirmOrders( $options, $order) {
 
         $option = [
             'AWSAccessKeyId'         => $options['AWSAccessKeyId'],
@@ -24,6 +24,10 @@ class Rsync_Orders_Amazon {
 
         $param = $this->_getParam( $option );
 
+        $message_id = str_replace('.', '', microtime(true));
+        $order_id = $order->entry_id;
+        $timestamp = gmdate("Y-m-d\TH:i:s.\\0\\0\\0\\Z", time());
+
         $feed = <<<EOD
 <?xml version="1.0" encoding="UTF-8"?>
 <AmazonEnvelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="amzn-envelope.xsd">
@@ -33,11 +37,11 @@ class Rsync_Orders_Amazon {
     </Header>
     <MessageType>OrderFulfillment</MessageType>
     <Message>
-        <MessageID>1</MessageID>
+        <MessageID>{$message_id}</MessageID>
         <OrderFulfillment>
-            <MerchantOrderID>1234567</MerchantOrderID>
-            <MerchantFulfillmentID>1234567</MerchantFulfillmentID>
-            <FulfillmentDate>2002-05-01T15:36:33-08:00</FulfillmentDate>
+            <MerchantOrderID>{$order_id}</MerchantOrderID>
+            <MerchantFulfillmentID>{$order_id}</MerchantFulfillmentID>
+            <FulfillmentDate>{$timestamp}</FulfillmentDate>
             <FulfillmentData>
                 <CarrierCode>UPS</CarrierCode>
                 <ShippingMethod>Second Day</ShippingMethod>
@@ -67,8 +71,7 @@ EOD;
             $update = [ 'order_status' => 0 ]; // 更新订单状态
         }
 
-        return $update
-
+        return $update;
     }
 
     private function _getParam( $option ) {

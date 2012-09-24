@@ -15,8 +15,8 @@ class Rsync_Orders {
         $this->_order = $order;
     }
 
-    public function confirmOrders( $options, $order_id ) {
-        return $this->_order->confirmOrders( $options, $order_id );
+    public function confirmOrders( $options, $order ) {
+        return $this->_order->confirmOrders( $options, $order );
     } 
 
 }
