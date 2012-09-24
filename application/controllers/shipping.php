@@ -7,7 +7,7 @@ class Shipping_Controller extends Base_Controller{
 	public function action_index()
 	{
 		$return=array();
-		$logistics=Input::get('logistics');
+		$logistics=Input::get('logistic');
 		if(is_array($logistics))
 		{
 			$ids=Shipping::handleInsert($logistics);
@@ -19,7 +19,7 @@ class Shipping_Controller extends Base_Controller{
 			{
 				$return['status']='no_insert';
 				$return['massage']='没有插入任何信息';
-				response::json($return);
+				Response::json($return);
 			}
 		}
 		else
