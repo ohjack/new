@@ -11,7 +11,7 @@ class Amazon {
         $this->data = [
                 'SignatureMethod' => 'HmacSHA256',
                 'SignatureVersion' => '2',
-                'Timestamp' => $this->_getTimeFormat('now'),
+                'Timestamp' => $this->_getTimeFormat( 'now' ),
                 ];
 
         $this->data += $data;
@@ -36,9 +36,8 @@ class Amazon {
         $sign .= $url['path']; // '/Orders/2011-01-01';
         $sign .= "\n";
         $sign .= $this->_dataAsString( $this->data ); 
-
         $this->data['Signature'] = $this->_hash( $sign , $this->key );
-    
+
         $this->data = $this->_dataAsString( $this->data );
 
         return $this->data; 

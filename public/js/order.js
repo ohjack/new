@@ -353,8 +353,8 @@ function load_logistics_form ( page ) {
                                     '<td><input name="logistic[' + id + '][ship_first]" type="checkbox"></td>' +
                                  '</tr>' + 
                                  '<tr style="display:none">' +
-                                    '<td colspan="5" style="background: #eee">' +
-                                        '<table style="margin: 0">' +
+                                    '<td colspan="5" style="background: #fee">' +
+                                        '<table style="margin: 0" class="item_logistic">' +
                                             '<thead>' +
                                                 '<tr>' +
                                                     '<th>产品ID</th>' +

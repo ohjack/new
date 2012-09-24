@@ -37,19 +37,26 @@ class Order {
              ];
 
         $table = DB::table('orders');
+
+        // 处理条件
         foreach ($options as $key => $option) {
-            if(trim($option)) {
-                if($key == 'mark_id') {
-                    $table = $table->left_join('orders_mark', 'orders.id', '=', 'orders_mark.order_id');
-                }
+            if($key == 'mark_id') {
+                $table = $table->left_join('orders_mark', 'orders.id', '=', 'orders_mark.order_id');
+            }
+
+            if(is_array($option)) {
+                $table = $table->where_in($key, $option);
+
+            } else if (trim($option)) {
                 $table = $table->where($key, '=', $option);
             }
         }
 
-        $orders = $table->order_by('orders.id', 'DESC')
-                        ->order_by('orders.order_status', 'ASC')
-                        ->paginate( $per_page , $fields);
+        // 排序
+        $table = $table->order_by('orders.id', 'DESC')
+                       ->order_by('orders.order_status', 'ASC');
 
+        $orders = $table->paginate( $per_page , $fields);
 
         // 整理列表需要的产品 标识等数据
         foreach ($orders->results as $order) {
@@ -147,19 +154,58 @@ class Order {
         return DB::table('orders')->where_null('crawled_at')->get(['id', 'entry_id', 'from']);
     }
 
+    /**
+     * 获取可以确定的订单
+     */
+    public static function getShipOrders( $options ) {
+
+        $table = DB::table('orders');
+
+        // 处理条件
+        foreach ($options as $key => $option) {
+            if(is_array($option)) {
+                $table = $table->where_in($key, $option);
+
+            } else if (trim($option)) {
+                $table = $table->where($key, '=', $option);
+            }
+        }
+
+        $order_ids = $table->lists('id');
+
+        return $order_ids;
+    
+    }
+
 
     /**
      * 确认订单
      */
     public static function confirmOrders( $user_platforms ) {
 
-        $submiter_name = 'Rsync_Orders_Amazon';
+        foreach ($user_platforms as $user_platform) {
 
-        $confirm_submuter = new Rsync_Orders( new $submiter_name );
+            // 得到用户平台下所有需要确认的订单
+            $options = [
+                'order_status' => [ 2, 3, 4 ],  // 2部分发货 3已发货 4先确定发货
+                'from'         => $user_platform->name,
+                'user_id'      => $user_platform->user_id
+                ];
 
-        $rs = $confirm_submuter->confirmOrders( [] );
+            $order_ids = Order::getShipOrders( $options );
 
-        return $rs;
+            $rsync_name = 'Rsync_Orders_' . $user_platform->type;
+            $rsyncer = new Rsync_Orders( new $rsync_name );
+            $options = array_merge(unserialize($user_platform->option), unserialize($user_platform->user_option));
+            foreach ($order_ids as $order_id) {
+                $rs = $rsyncer->confirmOrders( $options, $order_id );
+                print_r($rs);die;
+            }
+
+        }
+
+        //return $rs;
+        die;
     
     }
 
@@ -177,8 +223,6 @@ class Order {
             'status'  => 'success',
             'message' => [ 'total' => 0, 'insert' => 0, 'update' => 0 ]
             ];
-
-        //return $result;
 
         // 遍历平台进行抓取
         foreach ($user_platforms as $user_platform) {
@@ -223,8 +267,9 @@ class Order {
             // 更新抓取日志
             SpiderLog::updateLastSpider('order', $user_platform->id);
 
-            return $result;
         }
+
+        return $result;
     
     }
 }

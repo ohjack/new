@@ -8,9 +8,24 @@ class Amazon_Curl {
     
     public function setParam($param){
 
-         $postData[CURLOPT_URL] = $param['url']; 
-         $postData[CURLOPT_POSTFIELDS] = $param['query'];
-         if(isset($param['content_md5'])) $postData[CURLOPT_HTTPHEADER] = ['Content-MD5: ' . $param['content_md5']];
+         if(isset($param['filename'])) {
+             $fileHandle = fopen($param['filename'], 'r+');
+             $header = [
+                 'Expect: ',
+                 'Accept: ',
+                 'Transfer-Encoding: chunked',
+                 'Content-Type: application/x-www-form-urlencoded; charset=utf-8',
+                 'Content-MD5: ' . $param['content_md5']
+             ];
+             $postData[CURLOPT_URL] = $param['url'] . '?' . $param['query']; 
+             $postData[CURLOPT_INFILE] = $fileHandle;
+             $postData[CURLOPT_HTTPHEADER] = $header;
+             //fclose($fileHandle);
+         } else {
+             $postData[CURLOPT_URL] = $param['url']; 
+             $postData[CURLOPT_POSTFIELDS] = $param['query'];
+         }
+
          $this->param = $postData;
     }
 
@@ -20,9 +35,9 @@ class Amazon_Curl {
             CURLOPT_POST => true,           
             CURLOPT_HTTP_VERSION => 1.1,
             CURLOPT_HEADER => false,       //不显示header
-            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_SSL_VERIFYPEER => false,
             // CURLOPT_HTTPHEADER => ['Content-Type: text/xml'],
-            CURLOPT_USERAGENT => 'Plato/1.0 (Language=PHP5.4)',
+            CURLOPT_USERAGENT => 'Plato/1.0 (Language=' . phpversion() . ')',
             
         ];
         $this->param += $option;
