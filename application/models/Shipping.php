@@ -100,6 +100,14 @@ class Shipping{
 					$ids[]=static::insertShipped($insert_item);
 					//更新items 表中item的状态
 					static::updateItem($key,$item_status);
+					if(empty($logistic['method']))
+					{
+						$logistic['method']=$item['method'];
+					}
+					if(empty($logistic['company']))
+					{
+						$logistic['company']=$item['company'];
+					}
 				}
 				else
 				{
@@ -124,9 +132,6 @@ class Shipping{
 						$insert_item['tracking_no']=$logistic['tracking_no'];
 						$insert_item['quantity']=$item['quantity'];
 						$insert_item['created_at']=date("Y-m-d H:i:s");
-						print_r($insert_item);
-						echo '--------------------';
-						//print_r($insert_item);
 						if(!self::existTrackInfo($insert_item['tracking_no']))
 						{
 							static::insertShipped($insert_item);
@@ -134,12 +139,14 @@ class Shipping{
 					}
 				}
 			}
-			$order['order_status']=!empty($logistic['confirm_first'])?self::CONFIRM_FIRST:$order['order_status'];
-
-			//更新orders中order的状态
-			static::updateOrder($logKey,$order);
+			$order['order_status']=!empty($logistic['ship_first'])?self::CONFIRM_FIRST:$order['order_status'];
+			if(!empty($logistic['method'])&&!empty($logistic['company']))
+			{
+				//更新orders中order的状态
+				static::updateOrder($logKey,$order);
+			}
 		}
-		//return $ids;
+		return 'done';
 
 
 	}

@@ -282,10 +282,15 @@ $(function(){
             data: data,
             dataType: 'json',
             beforeSend: function() {
-            
+            	$('.mask').fadeIn();
+                $('.loading').fadeIn();
+           
             },
             success: function() {
-            
+            	$('.loading').fadeOut();
+            	var pnum=$('#paginator > .selected').text();
+            	pnum=(pnum>0)?pnum:1;
+            	load_logistics_form(pnum);
             },
             error: function() {
             

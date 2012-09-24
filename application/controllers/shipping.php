@@ -10,10 +10,12 @@ class Shipping_Controller extends Base_Controller{
 		$logistics=Input::get('logistic');
 		if(is_array($logistics))
 		{
-			$ids=Shipping::handleInsert($logistics);
-			if(!empty($ids))
+			$reStr=Shipping::handleInsert($logistics);
+			if($reStr=='done')
 			{
-				response::json($ids);
+				$return['status']='done';
+				$return['massage']='';
+				Response::json($return);
 			}
 			else
 			{
