@@ -34,7 +34,7 @@ class Spider_Orders_Amazon {
         $curl -> setParam($param);
         $data = $curl -> perform();
 
-        $listOrders = array();
+        $listOrders = [];
         if( $data['httpcode'] == 200 ) {
             $listOrders = $this->_getOrdersDataFormat( $this->_getOrdersData($data) );
         } else if ( $data['httpcode'] == 501 or $data['httpcode'] == 503 ) {  // retry

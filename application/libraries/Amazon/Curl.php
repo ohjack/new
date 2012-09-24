@@ -61,4 +61,37 @@ class Amazon_Curl {
 
         return $this->data;
     }
+
+    public function submitFeed( $param ) {
+        $fileHandle = fopen($param['filename'], 'r+');
+
+        $header = [
+            'Expect: ',
+            'Accept: ',
+            'Transfer-Encoding: chunked',
+            'Content-Type: application/x-www-form-urlencoded; charset=utf-8',
+            'Content-MD5: ' . $param['content_md5']
+            ];
+
+        $this->param[CURLOPT_URL] = $param['url'] . '?' . $param['query']; 
+        $this->param[CURLOPT_INFILE] = $fileHandle;
+        $this->param[CURLOPT_HTTPHEADER] = $header;
+
+        $this->_init();
+        $this->ch = curl_init();
+        curl_setopt_array($this->ch,$this->param);
+
+        $this->data['data']     = curl_exec($this->ch);
+        $this->data['httpcode'] = curl_getinfo( $this->ch, CURLINFO_HTTP_CODE ); 
+
+        if( curl_errno( $this->ch ) ) {
+            $error =  curl_error($this->ch) ;
+            throw new Amazon_Curl_Exception( $error );
+        }
+
+        fclose($fileHandle);
+        curl_close($this->ch);
+
+        return $this->data;
+    }
 }

@@ -31,7 +31,7 @@ class Logistics {
             foreach ($rule as $key => $value) {
                 $obj = $obj->where($key, '=', $value);
             }
-            $obj->where('orders.order_status', '=', 'unhandle');
+            $obj->where('orders.order_status', '=', '0');
             $items = $obj->get();
 
             // put the order to system
@@ -57,7 +57,7 @@ class Logistics {
     
         $systems = ['coolsystem', 'birdsystem'];
         return DB::table('orders')->where_in('logistics', $systems)
-                                  ->where('order_status', '=', 'matched')
+                                  ->where('order_status', '=', '1')
                                   ->count();
     }
 
@@ -114,7 +114,7 @@ class Logistics {
             $items = DB::table('items')->left_join('orders', 'items.order_id', '=', 'orders.id')
                                        ->left_join('sku_map', 'items.sku', '=', 'sku_map.original_sku')
                                        ->where('orders.logistics', '=', $system)
-                                       ->where('orders.order_status', '=', 'matched')
+                                       ->where('orders.order_status', '=', '1')
                                        ->where('sku_map.logistics', '=', $system)
                                        ->get($fields[$system]);
 
@@ -194,8 +194,8 @@ class Logistics {
                 DB::table('logistics_file')->insert( $data );
 
                 // 更新订单状态
-                DB::table('orders')->where_in('id', $order_ids)
-                                   ->update(['order_status' => 'exported']);
+                //DB::table('orders')->where_in('id', $order_ids)
+                //                   ->update(['order_status' => '1']);
 
                 $result[] = ['name' => $system, 'filename' => $filename, 'total' => $total];
                 

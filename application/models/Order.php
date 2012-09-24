@@ -15,6 +15,8 @@ class Order {
         $order->items = Item::getItems( $order_id );
         $order->marks = Mark::getByOrderId( $order_id );
 
+        $order->order_status = Config::get('application.order_status')[$order->order_status];
+
         return $order;
     }
 
@@ -107,7 +109,7 @@ class Order {
      */
     public static function setLogistics( $order_id, $logistics ) {
 
-        $option = [ 'logistics' => $logistics , 'order_status' => 'matched' ];
+        $option = [ 'logistics' => $logistics , 'order_status' => '1' ];
     
         DB::table('orders')->where('id', '=', $order_id)->update( $option );
     }
@@ -255,10 +257,11 @@ class Order {
                 $order_id = static::getIdByEntryId($order['entry_id']);
                 if( empty($order_id) ) {
                     $result['message']['insert']++;
+                    $order['user_id'] = 1;
                     $order_id = static::saveOrder($order);
                 } else {
-                    $result['message']['update']++;
-                    static::updateOrder($order_id, $order);
+                    //$result['message']['update']++;
+                    // static::updateOrder($order_id, $order);
                 }
 
                 $result['message']['total']++;
