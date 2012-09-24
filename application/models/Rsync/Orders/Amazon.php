@@ -59,11 +59,16 @@ EOD;
         $param['filename'] = $filename;
 
         $curl = new Amazon_Curl();
-        $curl -> setParam( $param );
-        $param = $curl->perform();
 
-        return $param;
-    
+        $data = $curl -> submitFeed( $param );
+
+        $update = [];
+        if( $data['httpcode'] == 200) {
+            $update = [ 'order_status' => 0 ]; // 更新订单状态
+        }
+
+        return $update
+
     }
 
     private function _getParam( $option ) {
