@@ -46,7 +46,8 @@ Route::controller('order');
 Route::controller('item');
 Route::controller('skumap.manage');
 Route::controller('skumap');
-
+Route::controller('shipping');
+Route::controller('track');
 /*
 |--------------------------------------------------------------------------
 | Application 404 & 500 Error Handlers
