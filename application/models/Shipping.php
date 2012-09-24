@@ -1,84 +1,146 @@
 <?php
 /*
  * 处理发货
- */
+*/
 class Shipping{
-	
+
 	const PART_SHIPPED =2;
 	const ALL_SHIPPED  =3;
 	const CONFIRM_FIRST =4;
-	
+
 	/*
 	 * 插入已发货信息
-	 * 
-	 * @
-	 */
- 	public static function insertShipped($Item)
-	{		
-		return DB::table('shipping')->insert_get_id($Item);
+	*
+	* @param:$Item	array	商品的物流信息
+	* 
+	* return:数据库行号
+	*/
+	public static function insertShipped($Item)
+	{
+		return DB::table('shipped')->insert_get_id($Item);
 	}
-	
+
 	/*
 	 * 更新Orders表
-	 */
-	public static function updateOrder($order)
+	 * 
+	 * @param:$order_id integer 订单编号
+	 * @param:$arr 		array	订单信息
+	 * 
+	 * return:
+	*/
+	public static function updateOrder($order_id,$arr)
 	{
-		return DB::table('orders')->update($order);
+		return DB::table('orders')->where('id','=',$order_id)->update($arr);
 	}
-	
+
 	/*
 	 * 更新Item
 	 * 
-	 */
-	public static function updateItem($item)
+	 * @param:$item_id		integer		商品编号
+	 * @param:$item_status	integer		发货状态
+	*
+	*/
+	public static function updateItem($item_id,$status)
 	{
-		return DB::table('items')->update($item);
+		$item_ar=array('status'=>$status);
+		return DB::table('items')->where('id','=',$item_id)->update($item_ar);
 	}
 	
 	/*
-	 * 手动录入发货信息
+	 * 物流跟踪号是否已存在shipped表中
 	 * 
+	 * @param:the number of the tracking infomaction
 	 */
+	public static function existTrackInfo($tracking_no)
+	{
+		return DB::table('shipped')->where('tracking_no','=',$tracking_no)->only('id');
+	}
+	/*
+	 * 手动录入发货信息
+	*
+	*@param:物流信息数组
+	*/
 	public static function handleInsert($logistics)
 	{
 		$order_status=self::ALL_SHIPPED;
 		$item_status=self::ALL_SHIPPED;
 		$order=array();
+		$quantity_match_number=0;
+		$unset_item_number=0;
+		$insert_item=array();
+
 		foreach ($logistics as $logKey=> $logistic)
 		{
+			//进入循环前先重置统计数
+			$quantiy_match_number=0;
+			$unset_item_number=0;
+			$insert_item=null;
 			foreach ($logistic['items'] as $key => $item)
 			{
-				if(!empty($item['method'])&&!empty($item['company']))
+				if($item['quantity']==$item['ship_quantity'])
 				{
-		
-					$insert_item['order_id']=$logistic[$logKey];
-					$insert_items['item_id']=$item[$key];
-					$insert_items['method']=$item['method'];
-					$insert_items['company']=$item['company'];
-					$insert_items['tracking_no']=$item['tracking_no'];
-					$insert_items['quantity']=$item['quantity'];
-						
-					//将item插入发货表
-					$ids[]=static::insertShipped($insert_item);
+					$quantity_match_number+=1;
 				}
-				if($item['quantity']!=(empty($item['quantity_input'])?0:$item['quantity_input']))
+				else
 				{
-					$order_status=self::PART_SHIPPED;
+					//部分发货
+					$order['order_status']=self::PART_SHIPPED;
 					$item_status=self::PART_SHIPPED;
 				}
-		
-				//更新items 表中item的状态
-				static::updateItem($item[$key],$item_status);
+				if(!empty($item['method'])&&!empty($item['company']))
+				{
+					$insert_item['order_id']=$logKey;
+					$insert_item['item_id']=$key;
+					$insert_item['method']=$item['method'];
+					$insert_item['company']=$item['company'];
+					$insert_item['tracking_no']=$item['tracking_no'];
+					$insert_item['quantity']=$item['ship_quantity'];
+
+					//将item插入发货表
+					$ids[]=static::insertShipped($insert_item);
+					//更新items 表中item的状态
+					static::updateItem($key,$item_status);
+				}
+				else
+				{
+					$unset_item_number+=1;
+				}
+
 			}
-				
-			$order['id']=$logistis['order_id'];
-			$order['status']=$logistic['confirm_first']?self::CONFIRM_FIRST:$order_status;
-				
+			if($quantity_match_number==count($logistic['items']))
+			{
+				$order['order_status']=self::ALL_SHIPPED;
+			}
+			if($unset_item_number==count($logistic['items']))
+			{
+				if(!empty($logistic['method'])&&!empty($logistic['company']))
+				{
+					foreach ($logistic['items'] as $key => $item)
+					{
+						$insert_item['order_id']=$logKey;
+						$insert_item['item_id']=$key;
+						$insert_item['method']=$logistic['method'];
+						$insert_item['company']=$logistic['company'];
+						$insert_item['tracking_no']=$logistic['tracking_no'];
+						$insert_item['quantity']=$item['quantity'];
+						$insert_item['created_at']=date("Y-m-d H:i:s");
+						print_r($insert_item);
+						echo '--------------------';
+						//print_r($insert_item);
+						if(!self::existTrackInfo($insert_item['tracking_no']))
+						{
+							static::insertShipped($insert_item);
+						}
+					}
+				}
+			}
+			$order['order_status']=!empty($logistic['confirm_first'])?self::CONFIRM_FIRST:$order['order_status'];
+
 			//更新orders中order的状态
-			static::updateOrder($order);
+			static::updateOrder($logKey,$order);
 		}
-		return $ids;
-		
-		
+		//return $ids;
+
+
 	}
 }
