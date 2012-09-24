@@ -136,6 +136,8 @@ class Shipping{
 						{
 							static::insertShipped($insert_item);
 						}
+						//更新items 表中item的状态
+						static::updateItem($key,$item_status);
 					}
 				}
 			}
