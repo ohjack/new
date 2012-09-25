@@ -3,8 +3,15 @@ class  Track_controller extends Base_Controller
 {
 	public function action_index()
 	{
-		//$start_id;
-		//Track::copy($start_id)
+
+	}
+	public function action_copy()
+	{
+		Track::runCopy();
+	}
+	public function action_track()
+	{
+		Track::runTrack();
 	}
 }
 
