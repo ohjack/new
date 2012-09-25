@@ -159,23 +159,24 @@ class Order {
     /**
      * 获取可以确定的订单
      */
-    public static function getShipOrders( $options ) {
+    public static function getShipOrders( $user_id, $from ) {
 
-        $table = DB::table('orders');
+        $orders = DB::table('orders')->where('user_id', '=', $user_id)
+                                     ->where('from' , '=', $from)
+                                     ->where_in('order_status', [2, 3, 4]) // 2部分发货 3已发货 4先确定发货
+                                     ->get(['id', 'entry_id', 'order_status']);
 
-        // 处理条件
-        foreach ($options as $key => $option) {
-            if(is_array($option)) {
-                $table = $table->where_in($key, $option);
 
-            } else if (trim($option)) {
-                $table = $table->where($key, '=', $option);
-            }
+        foreach($orders as $order) {
+            $fields = [
+                'items.entry_id', 'shipped.tracking_no', 'shipped.method', 'shipped.quantity as shipped_quantity',
+                'items.id as item_id'
+                ];
+            $order->items = DB::table('items')->left_join('shipped', 'items.id', '=', 'shipped.item_id')
+                                              ->where('items.order_id', '=', $order->id)->get($fields);
         }
 
-        $order_ids = $table->lists('id');
-
-        return $order_ids;
+        return $orders;
     
     }
 
@@ -187,28 +188,17 @@ class Order {
 
         foreach ($user_platforms as $user_platform) {
 
-            // 得到用户平台下所有需要确认的订单
-            $options = [
-                'order_status' => [ 2, 3, 4 ],  // 2部分发货 3已发货 4先确定发货
-                'from'         => $user_platform->name,
-                'user_id'      => $user_platform->user_id
-                ];
-
-            $order_ids = Order::getShipOrders( $options );
+            $orders = Order::getShipOrders( $user_platform->user_id, $user_platform->name );
 
             $rsync_name = 'Rsync_Orders_' . $user_platform->type;
             $rsyncer = new Rsync_Orders( new $rsync_name );
             $options = array_merge(unserialize($user_platform->option), unserialize($user_platform->user_option));
-            foreach ($order_ids as $order_id) {
-                $rs = $rsyncer->confirmOrders( $options, $order_id );
-                print_r($rs);die;
+
+            foreach ($orders as $order) {
+                $rsyncer->confirmOrders( $options, $order );
             }
 
         }
-
-        //return $rs;
-        die;
-    
     }
 
     /**

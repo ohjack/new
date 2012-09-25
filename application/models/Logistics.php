@@ -129,7 +129,8 @@ class Logistics {
                 foreach ($first_row[$system] as $row) {
                     $i++;
                     $cell = static::_autoCell($i) . '1';
-                    $objPHPExcel->getActiveSheet()->SetCellValue($cell, $row);
+                    //$objPHPExcel->getActiveSheet()->SetCellValue($cell, $row);
+                    $objPHPExcel->getActiveSheet()->setCellValueExplicit($cell, $row, PHPExcel_Cell_DataType::TYPE_STRING);
                 }
                 $order_ids = [];
                 $i = 1;
@@ -170,7 +171,8 @@ class Logistics {
                     foreach ($rows as $row) {
                         $j++;
                         $cell = static::_autoCell($j) . $i;
-                        $objPHPExcel->getActiveSheet()->SetCellValue($cell, $row);
+                        //$objPHPExcel->getActiveSheet()->SetCellValue($cell, $row);
+                        $objPHPExcel->getActiveSheet()->setCellValueExplicit($cell, $row, PHPExcel_Cell_DataType::TYPE_STRING);
                     }
 
                     $order_ids[] = $item->id;
