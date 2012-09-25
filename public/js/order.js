@@ -72,34 +72,9 @@ $(function(){
         
     });
 
-    // 确认订单
-    $('#confirm_order').click(function() {
-        $('.mask').fadeIn();
-        $('.confirm_order').fadeIn();
-
-        // 关闭
-        $('.confirm_order > .title').children('em').click(function(){
-            $('.mask').fadeOut();
-            $('.confirm_order').fadeOut();
-        });
-    });
-
-    // 确认订单提交
-    $('#confirm_order_submit').click(function() {
-
-        $.ajax({
-            type: 'POST',
-            url: '/order/ajax/confirm',
-            success: function( data ) {
-                console.log(data);
-            }
-        
-        });
-    });
-
     // 添加物流信息
     $('#addLogisticsInfo').click(function() {
-        load_logistics_form(0);
+        load_logistics_form(1);
         // 关闭
         $('.add_logistics_info > .title').children('em').click(function(){
             $('.mask').fadeOut();
@@ -254,7 +229,6 @@ $(function(){
 
             for (var index in method) {
                 option += '<option value="' + index + '">' + method[index] + '</option>';
-
             };
         }
 
@@ -297,6 +271,45 @@ $(function(){
             }
         });
     });
+
+    // 导入文件
+    $('#import_logistic').click(function() {
+        var tips = $('#upload_tips');
+        if($('#import_file').val()) {
+            tips.html('<font style="color: blue">[上传中...]</font>');
+            tips.fadeIn();
+            $.ajaxFileUpload({
+                url: '/order/ajax/import_logistic',
+                secureuri: false,
+                fileElementId: 'import_file',
+                dataType: 'json',
+                success: function( data, status ) {
+                    var tips = $('#upload_tips');
+                    if( typeof(data.error) != 'undefined') {
+                        if(data.error != '') {
+                            tips.html('<font style="color: red">[' + data.error + ']</font>');
+                        } else {
+                            tips.html('<font style="color: green">[' + data.msg + ']</font>');
+                        }
+
+                        tips.fadeIn();
+                    }
+                    tips.delay(2000).fadeOut();
+                },
+                error: function( data, status, e) {
+                    var tips = $('#upload_tips');
+                    tips.html('<font style="color: red">[' + e + ']</font>');
+                    tips.fadeIn().delay(2000).fadeOut();
+                    
+                }
+            });
+        
+        } else {
+            tips.html('<font style="color: red">请先选择文件</font>');
+            tips.fadeIn().delay(2000).fadeOut();
+        }
+    
+    });
 });
 
 // 加载物流信息表单
@@ -308,7 +321,7 @@ function load_logistics_form ( page ) {
         var option = {page: 1, entry_id: page}
         page = 0;
     } else {
-        var option = {page: page + 1};
+        var option = {page: page};
     }
 
     $.ajax({
@@ -394,7 +407,7 @@ function generateRows(selected) {
         var pagers = "<div id='paginator'>";
         for (var i = 0; i < pages; i++) {
             var page = i+1;
-            if(i == selected)
+            if(page == selected)
                 pagers += "<a href='javascript:;' class='pagor selected'>" + page + "</a>";
             else
                 pagers += "<a href='javascript:;' class='pagor'>" + page + "</a>";
@@ -404,11 +417,7 @@ function generateRows(selected) {
 
         $(".pagination").html(pagers);
 		$(".pagor").click(function() {
-			var index = $(".pagor").index(this);
-            if(index == selected) return;
-            load_logistics_form (index)
-			$(".pagor").removeClass("selected");
-			$(this).addClass("selected");
+            updatePage(this);
 		});		
 	} else {
 		if (selected < 5) {

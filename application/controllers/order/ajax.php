@@ -78,7 +78,7 @@ class Order_Ajax_Controller extends Base_Controller {
         return Response::json( $result );
     }
 
-    // 获取已匹配物流的订单
+    // 获取已匹配物流的订单列表
     public function action_matched() {
 
         // 系统的运输方式
@@ -113,6 +113,41 @@ class Order_Ajax_Controller extends Base_Controller {
         $result['message'] = $orders->results;
 
         return Response::json( $result );
+    }
+
+    // 导入发货信息
+    public function action_import_logistic() {
+        $result = [
+            'error'=> '',
+            'msg'  => ''
+            ];
+
+        $data['upload_file'] = Input::file('import_file');
+
+        // 验证
+        $rules = [
+            'upload_file' => 'mimes:xls,xlsx'
+            ];
+        $validation = Validator::make($data, $rules);
+
+        if( !$validation->fails() ) {
+            $fileinfo = pathinfo($data['upload_file']['name']);
+            $filepath = path('public') . 'data/upload/xls/';
+            $filename = md5(time().rand(0,1000)).'.'.$fileinfo['extension'];
+            $success = Input::upload('import_file', $filepath, $filename);
+            if($success) {
+
+
+                $result['msg'] = '导入成功!';
+            }
+        
+        } else {
+            $result['error'] = '请上传正确的文件。';
+        }
+
+        // 插件输出方式
+        echo json_encode($result);
+        //return Response::json( $result );
     }
 }
 ?>

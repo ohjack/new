@@ -6,7 +6,6 @@
     <div>
         <a href="javascript:;" class="f_r m_r_15" id="search_order">搜索订单</a>
         <a href="/order" class="f_r m_r_15">重置搜索</a>
-        <a href="javascript:;" class="f_r m_r_15" id="confirm_order">订单确认</a>
         <!--a href="javascript:;" class="f_r m_r_15" id="list_setttings">列表设置</a-->
     </div>
     <div class="search_order">
@@ -237,12 +236,6 @@
               <tbody>
               </tbody>
             </table>
-        </div>
-    </div>
-    <div class="confirm_order">
-        <div class="title"><em>X</em>确认订单：</div>
-        <div>
-              <input type="button" value="确认" id="confirm_order_submit"/>
         </div>
     </div>
 @endsection

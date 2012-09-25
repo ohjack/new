@@ -16,6 +16,9 @@ class Order_Task extends Task {
             case "c":
                 new Task_Order_Confirm($args);
                 break;
+            case "spider":
+            case "s":
+                new Task_Order_Spider($args);
             default:
                 $this->_help();
                 break;
@@ -30,7 +33,8 @@ class Order_Task extends Task {
         echo '帮助 ：';
         echo "\torder <命令> [参数] [选项 ..]\n";
         echo "命令：\n";
-        echo "\tc/confirm        同步发货状态后面参数跟指定会员ID为空则确认全部会员\n";
+        echo "\tc/confirm\t同步发货状态后面参数跟指定会员ID为空则确认全部会员\n";
+        echo "\ts/spider\t抓取未处理订单\n";
 
         exit();
     }

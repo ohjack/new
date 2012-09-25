@@ -28,6 +28,22 @@ class Rsync_Orders_Amazon {
         $order_id = $order->entry_id;
         $timestamp = gmdate("Y-m-d\TH:i:s.\\0\\0\\0\\Z", time());
 
+        // 遍历发货信息
+        $item_info = '';
+        foreach($order->items as $item) {
+            $company     = $item->company;
+            $method      = Config::get('application.logistic_company')[$item->company]['method'][$item->method];
+            $tracking_no = $item->tracking_no;
+            $item_info .= <<<EOD
+<Item>
+    <MerchantOrderItemID>{$item->entry_id}</MerchantOrderItemID>
+    <MerchantFulfillmentItemID>{$item->entry_id}</MerchantFulfillmentItemID>
+    <Quantity>{$item->shipped_quantity}</Quantity>
+</Item>
+EOD;
+
+        }
+
         $feed = <<<EOD
 <?xml version="1.0" encoding="UTF-8"?>
 <AmazonEnvelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="amzn-envelope.xsd">
@@ -43,15 +59,11 @@ class Rsync_Orders_Amazon {
             <MerchantFulfillmentID>{$order_id}</MerchantFulfillmentID>
             <FulfillmentDate>{$timestamp}</FulfillmentDate>
             <FulfillmentData>
-                <CarrierCode>UPS</CarrierCode>
-                <ShippingMethod>Second Day</ShippingMethod>
-                <ShipperTrackingNumber>1234567890</ShipperTrackingNumber>
+                <CarrierCode>{$company}</CarrierCode>
+                <ShippingMethod>{$method}</ShippingMethod>
+                <ShipperTrackingNumber>{$tracking_no}</ShipperTrackingNumber>
             </FulfillmentData>
-            <Item>
-                <MerchantOrderItemID>1234567</MerchantOrderItemID>
-                <MerchantFulfillmentItemID>1234567</MerchantFulfillmentItemID>
-                <Quantity>2</Quantity>
-            </Item>
+            {$item_info}
         </OrderFulfillment>
     </Message>
 </AmazonEnvelope>
@@ -66,9 +78,16 @@ EOD;
 
         $data = $curl -> submitFeed( $param );
 
+        // 对应修改的订单状态
+        $status_map = [
+            '2' => '5',
+            '3' => '6',
+            '4' => '7',
+            ];
+
         $update = [];
         if( $data['httpcode'] == 200) {
-            $update = [ 'order_status' => 0 ]; // 更新订单状态
+            $update = [ 'order_status' => $status_map[$order->order_status] ]; // 更新订单状态
         }
 
         return $update;

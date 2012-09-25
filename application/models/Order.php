@@ -49,7 +49,7 @@ class Order {
             if(is_array($option)) {
                 $table = $table->where_in($key, $option);
 
-            } else if (trim($option)) {
+            } else if (trim($option) != '') {
                 $table = $table->where($key, '=', $option);
             }
         }
@@ -59,6 +59,7 @@ class Order {
                        ->order_by('orders.order_status', 'ASC');
 
         $orders = $table->paginate( $per_page , $fields);
+
 
         // 整理列表需要的产品 标识等数据
         foreach ($orders->results as $order) {
@@ -169,8 +170,8 @@ class Order {
 
         foreach($orders as $order) {
             $fields = [
-                'items.entry_id', 'shipped.tracking_no', 'shipped.method', 'shipped.quantity as shipped_quantity',
-                'items.id as item_id'
+                'items.entry_id', 'shipped.tracking_no', 'shipped.method', 'shipped.company',
+                'shipped.quantity as shipped_quantity', 'items.id as item_id,'
                 ];
             $order->items = DB::table('items')->left_join('shipped', 'items.id', '=', 'shipped.item_id')
                                               ->where('items.order_id', '=', $order->id)->get($fields);
@@ -195,7 +196,9 @@ class Order {
             $options = array_merge(unserialize($user_platform->option), unserialize($user_platform->user_option));
 
             foreach ($orders as $order) {
-                $rsyncer->confirmOrders( $options, $order );
+                $data = $rsyncer->confirmOrders( $options, $order );
+                if(!empty($data)) // 更新订单状态
+                    DB::table('orders')->where('id', '=', $order->id)->update($data);
             }
 
         }

@@ -1,6 +1,8 @@
 @layout('layout')
 @section('script')
 {{ HTML::script('js/order.js') }}
+{{ HTML::script('js/ajaxfileupload.js') }}
+{{ HTML::script('js/float.js') }}
 @endsection  
 @section('content')
 <div style="margin: 100px 0 100px 100px;">
@@ -13,7 +15,12 @@
 <div style="clear: both"></div>
 <div class="add_logistics_info">
     <div class="title"><em>x</em>添加物流信息</div>
-    <div><span style="float: right;">订单ID：<input name="keyword" value=''/> <input id="logistic_search" type="button" value="搜索"></span>导入文件<input name="import_file" type="file"/><input type="button" value="上传"> <a href="#">下载导入模板</a> </div>
+    <div>
+        <span style="float: right;">订单ID：<input name="keyword" value=''/> <input id="logistic_search" type="button" value="搜索"></span>
+        <form name="form" action="" method="POST" enctype="multipart/form-data">
+            导入文件<input id="import_file" name="import_file" type="file"/><input type="button" value="上传" id="import_logistic"><span style="display: none" id="upload_tips"></span><a href="#">下载导入模板</a>
+        </form>
+    </div>
     <form id="logistic_form">
     <table id="add_logistics" style="width: 960px">
         <thead>
