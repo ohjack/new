@@ -97,8 +97,8 @@ class Track
 	public static function updateStatus($id,$status)
 	{
 		DB::table('track_pending')
-			->where('id','=',$id)
-			->update(array('status'=>$status));
+		->where('id','=',$id)
+		->update(array('status'=>$status));
 	}
 
 	/*
@@ -107,14 +107,17 @@ class Track
 	*/
 	public static function runTrack()
 	{
-		echo '开始》》》》》》》》》》》》<br/>';
-		echo '读取10条待查记录》》》》》》<br/>';
-		$pendinglist=self::getPendingList(10);
+
+		$pendinglist=self::getPendingList(1);
+		if(empty($pendinglist))
+		{
+			return false;
+		}
 		$count=0;
 		foreach($pendinglist as $listObj)
 		{
 			$count+=1;
-			echo "开始处理第".$count."条》》》》》》<br/>";
+			echo '>';
 			$list=(array)$listObj;
 			$trackMap=array(
 					array('kuaidi',array('dhl','ups','usps','fedex','tnt')),
@@ -123,12 +126,15 @@ class Track
 			);
 			foreach ($trackMap as $i)
 			{
-				if(in_array($list['company'], $i[1]))
+				if(in_array(strtolower($list['company']), $i[1]))
 				{
 					$var=$i[0];
 				}
 			}
-
+			if(empty($var))
+			{
+				return false;
+			}
 			if(!empty($var))
 			{
 
@@ -144,22 +150,22 @@ class Track
 				$data['data']=serialize($data['data']);
 				if(!empty($data['status']))
 				{
-					if($data['status']==3)
+					if($data['status']==3||$data['status']==10)
 					{
-					echo '获取物流信息完成》》》》》》<br/>';
-					echo '保存物流信息》》》》》》<br/>';
-					self::save($data);
-					echo '从待查表删此记录》》》》》》<br/>';
-					self::del($list['id']);
+
+						self::save($data);
+
+						self::del($list['id']);
 					}
-					else 
+					else
 					{
 						self::updateStatus($list['id'],$data['status']);
 					}
 				}
 			}
 		}
-		echo '处理完成！！！！！！！';
+
+		return true;
 	}
 
 
@@ -172,6 +178,80 @@ class Track
 		$start_id=self::getStartID();
 		$end_id=self::copy($start_id);
 		self::resetStartID($end_id);
+	}
+
+
+	/*
+	 * 读取xls数据
+	*/
+	public static function runReadXls()
+	{
+		$filename=path('public').'data/upload/xls/demo.xls';
+		$PHPExcel=new PHPExcel();
+		$PHPRead=new PHPExcel_Reader_Excel2007();
+		if(!$PHPRead->canRead($filename))
+		{
+			$PHPRead=new PHPExcel_Reader_Excel5();
+			if(!$PHPRead->canRead($filename))
+			{
+				exit();
+			}
+		}
+		$PHPExcel=$PHPRead->load($filename);
+		$arr=$PHPExcel->getSheet(0)->toArray();
+		foreach($arr as $key=>$shipp)
+		{
+			if(!$key=='0'){
+				if(!Shipping::existTrackInfo($shipp[0]))
+				{
+					$input=array(
+							'order_id'=>$shipp[0],
+							'item_id'=>$shipp[1],
+							'quantity'=>$shipp[2],
+							'company'=>$shipp[3],
+							'tracking_no'=>$shipp[4],
+							'method'=>$shipp[5],
+					);
+					DB::table('shipped')->insert_get_id($input);
+				}
+			}
+		}
+		echo 'Done';
+
+	}
+	public static function toDatabase($path)
+	{
+		$filename=$path;
+		$PHPExcel=new PHPExcel();
+		$PHPRead=new PHPExcel_Reader_Excel2007();
+		if(!$PHPRead->canRead($filename))
+		{
+			$PHPRead=new PHPExcel_Reader_Excel5();
+			if(!$PHPRead->canRead($filename))
+			{
+				exit();
+			}
+		}
+		$PHPExcel=$PHPRead->load($filename);
+		$arr=$PHPExcel->getSheet(0)->toArray();
+		foreach($arr as $key=>$shipp)
+		{
+			if(!$key=='0'){
+				if(!Shipping::existTrackInfo($shipp[0]))
+				{
+					$input=array(
+							'order_id'=>$shipp[0],
+							'item_id'=>$shipp[1],
+							'quantity'=>$shipp[2],
+							'company'=>$shipp[3],
+							'tracking_no'=>$shipp[4],
+							'method'=>$shipp[5],
+					);
+					DB::table('shipped')->insert_get_id($input);
+				}
+			}
+		}
+		 
 	}
 }
 
