@@ -33,7 +33,7 @@
         <tr class="order_logistic" title="双击展开产品">
           <td>{{$order->entry_id}}</td>
           <td>
-              <select name="logistic[{{ $order->id }}][compay]" class="logistic_company">
+              <select name="logistic[{{ $order->id }}][company]" class="logistic_company">
                    <option value>--请选择--</option>
                    @foreach($logistic_company as $key => $company)
                    <option value="{{ $key }}">{{ $key }}</option>
@@ -66,7 +66,10 @@
                         <tr>
                           <td>{{ $item->entry_id }}</td>
                           <td>{{ $item->sku }}</td>
-                          <td>{{ Form::text('logistic[' . $order->id .'][items][' . $item->id . '][ship_quantity]', $item->quantity, ['style'=>'width:30px']) }}/{{ $item->quantity }}</td>
+                          <td>
+                              {{ Form::text('logistic[' . $order->id .'][items][' . $item->id . '][ship_quantity]', $item->quantity, ['style'=>'width:30px']) }}/{{ $item->quantity }}
+                              {{ Form::hidden('logistic[' . $order->id . '][items][' . $item->id . '][quantity]', $item->quantity) }}
+                          </td>
                           <td>
                               <select name="logistic[{{ $order->id }}][items][{{ $item->id }}][compay]" class="logistic_company">
                                    <option value>--请选择--</option>
@@ -88,6 +91,7 @@
             </td>
         </tr>
         @endforeach
+        <tr><td colspan="5"><input type="submit" value="提交"></td></tr>
       </tbody>
       <tfoot>
         <tr>
