@@ -238,9 +238,9 @@ return array(
      * 物流公司代码及运送方式
      */ 
     'logistic_company'=>[
-        'usps'=>[
+        'USPS'=>[
             'method'=>[
-                    '1'=>'平邮',
+                    '1'=>'First Class',
                     '2'=>'快递',
                     ]
         ],

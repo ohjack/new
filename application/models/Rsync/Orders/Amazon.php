@@ -14,7 +14,7 @@ class Rsync_Orders_Amazon {
             'Key'                    => $options['Key'],
             'Version'                => self::SERVER_VERSION,
             'Action'                 => 'SubmitFeed',
-            'FeedType'               => '_POST_FLAT_FILE_ORDER_ACKNOWLEDGEMENT_DATA_',
+            'FeedType'               => '_POST_ORDER_FULFILLMENT_DATA_',
             'MarketplaceIdList.Id.1' => $options['MarketplaceId.Id.1'],
             'PurgeAndReplace'        => 'false',
         ];
@@ -29,49 +29,71 @@ class Rsync_Orders_Amazon {
         $timestamp = gmdate("Y-m-d\TH:i:s.\\0\\0\\0\\Z", time());
 
         // 遍历发货信息
-        $item_info = '';
         foreach($order->items as $item) {
             $company     = $item->company;
             $method      = Config::get('application.logistic_company')[$item->company]['method'][$item->method];
             $tracking_no = $item->tracking_no;
-            $item_info .= <<<EOD
-<Item>
-    <MerchantOrderItemID>{$item->entry_id}</MerchantOrderItemID>
-    <MerchantFulfillmentItemID>{$item->entry_id}</MerchantFulfillmentItemID>
-    <Quantity>{$item->shipped_quantity}</Quantity>
-</Item>
-EOD;
-
         }
 
-        $feed = <<<EOD
-<?xml version="1.0" encoding="UTF-8"?>
-<AmazonEnvelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="amzn-envelope.xsd">
-    <Header>
-        <DocumentVersion>1.01</DocumentVersion>
-        <MerchantIdentifier>My Store</MerchantIdentifier>
-    </Header>
-    <MessageType>OrderFulfillment</MessageType>
-    <Message>
-        <MessageID>{$message_id}</MessageID>
-        <OrderFulfillment>
-            <MerchantOrderID>{$order_id}</MerchantOrderID>
-            <MerchantFulfillmentID>{$order_id}</MerchantFulfillmentID>
-            <FulfillmentDate>{$timestamp}</FulfillmentDate>
-            <FulfillmentData>
-                <CarrierCode>{$company}</CarrierCode>
-                <ShippingMethod>{$method}</ShippingMethod>
-                <ShipperTrackingNumber>{$tracking_no}</ShipperTrackingNumber>
-            </FulfillmentData>
-            {$item_info}
-        </OrderFulfillment>
-    </Message>
-</AmazonEnvelope>
-EOD;
         $filename = path('public') . 'data/rsync/' . md5(time() . rand(0,1000)) . '.xml';
-        file_put_contents($filename, $feed);
-        chmod($filename, 0755);  
+
+        $xml = new XMLWriter();
+        $xml->openUri($filename);
+        $xml->setIndentString('    ');
+        $xml->setIndent(true);
+        $xml->startDocument('1.0', 'utf-8');
+        $xml->startElement('AmazonEnvelope');
+        $xml->writeAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
+        $xml->writeAttribute('xsi:noNamespaceSchemaLocation', 'amzn-envelope.xsd');
+        $xml->startElement('Header');
+        $xml->startElement('DocumentVersion');
+        $xml->text('1.01');
+        $xml->endElement();
+        $xml->startElement('MerchantIdentifier');
+        $xml->text($options['MarketplaceId.Id.1']);
+        $xml->endElement();
+        $xml->endElement();
+        $xml->startElement('MessageType');
+        $xml->text('OrderFulfillment');
+        $xml->endElement();
+        $xml->startElement('Message');
+        $xml->startElement('MessageID');
+        $xml->text(1);
+        $xml->endElement();
+        $xml->startElement('OrderFulfillment');
+        $xml->startElement('AmazonOrderID');
+        $xml->text($order_id);
+        $xml->endElement();
+        $xml->startElement('FulfillmentDate');
+        $xml->text('2012-09-28T00:00:00');
+        $xml->endElement();
+        $xml->startElement('FulfillmentData');
+        $xml->startElement('CarrierCode');
+        $xml->text($company);
+        $xml->endElement();
+        $xml->startElement('ShippingMethod');
+        $xml->text($method);
+        $xml->endElement();
+        $xml->startElement('ShipperTrackingNumber');
+        $xml->text($tracking_no);
+        $xml->endElement();
+        $xml->endElement();
+        foreach($order->items as $item) {
+            $xml->startElement('Item');
+            $xml->startElement('AmazonOrderItemCode');
+            $xml->text($item->entry_id);
+            $xml->endElement();
+            $xml->startElement('Quantity');
+            $xml->text($item->shipped_quantity);
+            $xml->endElement();
+            $xml->endElement();
+        }
+        $xml->endElement();
+        $xml->endElement();
+        $xml->endElement();
+        $xml->endDocument();
         $param['content_md5'] = base64_encode(md5_file($filename, true));
+        // chmod($filename, 0755);
         $param['filename'] = $filename;
 
         $curl = new Amazon_Curl();
@@ -92,6 +114,11 @@ EOD;
 
         return $update;
     }
+
+    private function _xml2Array( $xml ) {
+        return json_decode(json_encode((array) simplexml_load_string( $xml )), 1);
+    }
+
 
     private function _getParam( $option ) {
     
