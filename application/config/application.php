@@ -201,18 +201,6 @@ return array(
      *
      */
     'steps' => [
-        'handleLogistics' => [
-            'name'   => '物流处理',
-            'link'   => 'javascript:;',
-            'id'     => 'handleLogistics',
-            'class'  => 'click'
-            ],
-        'addLogisticsInfo' => [
-            'name'   => '添加物流信息',
-            'link'   => 'javascript:;',
-            'id'     => 'addLogisticsInfo',
-            'class'  => 'click'
-        ],
     ],
 
 

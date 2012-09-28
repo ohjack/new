@@ -20,7 +20,9 @@ abstract class Track_Iapi
 			curl_setopt ($curl, CURLOPT_URL, $url);
 			curl_setopt ($curl, CURLOPT_HEADER,0);
 			curl_setopt ($curl, CURLOPT_RETURNTRANSFER, 1);
-			curl_setopt ($curl, CURLOPT_USERAGENT,$_SERVER['HTTP_USER_AGENT']);
+			curl_setopt ($curl, CURLOPT_USERAGENT,'Mozilla/5.0 (X11; Linux i686) AppleWebKit/536.11 (KHTML, like Gecko) Ubuntu/12.04 Chromium/20.0.1132.47 Chrome/20.0.1132.47 Safari/536.11');
+			//curl_setopt ($curl, CURLOPT_USERAGENT,$_SERVER['HTTP_USER_AGENT']);
+			
 			curl_setopt ($curl, CURLOPT_TIMEOUT,5);
 			$get_content = curl_exec($curl);
 			curl_close ($curl);
