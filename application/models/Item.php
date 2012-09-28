@@ -4,11 +4,12 @@ class Item {
 
     /**
      * 获取没有SKU映射的产品
+     *
+     * @param: $user_id integer 用户ID
      *  
      * return $items object
-     *
      */
-    public static function getNoSkuItems() {
+    public static function getNoSkuItems( $user_id ) {
 
         $fields = [
             'items.sku',
@@ -19,6 +20,7 @@ class Item {
 
 
         $items = DB::table('items')->left_join('orders', 'items.order_id', '=', 'orders.id')
+                                   ->where('orders.user_id', '=', $user_id)
                                    ->group_by('items.sku')
                                    ->group_by('orders.from')
                                    ->get($fields);
@@ -39,7 +41,6 @@ class Item {
         }
 
         return $items_unhandled;
-
     }
 
     /**
@@ -89,7 +90,7 @@ class Item {
         // 初始化返回
         $result = [
             'status'  => 'success',
-            'message' => [ 'total' => 0, 'insert' => 0, 'update' => 0 ]
+            'message' => [ 'total' => 0 ]
             ];
 
         //return $result;
@@ -110,17 +111,15 @@ class Item {
             // 获取订单指定的平台配置
             $user_platform = $platforms[$order->from];
 
-            $platform_name = 'Platform_' . $user_platform->type;
-            $platform = new Platform( new $platform_name() );
-            $base_option = array_merge(unserialize($user_platform->option), unserialize($user_platform->user_option));
-            $base_option['order_id'] = $order->entry_id;
-            $option = $platform->getItemOption( $base_option );
-
-            if(empty($option)) continue; // 如果为空跳过抓取
-
             // 实例化API
             $spider_name = 'Spider_Orders_' . $user_platform->type;
             $item_spider = new Spider_Orders( new $spider_name() );
+            // 获取配置
+            $base_option = array_merge(unserialize($user_platform->option), unserialize($user_platform->user_option));
+            $base_option['order_id'] = $order->entry_id;
+            $option = $item_spider->getItemOption( $base_option );
+
+            if(empty($option)) continue; // 如果为空跳过抓取
 
             // 抓取产品
             try {
@@ -137,14 +136,10 @@ class Item {
             foreach ($items as $item) {
                 $item_id = static::getIdByEntryId( $item['entry_id'] );
                 if( !$item_id ) {
-                    $result['message']['insert']++;
+                    $result['message']['total']++;
                     $item['order_id'] = $order->id;
                     static::saveItem( $item );
-                } else { // 暂时不更新产品
-                    $result['message']['update']++;
                 }
-                
-                $result['message']['total']++;
             }
 
             // 标记订单已经抓取状态

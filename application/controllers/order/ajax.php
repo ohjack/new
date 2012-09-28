@@ -105,12 +105,6 @@ class Order_Ajax_Controller extends Base_Controller {
 
         $orders = Order::getOrders( 5, $options );
 
-        // 分页用
-        $result['per_page'] = $orders->per_page;
-        $result['page']     = $orders->page;
-        $result['total']    = $orders->total;
-
-        $result['message'] = $orders->results;
 
         return Response::json( $result );
     }

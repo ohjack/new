@@ -47,14 +47,12 @@ class Skumap_Controller extends Base_Controller {
             }
         }
 
-
         // 获取问题SKU 出来完成允许下一步
-        $items = Item::getNoSkuItems();
+        $items = Item::getNoSkuItems(1);
         if(empty($items)) {
-            Session::put('step', 'matchLogistics');
+            return Redirect::to('order/handle');
         }
 
-        return Redirect::to('order/handle');
     }
 }
 ?>

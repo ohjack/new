@@ -9,18 +9,11 @@
  * @version: $Id:SpiderLog.php  2012年09月10日 星期一 16时42分25秒Z $
  */
 
-
-
 class SpiderLog {
 
     /**
-     * 获取上上次抓取时间
+     * 获取上次抓取时间
      *
-     * 每次抓取都从上上次的时间到当前时间段进行抓取
-     * 为了防止漏抓,每段时间的订单都会抓取两次
-     * spider表中lasttime就是上上次抓取时间,prevtime是上次抓取时间
-     * 如果抓取时间短与2分钟返回空
-     * 
      * @param: $type         string  抓取类型
      * @param: $flatform_id  integer 用户平台ID
      *
@@ -42,23 +35,17 @@ class SpiderLog {
     /**
      * 更新抓取时间
      *
-     * 将上次抓取时间更新成上上次更新时间放在lasttime字段
-     * 将当前时间储存在上次抓取时间prevtime字段
-     *
      * @param: $type        integer 类型
      * @param: $platform_id integer 平台ID
+     * @param: $total       integer 抓取数目
      *
      * return void
      */
-    public static function updateLastSpider( $type, $platform_id ) {
-
-        $prevtime = DB::table('spider_log')->where('type', '=', $type)
-                                           ->where('platform_id', '=', $platform_id)
-                                           ->only('prevtime');
+    public static function updateLastSpider( $type, $platform_id, $total ) {
 
         $data = [
-            'lasttime' => $prevtime,
-            'prevtime' => date('Y-m-d H:i:s')
+            'lasttime' => date('Y-m-d H:i:s'),
+            'total'    => $total
             ];
 
         DB::table('spider_log')->where('type', '=', $type)
@@ -84,7 +71,6 @@ class SpiderLog {
         $data = [
             'type'        => $type,
             'platform_id' => $platform_id,
-            'prevtime'    => $datetime,
             'lasttime'    => $datetime
             ];
 
@@ -93,5 +79,24 @@ class SpiderLog {
         return $datetime;
     
     }
+
+    /**
+     * 获取抓取的订单数
+     *
+     * @param: $user_id interge 用户ID
+     *
+     * return interge
+     */
+    public static function lastTotal( $user_id ) {
+        $spider_log = DB::table('users_platform')->left_join('spider_log', 'users_platform.platform_id', '=', 'spider_log.platform_id')
+                                                 ->where('users_platform.user_id', '=', $user_id)
+                                                 ->order_by('spider_log.lasttime', 'DESC')
+                                                 ->first();
+
+        return $spider_log->total > 99 ? 'N' : $spider_log->total;
+
+    }
+
+
 }
 ?>

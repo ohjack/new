@@ -44,12 +44,12 @@ function spiderItems() {
                 var message = data.message;
                 var tips = '';
                 if(message.total == 0) {
-                    tips = '<br/>没有抓取到任何产品';
+                    tips = '没有抓取到任何产品';
                 } else {
-                    tips = '<br/>抓取产品:' + message.total + '个<br/>新增产品:' +message.insert+ '个<br/>更新产品:' + message.update + '个';
+                    tips = '本次共抓取' + message.total + '个产品';
                 }
-                html = $('.loading').html().replace('<img src="/img/loading.gif"> 继续产品抓取中... ', '');
-                $('.loading').html(html + '<span style="color: green">产品抓取成功!' + tips+ '<br />抓取全部完成</span>');
+                html = $('.loading').html().replace('<img src="/img/loading.gif"> 继续抓取产品中... ', '');
+                $('.loading').html(html + '<span style="color: green">' + tips+ '<br />抓取全部完成</span>');
             } else if ( data.status == 'error') {
                 $('.loading').append('<br /><span style="color: red">' + data.message + '</span>');
             }
@@ -101,11 +101,11 @@ $(function(){
                 if( data.status == 'success' ) {
                     var message = data.message;
                     if(message.total == 0) {
-                        var tips = '<br/>没有抓取到任何订单。<br/>没有新订单或者与上次抓取间隔间隔不到两分钟。';
+                        var tips = '没有抓取到任何订单或者抓取过于频繁。';
                     } else {
-                        var tips = '<br/>抓取订单:' + message.total + '个<br/>新增订单:' +message.insert+ '个<br/>更新订单:' + message.update + '个';
+                        var tips = '本次共抓取' + message.total + '个订单';
                     }
-                    $('.loading').html('<span style="color: green"><em class="click">[ 关闭 ]</em>订单抓取成功!' + tips+ '</span>' + '<br / ><img src="/img/loading.gif"> 继续产品抓取中... ');
+                    $('.loading').html('<span style="color: green"><em class="click">[ 关闭 ]</em>' + tips+ '</span>' + '<br / ><img src="/img/loading.gif"> 继续抓取产品中... ');
                     spiderItems();
                 } else if ( data.status == 'error') {
                     $('.loading').html('<span style="color: red"><em class="click">[ 关闭 ]</em>' + data.message + '</span>');

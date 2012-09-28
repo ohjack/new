@@ -2,7 +2,9 @@
 
 class Order_Controller extends Base_Controller {
 
+    const HAD_MATCH_ORDER = 1;
 
+    // 订单列表
     public function action_index() {
 
         // 搜索字段
@@ -29,9 +31,10 @@ class Order_Controller extends Base_Controller {
     }
 
     // 处理订单
-    public function action_handle() {
+    public function action_center() {
         //Session::put('step', 'spiderOrder');
 
+        /*
         $step = Session::get('step');
         if($step == 'mapSetting') {
             if( !count(Item::getNoSkuItems()) ) {
@@ -47,9 +50,100 @@ class Order_Controller extends Base_Controller {
         }
 
         Step::reset();
+        */
 
-        return View::make('order.handle')->with('title', '处理订单');
+        $total = [
+            'order'  => SpiderLog::lastTotal(1),
+            'skumap' => count(Item::getNoSkuItems(1)),
+            ];
+
+        return View::make('order.center')->with('total', $total)
+                                         ->with('title', '处理订单');
     }
 
+    // 订单sku映射设置列表
+    public function action_skumap() {
+
+        $items = Item::getNoSkuItems(1);
+
+        return View::make('order.skumap.list')->with('items', $items)
+                                        ->with('title', '产品设置');
+    
+    }
+
+    // 保存sku映射
+    public function action_doskumap() {
+    
+        $datas = Input::get();
+
+        // validation
+        $rules = [
+            'original_sku' => 'required|min:1',
+            'target_sku'   => 'required|min:1',
+            'logistics'    => 'required|min:1'
+            ];
+
+        if( isset( $datas['original_sku'] ) ) {
+            foreach ($datas['original_sku'] as $key => $value) {
+                $data = [
+                    'product_name'  => $datas['product_name'][$key],
+                    'product_price' => $datas['product_price'][$key],
+                    'target_sku'    => $datas['target_sku'][$key],
+                    'original_sku'  => $datas['original_sku'][$key],
+                    'logistics'     => $datas['logistics'][$key]
+                    ];
+
+                $validation = Validator::make($data, $rules);
+
+                if( !$validation->fails() && !SkuMap::chkMap($data['original_sku'], $data['logistics']) ) {
+                    SkuMap::saveMap($data);
+                }
+            }
+        }
+
+        // SKU列表
+        $items = count(Item::getNoSkuItems(1));
+        if(empty($items)) {
+            if(Order::Match(1)) return Redirect::to('order/center');
+        } else {
+            return Redirect::to('order/skumap');
+        }
+    }
+
+    // 物流导出
+    public function action_handle() {
+
+        $logistics = [
+            'coolsystem',
+            'birdsystem'
+            ];
+    
+        $user_id = 1;
+        $files = Logistics::getXlsFile( $user_id, $logistics );
+
+        return View::make('order.logistics.list')->with('files', $files)
+                                                 ->with('title', '物流导出');
+    }
+
+    // 跟踪信息录入
+    public function action_tracking() {
+
+        // 系统的运输方式
+        $logistic_company = Config::get('application.logistic_company');
+
+        $options = [
+            'entry_id' => Input::get('entry_id'),
+            'order_status'  => self::HAD_MATCH_ORDER,   
+            ];
+
+        $orders = Order::getOrders( 5, $options );
+
+        $logistic_company = Config::get('application.logistic_company');
+
+        return View::make('order.tracking.list')->with('orders', $orders)
+                                                ->with('logistic_company', $logistic_company)
+                                                ->with('title', '跟踪数据录入');
+    
+    }
 }
 ?>
