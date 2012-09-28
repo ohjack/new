@@ -98,7 +98,7 @@ class Track
 	{
 		DB::table('track_pending')
 		->where('id','=',$id)
-		->update(array('status'=>$status));
+		->update(array('status'=>$status,'tracked_at'=>date("Y-m-d H:i:s")));
 	}
 
 	/*
@@ -246,6 +246,7 @@ class Track
 							'company'=>$shipp[3],
 							'tracking_no'=>$shipp[4],
 							'method'=>$shipp[5],
+							'created_at'=>date("Y-m-d H:i:s"),
 					);
 					DB::table('shipped')->insert_get_id($input);
 				}
