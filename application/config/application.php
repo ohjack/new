@@ -201,36 +201,6 @@ return array(
      *
      */
     'steps' => [
-        'spiderOrder' => [
-            'name'   => '抓取订单',
-            'link'   => 'javascript:;',
-            'id'     => 'spiderOrders',
-            'class'  => 'click'
-        ],
-        'mapSetting' => [
-            'name'   => '产品设置',
-            'link'   => '/skumap',
-            'id'     => '',
-            'class'  => 'click'
-        ],
-        'matchLogistics' => [
-            'name'   => '匹配物流',
-            'link'   => 'javascript:;',
-            'id'     => 'matchLogistics',
-            'class'  => 'click'
-            ],
-        'handleLogistics' => [
-            'name'   => '物流处理',
-            'link'   => 'javascript:;',
-            'id'     => 'handleLogistics',
-            'class'  => 'click'
-            ],
-        'addLogisticsInfo' => [
-            'name'   => '添加物流信息',
-            'link'   => 'javascript:;',
-            'id'     => 'addLogisticsInfo',
-            'class'  => 'click'
-        ],
     ],
 
 
@@ -239,11 +209,11 @@ return array(
      *
      */
     'order_status' => [
-        '0'  => '等待处理',
-        '1'  => '已分配物流',
-        '2'  => '部分发货',
-        '3'  => '已发货',
-        '4'  => '先确定发货',
+        '0'  => '等待处理',         // PENDING_ORDER
+        '1'  => '已分配物流',       // HAD_MATCH_ORDER
+        '2'  => '部分发货',         // PART_SEND_ORDER
+        '3'  => '已发货',           // ALL_SEND_ORDER
+        '4'  => '先确定发货',       // MARK_SEND_ORDER 
         '5'  => '部分发货已同步',
         '6'  => '已发货已同步',
         '7'  => '先确定发货已同步',

@@ -2,73 +2,34 @@
 
 class Logistics {
 
-    /**
-     * 所有产品匹配物流
-     *
-     * 将所有未处理的的订单通过产品sku进行物流匹配操作
-     *
-     * return array 匹配结果
-     *
-     */
-    public static function allHandle () {
-
-        $result = [
-            'status'  => 'success',
-            'message' => ['total' => 0]
-            ];
-
-        $rules = [
-                'coolsystem'  => ['orders.shipping_country' => 'US', 'orders.from' => 'Amazon.com'],
-                'birdsystem'  => ['orders.from' => 'Amazon.co.uk'],
-                'micaosystem' => []
-            ];
-
-        $handled = array();
-        foreach ($rules as $system => $rule) {
-
-            // get items in the rule
-            $obj = DB::table('items')->left_join('orders', 'items.order_id', '=', 'orders.id');
-            foreach ($rule as $key => $value) {
-                $obj = $obj->where($key, '=', $value);
-            }
-            $obj->where('orders.order_status', '=', '0');
-            $items = $obj->get();
-
-            // put the order to system
-            foreach ($items as $item) {
-                $exsits = SkuMap::chkMap($item->sku, $system);
-                if( $exsits && !in_array($item->order_id, $handled) ) {
-                    Order::setLogistics($item->order_id, $system);
-                    $handled[] = $item->order_id;
-                    $result['message']['total']++;
-                }
-            }
-        }
-
-        return $result;
-    }
+    const PENDING_ORDER   = 0;
+    const HAD_MATCH_ORDER = 1;
 
     /**
      * 统计两物流的数量
      *
+     * @param: $user_id integer 用户ID
      *
+     * return integer
      */
-    public static function getTotal() {
+    public static function getTotal( $user_id ) {
     
-        $systems = ['coolsystem', 'birdsystem'];
-        return DB::table('orders')->where_in('logistics', $systems)
-                                  ->where('order_status', '=', '1')
+        $logistics = ['coolsystem', 'birdsystem'];
+
+        return DB::table('orders')->where_in('logistics', $logistics)
+                                  ->where('order_status', '=', self::HAD_MATCH_ORDER)
                                   ->count();
     }
 
     /**
      * 生成物流导入文件
      *
+     * @param: $user_id array 用户ID
      * @param: $systems array 系统 暂时是酷&鸟系统
      *
      * return array
      */
-    public static function getCsvFile( $systems ) {
+    public static function getXlsFile($user_id, $logistics ) {
 
         header('content-type:text/html;charset=utf-8');
 
@@ -110,23 +71,24 @@ class Logistics {
 
         $result = [];
         $objPHPExcel = new PHPExcel();
-        foreach($systems as $system) {
+        foreach($logistics as $logistic) {
             $items = DB::table('items')->left_join('orders', 'items.order_id', '=', 'orders.id')
                                        ->left_join('sku_map', 'items.sku', '=', 'sku_map.original_sku')
-                                       ->where('orders.logistics', '=', $system)
-                                       ->where('orders.order_status', '=', '1')
-                                       ->where('sku_map.logistics', '=', $system)
-                                       ->get($fields[$system]);
+                                       ->where('orders.user_id', '=', $user_id)
+                                       ->where('orders.logistics', '=', $logistic)
+                                       ->where('orders.order_status', '=', self::HAD_MATCH_ORDER)
+                                       ->where('sku_map.logistics', '=', $logistic)
+                                       ->get($fields[$logistic]);
 
             if( $items ) {
-                $filename = sprintf('%s_%s_%s.xlsx', $system, 1, date('Y_m_d_H_i_s'));
+                $filename = sprintf('%s_%s_%s.xlsx', $logistic, $user_id, date('Y_m_d'));
                 $filepath = path('public') . 'data' . DS . 'logistics_file' . DS . $filename;
                 //$fp = fopen($filepath, 'w+') or die();
                 //fputcsv($fp, $first_row[$system], "\t");
                 $objPHPExcel->setActiveSheetIndex(0);
 
                 $i = 0;
-                foreach ($first_row[$system] as $row) {
+                foreach ($first_row[$logistic] as $row) {
                     $i++;
                     $cell = static::_autoCell($i) . '1';
                     //$objPHPExcel->getActiveSheet()->SetCellValue($cell, $row);
@@ -137,7 +99,7 @@ class Logistics {
                 foreach ($items as $item) {
                     $i++;
                     //$row = [];
-                    if($system == 'coolsystem') {
+                    if($logistic == 'coolsystem') {
                         $rows = [
                             '', '', '', '', $item->order_id, '',
                             $item->sku, '', $item->quantity, '', $item->item_id, '', '', '', '',
@@ -151,7 +113,7 @@ class Logistics {
                     }
 
 
-                    if($system == 'birdsystem') {
+                    if($logistic == 'birdsystem') {
                         $time = new DateTime($item->created_at);
                         $item->created_at = $time->format( DateTime::ISO8601 );
                         $rows = [
@@ -199,7 +161,7 @@ class Logistics {
                 //DB::table('orders')->where_in('id', $order_ids)
                 //                   ->update(['order_status' => '1']);
 
-                $result[] = ['name' => $system, 'filename' => $filename, 'total' => $total];
+                $result[] = ['name' => $logistic, 'filename' => $filename, 'total' => $total];
                 
             }
         

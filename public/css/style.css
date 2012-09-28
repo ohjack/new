@@ -388,6 +388,7 @@ a.pagor {
     margin-right:4px;
     text-decoration:none;
     text-align:center;
+
 }
 
 a.pagor:hover {
@@ -408,6 +409,46 @@ a.selected {
 .item_logistic td {
     background: #fff;
 }
+
+#step {
+    height:300px; 
+    margin-top: 50px;
+}
+
+#step .content{
+    margin: 0 auto;
+    overflow: auto; 
+    text-align: center; 
+    width: 840px;
+    border:0;
+
+}
+
+#step .box{
+    border: 1px solid #ccc;
+    margin: 10px;
+    padding: 84px 10px 10px 10px;
+    width: 98px;
+    float: left;
+    position: relative;
+    line-height: 24px;
+}
+
+#step .box em {
+    position: absolute;
+    background: #f00;
+    padding: 5px;
+    line-height: 12px;
+    width: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #fff;
+    right: 0px;
+    top: 0;
+}
+
+.circle{ border-radius:50px;-moz-border-radius: 50px;-webkit-border-radius: 50px;}
+
 
 .footer {
     text-align: center;

@@ -125,8 +125,8 @@
       </tbody>
       <tfoot>
         <tr>
-          <td colspan="8">
-            {{ $orders->appends($options)->links() }} 总订单：{{ $orders->total }}个 每页：{{ $orders->per_page }}个
+          <td colspan="9">
+            {{ $orders->appends($options)->links() }} {{ $orders->page * $orders->per_page - $orders->per_page + 1 }}-{{$orders->page * $orders->per_page }} of {{ $orders->total }} {{ $orders->per_page }} per page
           </td>
         </tr>
       </tfoot>

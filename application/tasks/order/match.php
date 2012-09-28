@@ -1,6 +1,6 @@
 <?php
 /**
- * 订单抓取
+ * 订单匹配物流
  *
  * @author: weelion <weelion@qq.com>
  * @copyright: Copyright (c) 2012 EMIO Tech All Rights Reserved.
@@ -8,43 +8,40 @@
  */
 
 
-class Task_Order_Spider {
+class Task_Order_Match {
 
     // 操作入口
     public function __construct( $args ) {
 
         // 确认订单
         if(empty($args)) {
-            $this->_spider_all();
+            $this->_match_all();
         } else {
             foreach ($args as $user_id) {
                 $user_id = intval($user_id) ? intval($user_id) : 0;
-                $this->_spider_one( $user_id );
+                $this->_match_one( $user_id );
             }
         }
     }
 
-    // 遍历所有用户抓取订单
-    private function _spider_all() {
+    // 遍历所有用户订单匹配物流
+    private function _match_all() {
 
         //$user_ids = DB::table('users')->list('id');
 
         $user_ids = [1];
 
         foreach ($user_ids as $user_id) {
-            static::_spider_one( $user_id);
+            static::_match_one( $user_id);
         }
 
     }
 
-    // 单个用户的订单抓取
-    private function _spider_one( $user_id ) {
+    // 单个用户的订单匹配物流
+    private function _match_one( $user_id ) {
         if(empty($user_id)) return ;
 
-        $user_platforms = User::getPlatforms($user_id);
-        Order::spiderOrders( $user_platforms );
-        Item::spiderItems( $user_platforms);
-
+        Order::Match( $user_id );
     }
 
 }
