@@ -3,6 +3,9 @@
 class Order_Controller extends Base_Controller {
 
     const HAD_MATCH_ORDER = 1;
+    const PART_SEND_ORDER = 2; // 部分发货
+    const ALL_SEND_ORDER  = 3; // 全部发货
+    const MARK_SEND_ORDER = 4; // 先标记发货
 
     // 订单列表
     public function action_index() {
@@ -52,9 +55,19 @@ class Order_Controller extends Base_Controller {
         Step::reset();
         */
 
+        $options = [
+            'orders.user_id' => 1,
+            'orders.confirm' => 0,
+            'orders.order_status' => [self::PART_SEND_ORDER, self::ALL_SEND_ORDER, self::MARK_SEND_ORDER],
+            ];
+
+        $orders = Order::getOrders(1, $options);
+
         $total = [
             'order'  => SpiderLog::lastTotal(1),
             'skumap' => count(Item::getNoSkuItems(1)),
+            'handle' => Logistics::getTotal(1),
+            'confirm' => $orders->total,
             ];
 
         return View::make('order.center')->with('total', $total)
@@ -136,13 +149,38 @@ class Order_Controller extends Base_Controller {
             'order_status'  => self::HAD_MATCH_ORDER,   
             ];
 
-        $orders = Order::getOrders( 5, $options );
+        $orders = Order::getOrders( 15, $options );
 
         $logistic_company = Config::get('application.logistic_company');
 
         return View::make('order.tracking.list')->with('orders', $orders)
                                                 ->with('logistic_company', $logistic_company)
                                                 ->with('title', '跟踪数据录入');
+    
+    }
+
+    // 确认订单
+    public function action_confirm() {
+
+        $options = [
+            'orders.user_id' => 1,
+            'orders.confirm' => 0,
+            'orders.order_status' => [self::PART_SEND_ORDER, self::ALL_SEND_ORDER, self::MARK_SEND_ORDER],
+            ];
+
+        $orders = Order::getOrders(15, $options);
+
+        return View::make('order.confirm.list')->with('orders', $orders)
+                                               ->with('title', '确认订单');
+    
+    }
+
+    // 执行确认订单
+    public function action_doconfirm() {
+        $ids = Input::get('id');
+        Order::confirm( $ids );
+
+        return Redirect::to('order/confirm');
     
     }
 }

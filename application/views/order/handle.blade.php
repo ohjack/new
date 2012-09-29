@@ -2,7 +2,6 @@
 @section('script')
 {{ HTML::script('js/order.js') }}
 {{ HTML::script('js/ajaxfileupload.js') }}
-{{ HTML::script('js/float.js') }}
 @endsection  
 @section('content')
 <div style="margin: 100px 0 100px 100px;">

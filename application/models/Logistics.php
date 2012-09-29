@@ -18,6 +18,7 @@ class Logistics {
 
         return DB::table('orders')->where_in('logistics', $logistics)
                                   ->where('order_status', '=', self::HAD_MATCH_ORDER)
+                                  ->where('user_id', '=', $user_id)
                                   ->count();
     }
 
@@ -83,22 +84,18 @@ class Logistics {
             if( $items ) {
                 $filename = sprintf('%s_%s_%s.xlsx', $logistic, $user_id, date('Y_m_d'));
                 $filepath = path('public') . 'data' . DS . 'logistics_file' . DS . $filename;
-                //$fp = fopen($filepath, 'w+') or die();
-                //fputcsv($fp, $first_row[$system], "\t");
                 $objPHPExcel->setActiveSheetIndex(0);
 
                 $i = 0;
                 foreach ($first_row[$logistic] as $row) {
                     $i++;
                     $cell = static::_autoCell($i) . '1';
-                    //$objPHPExcel->getActiveSheet()->SetCellValue($cell, $row);
                     $objPHPExcel->getActiveSheet()->setCellValueExplicit($cell, $row, PHPExcel_Cell_DataType::TYPE_STRING);
                 }
                 $order_ids = [];
                 $i = 1;
                 foreach ($items as $item) {
                     $i++;
-                    //$row = [];
                     if($logistic == 'coolsystem') {
                         $rows = [
                             '', '', '', '', $item->order_id, '',
@@ -133,44 +130,35 @@ class Logistics {
                     foreach ($rows as $row) {
                         $j++;
                         $cell = static::_autoCell($j) . $i;
-                        //$objPHPExcel->getActiveSheet()->SetCellValue($cell, $row);
                         $objPHPExcel->getActiveSheet()->setCellValueExplicit($cell, $row, PHPExcel_Cell_DataType::TYPE_STRING);
                     }
 
                     $order_ids[] = $item->id;
 
-                    //fputcsv($fp, $row, "\t");
                 }
 
-                //fclose($fp);
-                $e = new  PHPExcel_Writer_Excel5($objPHPExcel);
-                $e->save($filepath);
+                $PHPExcel_Writer = new  PHPExcel_Writer_Excel5($objPHPExcel);
+                $PHPExcel_Writer->save($filepath);
 
-                // 入库
+                // 统计
                 $total = count( $order_ids );
-                $data = [
-                    'filename'   => $filename,
-                    'total'      => $total,
-                    'user_id'    => 1,
-                    'order_ids'  => implode(',', $order_ids),
-                    'created_at' => date('Y-m-d H:i:s'),
-                    ];
-                DB::table('logistics_file')->insert( $data );
-
-                // 更新订单状态
-                //DB::table('orders')->where_in('id', $order_ids)
-                //                   ->update(['order_status' => '1']);
 
                 $result[] = ['name' => $logistic, 'filename' => $filename, 'total' => $total];
-                
             }
-        
         }
 
         return $result;
-
     }
 
+    /**
+     * 获取表格列字母
+     *
+     * 如第1列:返回A  第26列:返回Z 第27列:返回AA
+     *
+     * @param: $n integer 第几列
+     *
+     * return string
+     */
     private static function _autoCell($n) {
        $n--;
        for($r = ""; $n >= 0; $n = intval($n / 26) - 1)
