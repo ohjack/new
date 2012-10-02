@@ -8,7 +8,7 @@
 <div style="margin-top: 200px">
   <div style="margin:0 auto; width: 300px; border: 1px solid #ccc;">
     <h2 style="text-align: center; margin: 5px; padding-top: 20px">用户登录</h2>
-  {{ Form::open('login') }}  
+  {{ Form::open('login/submit') }}  
     <table style="padding:0 20px 20px 20px">
       <tr>
         <th style="text-align: right">帐号：</th>
