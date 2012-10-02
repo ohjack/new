@@ -166,10 +166,12 @@ class Order {
     /**
      * 获取未抓取的订单
      *
-     * return array 订单ID 第三方ID 来源
+     * @param: $user_id integer 用户ID
+     *
+     * return array
      */
-    public static function getUnspiderOrders() {
-        return DB::table('orders')->where_null('crawled_at')->get(['id', 'entry_id', 'from']);
+    public static function getUnspiderOrders( $user_id ) {
+        return DB::table('orders')->where('user_id', '=', $user_id)->where_null('crawled_at')->get(['id', 'entry_id', 'from']);
     }
 
     /**
@@ -185,6 +187,7 @@ class Order {
         $status = [ self::PART_SEND_ORDER, self::ALL_SEND_ORDER, self::MARK_SEND_ORDER ];
         $orders = DB::table('orders')->where('user_id', '=', $user_id)
                                      ->where('from' , '=', $from)
+                                     ->where('confirm' , '=', 1)
                                      ->where_in('order_status', $status)
                                      ->get(['id', 'entry_id', 'order_status']);
 
@@ -201,8 +204,26 @@ class Order {
         return $orders;
     }
 
+    /**
+     * 标记为可确认订单
+     *
+     * @param: $ids array 订单IDs
+     *
+     * return void
+     */
+    public static function confirm( $ids ) {
 
+        if(empty($ids)) return;
 
+        $user_id = 1;
+        $data = ['confirm' => 1];
+
+        DB::table('orders')->where('user_id', '=', $user_id)
+                           ->where('confirm', '=', 0)
+                           ->where_in('order_status', [self::PART_SEND_ORDER, self::ALL_SEND_ORDER, self::MARK_SEND_ORDER])
+                           ->where_in('id', $ids)
+                           ->update( $data );
+    }
 
     /**
      * 抓取订单
@@ -248,7 +269,7 @@ class Order {
                 $order_id = static::getIdByEntryId($order['entry_id']);
                 if( empty($order_id) ) {
                     $result['message']['total']++;
-                    $order['user_id'] = 1;
+                    $order['user_id'] = $user_platform->user_id;
                     $order_id = static::saveOrder($order);
                 }
             }

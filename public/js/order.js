@@ -239,7 +239,8 @@ $(function(){
 
     // 展开产品物流信息表单
     $('.order_logistic').live('dblclick',function(){
-            $(this).next().toggle('slow');
+        return; // 暂时不对产品级别设置
+        $(this).next().toggle('slow');
     });
 
     // 导入文件

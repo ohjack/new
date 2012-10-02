@@ -11,7 +11,7 @@
         <span style="float: right;">订单ID：<input name="entry_id" value=""> <input type="submit" value="搜索"></span>
         {{ Form::close() }}
         <form name="form" action="" method="POST" enctype="multipart/form-data">
-            导入文件<input id="import_file" name="import_file" type="file"><input type="button" value="上传" id="import_logistic"><span style="display: none" id="upload_tips"></span><a href="#">下载导入模板</a>
+            导入文件<input id="import_file" name="import_file" type="file"><input type="button" value="上传" id="import_logistic"><span style="display: none" id="upload_tips"></span><a href="{{Route::controller('home')}}/data/demo/shipped.xls">下载导入模板</a>
         </form>
     </div>
     {{ Form::open('shipping') }}
@@ -30,7 +30,7 @@
             var logistic_company = {{ json_encode($logistic_company) }};
         </script>
         @foreach($orders->results as $order)
-        <tr class="order_logistic" title="双击展开产品">
+        <tr class="order_logistic">
           <td>{{$order->entry_id}}</td>
           <td>
               <select name="logistic[{{ $order->id }}][company]" class="logistic_company">

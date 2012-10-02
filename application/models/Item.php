@@ -93,17 +93,15 @@ class Item {
             'message' => [ 'total' => 0 ]
             ];
 
-        //return $result;
-
-
         // 整理平台
         $platforms = [];
         foreach($user_platforms as $user_platform) {
             $platforms[$user_platform->name] = $user_platform;
+            $user_id = $user_platform->user_id;
         }
 
         // 获取未抓取的订单
-        $orders = Order::getUnspiderOrders();
+        $orders = Order::getUnspiderOrders( $user_id );
 
         // 遍历订单进行抓取
         foreach ($orders as $order) {
@@ -145,6 +143,11 @@ class Item {
             // 标记订单已经抓取状态
             DB::table('orders')->where('id', '=', $order->id)->update(['crawled_at' => date('Y-m-d H:i:s')]);
 
+        }
+
+        // 如果没有需要处理的SKU匹配一次物流
+        if(!count(Item::getNoSkuItems($user_id))) {
+            Order::Match($user_id);
         }
 
         return $result;

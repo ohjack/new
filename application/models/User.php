@@ -9,23 +9,15 @@ class User {
      *
      * return array
      */
-    public static function getPlatforms($user_id) {
+    public static function getPlatforms( $user_id ) {
 
-        $fields = [
-            'p.type',
-            'p.name', 
-            'p.option', 
-            'up.id',
-            'up.user_id',
-            'up.option as user_option'
-            ];
+        $fields = ['p.type', 'p.name', 'p.option', 'up.id', 'up.user_id', 'up.option as user_option'];
 
         $platforms = DB::table('platform as p')->left_join('users_platform as up', 'p.id', '=', 'up.platform_id')
-                                            ->where('up.user_id', '=', $user_id)
-                                            ->get( $fields );
+                                               ->where('up.user_id', '=', $user_id)
+                                               ->get( $fields );
 
         return $platforms;
-    
     }
 }
 

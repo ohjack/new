@@ -35,7 +35,7 @@ class Mark {
      *
      * return void
      */
-    public static function saveOrderMark( $data ) {
+    public static function save( $data ) {
         DB::table('orders_mark')->insert( $data );;
     }
 
@@ -47,7 +47,7 @@ class Mark {
      *
      * return void
      */
-    public static function delOrderMark($order_id, $mark_id) {
+    public static function delete($order_id, $mark_id) {
         DB::table('orders_mark')->where('order_id', '=', $order_id)
                                 ->where('mark_id', '=', $mark_id)
                                 ->delete();

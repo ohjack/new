@@ -26,7 +26,7 @@ class Order_Ajax_Controller extends Base_Controller {
             'mark_id'  => Input::get('mark_id')
             ];
 
-        Mark::saveOrderMark( $data );
+        Mark::save( $data );
 
         return Response::json('ok');
     }
@@ -37,11 +37,11 @@ class Order_Ajax_Controller extends Base_Controller {
             return Response::error('404');
         }
 
-            $order_id = Input::get('order_id');
-            $mark_id  = Input::get('mark_id');
-            $user_id  = 1;   // 当前用户
+        $order_id = Input::get('order_id');
+        $mark_id  = Input::get('mark_id');
+        $user_id  = 1;   // 当前用户
         
-        Mark::delOrderMark( $order_id, $mark_id );
+        Mark::delete( $order_id, $mark_id );
 
         return Response::json('ok');
     }
@@ -51,7 +51,6 @@ class Order_Ajax_Controller extends Base_Controller {
         if( !Request::ajax() ) {
             return Response::error('404');
         }
-
 
         $order_ids = Input::get('order_ids');
         $mark_ids = Input::get('mark_ids');
@@ -64,24 +63,13 @@ class Order_Ajax_Controller extends Base_Controller {
         return Response::json('ok');
     }
 
-    // 确认订单提交
-    public function action_confirm() {
-    
-        $result = 'ok';
-    
-        $user_platforms = User::getPlatforms(1);
-
-        $result = Order::confirmOrders( $user_platforms );
-
-        return Response::json( $result );
-    }
 
     // 导入发货信息
     public function action_import_logistic() {
         $result = [
-        'error'=> '',
-        'msg'  => ''
-        ];
+            'error'=> '',
+            'msg'  => ''
+            ];
 
         $data['upload_file'] = Input::file('import_file');
         // 验证
