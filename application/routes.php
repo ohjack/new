@@ -37,6 +37,9 @@ Route::get('/', function() {
 });
 
 
+
+
+
 Route::controller('user');
 Route::controller('spider.order');
 Route::controller('spider.item');
@@ -44,10 +47,14 @@ Route::controller('order.logistics');
 Route::controller('order.ajax');
 Route::controller('order');
 Route::controller('item');
+
 Route::controller('skumap.manage');
 Route::controller('skumap');
 Route::controller('shipping');
 Route::controller('track');
+Route::controller('login');
+Route::controller('register');
+Route::controller('logout');
 /*
 |--------------------------------------------------------------------------
 | Application 404 & 500 Error Handlers
@@ -120,3 +127,9 @@ Route::filter('auth', function()
 {
     if (Auth::guest()) return Redirect::to('login');
 });
+
+Route::filter('checkin',function()
+{
+    if(!Sentry::check()) return Redirect::to('login');
+}
+);
