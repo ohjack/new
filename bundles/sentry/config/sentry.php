@@ -50,7 +50,7 @@ return array(
 	/*
 	 * Default Authorization Column - username or email
 	 */
-	'login_column' => 'email',
+	'login_column' => 'username',
 
 	/*
 	 * Remember Me settings
