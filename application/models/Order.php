@@ -62,8 +62,8 @@ class Order {
         }
 
         // 排序
-        $table = $table->order_by('orders.id', 'DESC')
-                       ->order_by('orders.order_status', 'ASC');
+        $table = $table->order_by('orders.order_status', 'ASC')
+                       ->order_by('orders.created_at', 'DESC');
 
         $orders = $table->paginate( $per_page , $fields);
 

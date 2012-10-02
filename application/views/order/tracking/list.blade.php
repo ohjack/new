@@ -41,9 +41,10 @@
               </select>
           </td>
           <td>
-              <select name="logistic[{{ $order->id }}][method]" class="logistic_method">
+              <!--select name="logistic[{{ $order->id }}][method]" class="logistic_method">
                   <option value>--请选择--</option>
-              </select>
+              </select-->
+              {{ Form::text('logistic['.$order->id.'][method]') }}
           </td>
           <td>{{ Form::text('logistic[' . $order->id . '][tracking_no]') }}</td>
           <td>{{ Form::checkbox('logistic[' . $order->id . '][ship_first]') }}</td>

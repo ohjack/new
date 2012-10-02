@@ -12,6 +12,7 @@
 </head>
 @section('dashboard')
   <div>
+       {{ HTML::link('logout', '登出', ['style' => 'float: right']) }}
        {{ HTML::link('order', '订单列表') }}
        {{ HTML::link('order/center', '处理订单') }}
        {{ HTML::link('skumap/manage', '产品设置管理') }}

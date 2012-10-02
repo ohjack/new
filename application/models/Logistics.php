@@ -82,7 +82,7 @@ class Logistics {
                                        ->get($fields[$logistic]);
 
             if( $items ) {
-                $filename = sprintf('%s_%s_%s.xlsx', $logistic, $user_id, date('Y_m_d'));
+                $filename = sprintf('%s_%s_%s.xls', $logistic, $user_id, date('Y_m_d'));
                 $filepath = path('public') . 'data' . DS . 'logistics_file' . DS . $filename;
                 $objPHPExcel->setActiveSheetIndex(0);
 

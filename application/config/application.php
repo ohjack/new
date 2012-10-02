@@ -238,18 +238,27 @@ return array(
      * 物流公司代码及运送方式
      */ 
     'logistic_company'=>[
-        'USPS'=>[
+        'UPS'=>[
             'method'=>[
                     '1'=>'First Class',
                     '2'=>'快递',
                     ]
         ],
-        'royalmail'=>[
+        'DHL'=>[
             'method'=>[
                     '1'=>'平邮',
                     '2'=>'快递'
             ]
         ],
-        
+        'Fedex' => [
+            'method' => '',
+        ],
+        'EMS' => [],
+        'USPS' => [],
+        'RoyalMail' => [],
+        'SingPost' => [],
+        'HK Post' => [],
+        'EUB' => [],
+        'Amazon FBA' => []
     ],
 );
