@@ -17,3 +17,6 @@ function  check()
 	}
 	
 }
+function login()
+{
+}

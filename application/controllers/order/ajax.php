@@ -10,7 +10,6 @@ class Order_Ajax_Controller extends Base_Controller {
 
         $order_id = Input::get('order_id');
         $order = Order::getOrder( $order_id );
-
         return Response::json($order);
         
     }

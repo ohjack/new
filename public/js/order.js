@@ -18,6 +18,7 @@ $(function(){
                 // 订单信息
                 $('#order_info td').each(function() {
                     var field = ($(this).attr('field'));
+                    
                     if(field == 'shipping_address') {
                         $(this).html(eval('data.shipping_address3 + \' \' + data.shipping_address2 + \' \' + data.shipping_address1'));
                     } else if (field == 'total') {
@@ -26,6 +27,11 @@ $(function(){
                         $(this).html(eval('data.'+ field));
                     }
                 });
+
+                 $('#track_info td').each(function(){
+                	 var field=($(this).attr('field'));                
+                 	$(this).html(eval('data.tracking[0].'+field));
+                  });
 
                 // 产品列表
                 var items_count = data.items.length;
