@@ -204,13 +204,16 @@ class Track
 			if(!$key=='0'){
 				if(!Shipping::existTrackInfo($shipp[0]))
 				{
+				    $orderInfo=Shipping::getOrder('entry_id', $shipp[0]);
+				    $temp_id=empty($orderInfo)?0:$orderInfo['id'];
 					$input=array(
-							'order_id'=>$shipp[0],
+							'entry_id'=>$shipp[0],
 							'item_id'=>$shipp[1],
 							'quantity'=>$shipp[2],
 							'company'=>$shipp[3],
 							'tracking_no'=>$shipp[4],
-							'method'=>$shipp[5],
+							'method'=>$shipp[5],					        
+					        'order_id'=>$temp_id,
 					);
 					DB::table('shipped')->insert_get_id($input);
 				}
@@ -239,13 +242,16 @@ class Track
 			if(!$key=='0'){
 				if(!Shipping::existTrackInfo($shipp[0]))
 				{
+				    $orderInfo=Shipping::getOrder('entry_id', $shipp[0]);
+				    $temp_id=empty($orderInfo)?0:$orderInfo['id'];
 					$input=array(
-							'order_id'=>$shipp[0],
+							'entry_id'=>$shipp[0],
 							'item_id'=>$shipp[1],
 							'quantity'=>$shipp[2],
 							'company'=>$shipp[3],
 							'tracking_no'=>$shipp[4],
-							'method'=>$shipp[5],
+							'method'=>$shipp[5],					        
+					        'order_id'=>$temp_id,
 							'created_at'=>date("Y-m-d H:i:s"),
 					);
 					DB::table('shipped')->insert_get_id($input);
@@ -254,6 +260,19 @@ class Track
 		}
 		 
 	}
+	
+	/*读取跟踪信息
+	 * 
+	 * @param    $order_id    订单编号
+	 * 
+	 * return
+	 */
+    public static function getTracking($order_id)
+    {
+        return DB::table('shipped') ->where('shipped.order_id','=',$order_id)
+                                    ->left_join('track_finished','shipped.tracking_no','=','track_finished.tracking_no')
+                                    ->get(array('shipped.order_id','shipped.company','shipped.method','shipped.tracking_no','track_finished.status','track_finished.data'));
+    }
 }
 
 
