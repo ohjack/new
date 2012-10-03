@@ -138,6 +138,7 @@
                 <ul>
                     <li panel="order_info" class="tab_current">订单详情</li>
                     <li panel="items_list">产品列表</li>
+                    <li panel="track_info">物流跟踪</li>
                 </ul>
             </div>
             <div class="mark">
@@ -235,6 +236,26 @@
               </thead>
               <tbody>
               </tbody>
+            </table>
+            <table style="width: 100%;display:none" id="track_info">
+             <tbody>
+              <tr>
+              <th width="80em">物流公司：</th>
+              <td field='company'></td>
+              </tr>
+              <tr>
+              <th width="80em">快递单号：</th>
+              <td field='tracking_no'></td>
+              </tr>
+              <tr>
+              <th width="80em">物流状态：</th>
+              <td field='status'></td>
+              </tr>
+              <tr>
+              <th width="80em">详情：</th>
+              <td field="data"></td>
+              </tr>
+             </tbody>
             </table>
         </div>
     </div>
