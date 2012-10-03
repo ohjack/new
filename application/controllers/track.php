@@ -3,7 +3,7 @@ class  Track_controller extends Base_Controller
 {
 	public function action_index()
 	{
-
+        
 	}
 	public function action_copy()
 	{
@@ -12,6 +12,10 @@ class  Track_controller extends Base_Controller
 	public function action_track()
 	{
 		Track::runTrack();
+	}
+	public function action_readxls()
+	{
+		Track::runReadXls();
 	}
 }
 
