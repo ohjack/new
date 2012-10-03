@@ -21,7 +21,8 @@ class Order {
         $order = DB::table('orders')->find( $order_id );
         $order->items = Item::getItems( $order_id );
         $order->marks = Mark::getByOrderId( $order_id );
-        $order->order_status = Config::get('application.order_status')[$order->order_status];
+
+        $order->order_status = Config::get('application.order_status')[$order->order_status]['desc'];
 
         $track=Track::getTracking($order_id);
 

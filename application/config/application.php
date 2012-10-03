@@ -209,14 +209,14 @@ return array(
      *
      */
     'order_status' => [
-        '0'  => '等待处理',         // PENDING_ORDER
-        '1'  => '已分配物流',       // HAD_MATCH_ORDER
-        '2'  => '部分发货',         // PART_SEND_ORDER
-        '3'  => '已发货',           // ALL_SEND_ORDER
-        '4'  => '先确定发货',       // MARK_SEND_ORDER 
-        '5'  => '部分发货',
-        '6'  => '已发货',
-        '7'  => '先确定发货',
+        '0'  => ['desc' => '等待处理',   'define' => 'PENDING_ORDER'],
+        '1'  => ['desc' => '已分配物流', 'define' => 'HAD_MATCH_ORDER'],
+        '2'  => ['desc' => '部分发货',   'define' => 'PART_SEND_ORDER'],
+        '3'  => ['desc' => '已发货',     'define' => 'ALL_SEND_ORDER'],
+        '4'  => ['desc' => '先确定发货', 'define' => 'MARK_SEND_ORDER'],
+        '5'  => ['desc' => '部分发货',   'define' => ''],
+        '6'  => ['desc' => '已发货',     'define' => ''],
+        '7'  => ['desc' => '先确定发货', 'define' => '']
     ],
         
     /**
