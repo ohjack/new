@@ -4,9 +4,9 @@
 */
 class Shipping{
 
-	const PART_SHIPPED =2;
-	const ALL_SHIPPED  =3;
-	const CONFIRM_FIRST =4;
+	const PART_SEND_ORDER=2;
+	const ALL_SEND_ORDER  =3;
+	const MARK_SEND_ORDER =4;
 
 	/*
 	 * 插入已发货信息
@@ -62,8 +62,8 @@ class Shipping{
 	*/
 	public static function handleInsert($logistics)
 	{
-		$order_status=self::ALL_SHIPPED;
-		$item_status=self::ALL_SHIPPED;
+		$order_status=self::ALL_SEND_ORDER;
+		$item_status=self::ALL_SEND_ORDER;
 		$order=array();
 		$quantity_match_number=0;
 		$unset_item_number=0;
@@ -84,8 +84,8 @@ class Shipping{
 				else
 				{
 					//部分发货
-					$order['order_status']=self::PART_SHIPPED;
-					$item_status=self::PART_SHIPPED;
+					$order['order_status']=self::PART_SEND_ORDER;
+					$item_status=self::PART_SEND_ORDER;
 				}
 				if(!empty($item['method'])&&!empty($item['company']))
 				{
@@ -95,6 +95,8 @@ class Shipping{
 					$insert_item['company']=$item['company'];
 					$insert_item['tracking_no']=$item['tracking_no'];
 					$insert_item['quantity']=$item['ship_quantity'];
+					$orderInfo=self::getOrder('order_id', $logKey);
+					$insert_item['entry_id']=$orderInfo[0]->entry_id;
 
 					//将item插入发货表
 					$ids[]=static::insertShipped($insert_item);
@@ -117,7 +119,7 @@ class Shipping{
 			}
 			if($quantity_match_number==count($logistic['items']))
 			{
-				$order['order_status']=self::ALL_SHIPPED;
+				$order['order_status']=self::ALL_SEND_ORDER;
 			}
 			if($unset_item_number==count($logistic['items']))
 			{
@@ -130,18 +132,21 @@ class Shipping{
 						$insert_item['method']=$logistic['method'];
 						$insert_item['company']=$logistic['company'];
 						$insert_item['tracking_no']=$logistic['tracking_no'];
-						$insert_item['quantity']=$item['quantity'];
+						$insert_item['quantity']=!empty($item['quantity'])?$item['quantity']:0;
 						$insert_item['created_at']=date("Y-m-d H:i:s");
-						if(!self::existTrackInfo($insert_item['tracking_no']))
-						{
+						$orderInfo=self::getOrder('id', $logKey);
+						//print_r($orderInfo);die;
+						$insert_item['entry_id']=$orderInfo[0]->entry_id;
+						//if(!self::existTrackInfo($insert_item['tracking_no']))
+						//{
 							static::insertShipped($insert_item);
-						}
+						//}
 						//更新items 表中item的状态
 						static::updateItem($key,$item_status);
 					}
 				}
 			}
-			$order['order_status']=!empty($logistic['ship_first'])?self::CONFIRM_FIRST:$order['order_status'];
+			$order['order_status']=!empty($logistic['ship_first'])?self::MARK_SEND_ORDER:$order['order_status'];
 			if(!empty($logistic['method'])&&!empty($logistic['company']))
 			{
 				//更新orders中order的状态
@@ -151,5 +156,19 @@ class Shipping{
 		return 'done';
 
 
+	}
+	
+	/*
+	 * 获取订单信息
+	 * 
+	 * @param    $column    列名
+	 * @param    $value     列值
+	 * 
+	 * return    
+	 */
+	public static function getOrder($column,$value)
+	{
+        return DB::table('orders')->where($column,'=',$value)
+                                 ->get();   
 	}
 }
