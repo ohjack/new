@@ -34,7 +34,6 @@
 */
 
 return array(
-    'bob',
     'docs'   => ['handles' => 'docs'],
     'sentry' => ['auto' => true]
 );
