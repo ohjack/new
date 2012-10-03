@@ -7,7 +7,7 @@
   {{ HTML::script('js/user.js') }}   
 </head>
 <body>
-  <div style="margin-top: 100px">
+  <div style="margin-top: 200px">
     <div style="margin: 0 auto; width: 300px; border: 1px solid #ccc; padding: 0 20px 20px 20px">
         <h2 style="text-align: center; margin: 5px; padding-top: 20px">用户注册</h2>
         {{ Form::open('register/submit') }}

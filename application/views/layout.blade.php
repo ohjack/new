@@ -13,6 +13,7 @@
 @section('dashboard')
   <div>
        {{ HTML::link('logout', '登出', ['style' => 'float: right']) }}
+       <span style="float: right;padding: 0 10px">您好，<font style="color: green">{{ Sentry::user()->get('username') }}</font></span>
        {{ HTML::link('order', '订单列表') }}
        {{ HTML::link('order/center', '处理订单') }}
        {{ HTML::link('skumap/manage', '产品设置管理') }}

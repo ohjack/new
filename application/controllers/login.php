@@ -11,7 +11,7 @@ class Login_Controller extends Base_Controller
     {
         if (Sentry::check())
         {
-            return Redirect::to('/');
+            return Redirect::to('order');
         }
         return View::make('login');
     }
@@ -22,7 +22,7 @@ class Login_Controller extends Base_Controller
         $password=Input::get('password');
         if(User::login($username, $password))
         {
-            return Redirect::to('/');
+            return Redirect::to('order');
         }
     }
 }

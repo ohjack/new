@@ -177,3 +177,11 @@ if ( ! Request::cli() and Config::get('session.driver') !== '')
 {
     Session::load();
 }
+
+/**
+ * 定义订单状态
+ */
+foreach(Config::get('application.order_status') as $index => $status) {
+    if(!empty($status['define']) && !defined($status['define']))
+        define($status['define'], $index);
+}

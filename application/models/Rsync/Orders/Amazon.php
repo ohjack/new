@@ -31,12 +31,13 @@ class Rsync_Orders_Amazon {
         // 遍历发货信息
         foreach($order->items as $item) {
             $company     = $item->company;
-            $method      = Config::get('application.logistic_company')[$item->company]['method'][$item->method];
+            $method      = $item->method;
             $tracking_no = $item->tracking_no;
         }
 
         $filename = path('public') . 'data/rsync/' . md5(time() . rand(0,1000)) . '.xml';
 
+        // -------------------------------XML file -----------------------------------
         $xml = new XMLWriter();
         $xml->openUri($filename);
         $xml->setIndentString('    ');
@@ -65,7 +66,7 @@ class Rsync_Orders_Amazon {
         $xml->text($order_id);
         $xml->endElement();
         $xml->startElement('FulfillmentDate');
-        $xml->text('2012-09-28T00:00:00');
+        $xml->text($timestamp);
         $xml->endElement();
         $xml->startElement('FulfillmentData');
         $xml->startElement('CarrierCode');
@@ -92,6 +93,8 @@ class Rsync_Orders_Amazon {
         $xml->endElement();
         $xml->endElement();
         $xml->endDocument();
+        // -------------------------------XML file end -------------------------------
+
         $param['content_md5'] = base64_encode(md5_file($filename, true));
         // chmod($filename, 0755);
         $param['filename'] = $filename;

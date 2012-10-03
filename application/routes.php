@@ -31,27 +31,26 @@
 |       });
 |
 */
-
 Route::get('/', function() {
-    return Redirect::to('order', 301);
+    return Redirect::to('login');
 });
 
+Route::group(array('before' => 'sentry'), function(){
 
+    Route::controller('user');
+    Route::controller('spider.order');
+    Route::controller('spider.item');
+    Route::controller('order.logistics');
+    Route::controller('order.ajax');
+    Route::controller('order');
+    Route::controller('item');
 
+    Route::controller('skumap.manage');
+    Route::controller('skumap');
+    Route::controller('shipping');
+    Route::controller('track');
 
-
-Route::controller('user');
-Route::controller('spider.order');
-Route::controller('spider.item');
-Route::controller('order.logistics');
-Route::controller('order.ajax');
-Route::controller('order');
-Route::controller('item');
-
-Route::controller('skumap.manage');
-Route::controller('skumap');
-Route::controller('shipping');
-Route::controller('track');
+});
 Route::controller('login');
 Route::controller('register');
 Route::controller('logout');
@@ -128,8 +127,7 @@ Route::filter('auth', function()
     if (Auth::guest()) return Redirect::to('login');
 });
 
-Route::filter('checkin',function()
+Route::filter('sentry',function()
 {
     if(!Sentry::check()) return Redirect::to('login');
-}
-);
+});

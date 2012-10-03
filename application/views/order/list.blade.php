@@ -44,8 +44,8 @@
                   <td>
                       <select name="order_status">
                           <option value=''>--请选择--</option>
-                          @foreach(Config::get('application.order_status') as $code => $name)
-                          <option value="{{ $code }}">{{ $name }}</option>
+                          @foreach(Config::get('application.order_status') as $code => $status)
+                          <option value="{{ $code }}">{{ $status['desc'] }}</option>
                           @endforeach
                       </select>
                   </td>
@@ -119,7 +119,14 @@
             @endforeach
           </td>
           <td>{{$order->from}}</td>
-          <td>{{ Config::get('application.order_status')[$order->order_status] }}</td>
+          <td 
+              @if($order->order_status == '0')
+                style="color: red"
+              @elseif(in_array($order->order_status, [5,6,7]))
+                style="color: green"
+              @endif
+            >
+            {{ Config::get('application.order_status')[$order->order_status]['desc'] }}</td>
         </tr>
         @endforeach
       </tbody>

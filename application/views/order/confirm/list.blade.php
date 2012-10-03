@@ -46,7 +46,7 @@
             @endforeach
           </td>
           <td>{{$order->from}}</td>
-          <td>{{ Config::get('application.order_status')[$order->order_status] }}</td>
+          <td>{{ Config::get('application.order_status')[$order->order_status]['desc'] }}</td>
         </tr>
         @endforeach
       </tbody>
