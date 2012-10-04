@@ -7,7 +7,7 @@ class Order_Controller extends Base_Controller {
     const PART_SEND_ORDER = 2; // 部分发货
     const ALL_SEND_ORDER  = 3; // 全部发货
     const MARK_SEND_ORDER = 4; // 先标记发货
-
+    
     // 订单列表
     public function action_index() {
 
@@ -22,9 +22,9 @@ class Order_Controller extends Base_Controller {
         $orders = Order::getOrders(15, $options);
 
         $logistics = array_keys(Config::get('application.logistics'));
-
+        $user_id=Sentry::user()->get('id');
         // 载入用户mark
-        $marks = Mark::getByUserId( Sentry::user()->get('id') );
+        $marks = Mark::getByUserId( $user_id );
 
         // view
         return View::make('order.list')->with('orders', $orders)
@@ -55,7 +55,7 @@ class Order_Controller extends Base_Controller {
 
         Step::reset();
         */
-
+        $user_id=Senty::user()->get('id');
         $options = [
             //'orders.user_id' => Sentry::user()->get('id'),
             'orders.confirm' => 0,
@@ -65,9 +65,9 @@ class Order_Controller extends Base_Controller {
         $orders = Order::getOrders(1, $options);
 
         $total = [
-            'order'  => SpiderLog::lastTotal(Sentry::user()->get('id')),
-            'skumap' => count(Item::getNoSkuItems(Sentry::user()->get('id'))),
-            'handle' => Logistics::getTotal(Sentry::user()->get('id')),
+            'order'  => SpiderLog::lastTotal($user_id),
+            'skumap' => count(Item::getNoSkuItems($user_id)),
+            'handle' => Logistics::getTotal($user_id),
             'confirm' => $orders->total,
             ];
 
@@ -77,8 +77,8 @@ class Order_Controller extends Base_Controller {
 
     // 订单sku映射设置列表
     public function action_skumap() {
-
-        $items = Item::getNoSkuItems(Sentry::user()->get('id'));
+        $user_id=Sentry::user()->get('id');
+        $items = Item::getNoSkuItems($user_id);
 
         return View::make('order.skumap.list')->with('items', $items)
                                         ->with('title', '产品设置');
@@ -96,7 +96,7 @@ class Order_Controller extends Base_Controller {
             'target_sku'   => 'required|min:1',
             'logistics'    => 'required|min:1'
             ];
-
+        $user_id=Sentry::user()->get('id');
         if( isset( $datas['original_sku'] ) ) {
             foreach ($datas['original_sku'] as $key => $value) {
                 $data = [
@@ -104,7 +104,8 @@ class Order_Controller extends Base_Controller {
                     'product_price' => $datas['product_price'][$key],
                     'target_sku'    => $datas['target_sku'][$key],
                     'original_sku'  => $datas['original_sku'][$key],
-                    'logistics'     => $datas['logistics'][$key]
+                    'logistics'     => $datas['logistics'][$key],
+                    'user_id'       =>$user_id,
                     ];
 
                 $validation = Validator::make($data, $rules);
@@ -116,9 +117,9 @@ class Order_Controller extends Base_Controller {
         }
 
         // SKU列表
-        $items = count(Item::getNoSkuItems(Sentry::user()->get('id')));
+        $items = count(Item::getNoSkuItems($user_id));
         if(empty($items)) {
-            if(Order::Match(Sentry::user()->get('id'))) return Redirect::to('order/center');
+            if(Order::Match($user_id)) return Redirect::to('order/center');
         } else {
             return Redirect::to('order/skumap');
         }

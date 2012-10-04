@@ -28,7 +28,7 @@ class Skumap_Controller extends Base_Controller {
             'target_sku'   => 'required|min:1',
             'logistics'    => 'required|min:1'
             ];
-
+        $user_id=Sentry::user()->get('id');
         if( isset( $datas['original_sku'] ) ) {
             foreach ($datas['original_sku'] as $key => $value) {
                 $data = [
@@ -36,7 +36,8 @@ class Skumap_Controller extends Base_Controller {
                     'product_price' => $datas['product_price'][$key],
                     'target_sku'    => $datas['target_sku'][$key],
                     'original_sku'  => $datas['original_sku'][$key],
-                    'logistics'     => $datas['logistics'][$key]
+                    'logistics'     => $datas['logistics'][$key],
+                    'user_id'       => $user_id,
                     ];
 
                 $validation = Validator::make($data, $rules);
@@ -48,7 +49,7 @@ class Skumap_Controller extends Base_Controller {
         }
 
         // 获取问题SKU 出来完成允许下一步
-        $items = Item::getNoSkuItems(Sentry::user()->get('id'));
+        $items = Item::getNoSkuItems($user_id);
         if(empty($items)) {
             return Redirect::to('order/handle');
         }

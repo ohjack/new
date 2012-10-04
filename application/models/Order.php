@@ -36,7 +36,7 @@ class Order {
      * reutrn object
      */
     public static function getOrders( $per_page, $options ) {
-
+        $user_id=Sentry::user()->get('id');
         $fields = [
             'orders.id', 'orders.created_at', 'orders.entry_id', 'orders.currency',
             'orders.total', 'orders.shipment_level', 'orders.order_status', 'orders.shipping_name',
@@ -51,16 +51,16 @@ class Order {
         foreach ($options as $key => $option) {
             if($key == 'mark_id') {
                 $table = $table->left_join('orders_mark', 'orders.id', '=', 'orders_mark.order_id')
-                                ->where('orders.user_id','=',Sentry::user()->get('id'));
+                                ->where('orders.user_id','=',$user_id);
             }
 
             if(is_array($option)) {
                 $table = $table->where_in($key, $option)
-                                ->where('orders.user_id','=',Sentry::user()->get('id'));
+                                ->where('orders.user_id','=',$user_id);
 
             } else if (trim($option) != '') {
                 $table = $table->where($key, '=', $option)
-                                ->where('orders.user_id','=',Sentry::user()->get('id'));
+                                ->where('orders.user_id','=',$user_id);
             }
         }
 
