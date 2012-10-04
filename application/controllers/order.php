@@ -180,7 +180,8 @@ class Order_Controller extends Base_Controller {
     // 执行确认订单
     public function action_doconfirm() {
         $ids = Input::get('id');
-        Order::confirm( $ids );
+        $user_id = Sentry::user()->get('id');
+        Order::confirm( $user_id, $ids );
 
         return Redirect::to('order/confirm');
     

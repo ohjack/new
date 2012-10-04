@@ -67,8 +67,20 @@ class Logistics {
                 ]
             ];
 
+        // 排除掉之前导出的订单
+        static::_clearExport( $user_id ); // 清空7天前导出的数据
+        $order_ids = static::_exported( $user_id );
+        $ids = '';
+        $dot = '';
+        foreach ($order_ids as $order_id) {
+            $ids .= $dot . $order_id;
+            $dot = ',';
+        }
+        $exported_ids = explode(',', $ids);
+
         $result = [];
         $objPHPExcel = new PHPExcel();
+        $export_ids = [];
         foreach($logistics as $logistic) {
             $items = DB::table('items')->left_join('orders', 'items.order_id', '=', 'orders.id')
                                        ->left_join('sku_map', 'items.sku', '=', 'sku_map.original_sku')
@@ -76,6 +88,7 @@ class Logistics {
                                        ->where('orders.logistics', '=', $logistic)
                                        ->where('orders.order_status', '=', HAD_MATCH_ORDER)
                                        ->where('sku_map.logistics', '=', $logistic)
+                                       ->where_not_in('orders.id', $exported_ids)
                                        ->get($fields[$logistic]);
 
             if( $items ) {
@@ -131,8 +144,11 @@ class Logistics {
                     }
 
                     $order_ids[] = $item->id;
+                    $export_ids[] = $item->id;
 
                 }
+
+
 
                 $PHPExcel_Writer = new  PHPExcel_Writer_Excel5($objPHPExcel);
                 $PHPExcel_Writer->save($filepath);
@@ -144,7 +160,45 @@ class Logistics {
             }
         }
 
+        // 物流信息导出记录
+        if(!empty($export_ids)) {
+
+            $data = ['ids' => implode(',', $export_ids), 'user_id' => $user_id, 'export_date' => date('Y-m-d H:i:s')];
+            DB::table('orders_export')->insert($data);
+
+        }
+
         return $result;
+    }
+
+    /**
+     * 获取导出记录
+     *
+     * @param: $user_id integer 用户ID
+     *
+     * return array
+     */
+    private static function _exported( $user_id ) {
+        $ids = DB::table('orders_export')->where('user_id', '=', $user_id)
+                                         ->lists('ids'); 
+
+        return $ids;
+    }
+
+    /**
+     * 删除7天前的导出记录
+     *
+     * @param: $user_id integer 用户ID
+     *
+     */
+    private static function _clearExport( $user_id) {
+        $date = date('Y-m-d', time() - (7 * 24 * 60 * 60));
+
+        DB::table('orders_export')->where('user_id', '=', $user_id)
+                                 ->where('export_date', '<', $date)
+                                 ->delete();
+
+    
     }
 
     /**

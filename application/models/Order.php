@@ -215,20 +215,20 @@ class Order {
     /**
      * 标记为可确认订单
      *
-     * @param: $ids array 订单IDs
+     * @param: $user_id integer 用户ID
+     * @param: $ids     array   订单IDs
      *
      * return void
      */
-    public static function confirm( $ids ) {
+    public static function confirm( $user_id, $ids ) {
 
         if(empty($ids)) return;
 
-        $user_id = Sentry::user()->get('id'); //当前用户
         $data = ['confirm' => 1];
 
         DB::table('orders')->where('user_id', '=', $user_id)
                            ->where('confirm', '=', 0)
-                           ->where_in('order_status', [PART_SEND_ORDER, ALL_SEND_ORDER, MARK_SEND_ORDER])
+                           ->where_in('order_status', [ PART_SEND_ORDER, ALL_SEND_ORDER, MARK_SEND_ORDER ])
                            ->where_in('id', $ids)
                            ->update( $data );
     }
