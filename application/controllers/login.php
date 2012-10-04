@@ -1,9 +1,4 @@
 <?php
-use Laravel\Redirect;
-
-use Laravel\Input;
-
-use Laravel\View;
 
 class Login_Controller extends Base_Controller
 {
