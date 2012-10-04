@@ -50,14 +50,17 @@ class Order {
         // 处理条件
         foreach ($options as $key => $option) {
             if($key == 'mark_id') {
-                $table = $table->left_join('orders_mark', 'orders.id', '=', 'orders_mark.order_id');
+                $table = $table->left_join('orders_mark', 'orders.id', '=', 'orders_mark.order_id')
+                                ->where('orders.user_id','=',Sentry::user()->get('id'));
             }
 
             if(is_array($option)) {
-                $table = $table->where_in($key, $option);
+                $table = $table->where_in($key, $option)
+                                ->where('orders.user_id','=',Sentry::user()->get('id'));
 
             } else if (trim($option) != '') {
-                $table = $table->where($key, '=', $option);
+                $table = $table->where($key, '=', $option)
+                                ->where('orders.user_id','=',Sentry::user()->get('id'));
             }
         }
 
@@ -220,7 +223,7 @@ class Order {
 
         if(empty($ids)) return;
 
-        $user_id = 1;
+        $user_id = Sentry::user()->get('id'); //当前用户
         $data = ['confirm' => 1];
 
         DB::table('orders')->where('user_id', '=', $user_id)

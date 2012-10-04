@@ -93,7 +93,7 @@ class SpiderLog {
                                                  ->order_by('spider_log.lasttime', 'DESC')
                                                  ->first();
 
-        return $spider_log->total > 99 ? 'N' : $spider_log->total;
+        return empty($spider_log)?0:($spider_log->total > 99 ? 'N' : $spider_log->total);
 
     }
 
