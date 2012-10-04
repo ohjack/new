@@ -169,6 +169,6 @@ class Shipping{
 	public static function getOrder($column,$value)
 	{
         return DB::table('orders')->where($column,'=',$value)
-                                 ->get();   
+                                 ->first();   
 	}
 }
