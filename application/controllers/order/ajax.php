@@ -38,7 +38,7 @@ class Order_Ajax_Controller extends Base_Controller {
 
         $order_id = Input::get('order_id');
         $mark_id  = Input::get('mark_id');
-        $user_id  = 1;   // 当前用户
+        $user_id  = Sentry::user()->get('id');   // 当前用户
         
         Mark::delete( $order_id, $mark_id );
 

@@ -48,7 +48,7 @@ class Skumap_Controller extends Base_Controller {
         }
 
         // 获取问题SKU 出来完成允许下一步
-        $items = Item::getNoSkuItems(1);
+        $items = Item::getNoSkuItems(Sentry::user()->get('id'));
         if(empty($items)) {
             return Redirect::to('order/handle');
         }

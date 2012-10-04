@@ -24,7 +24,7 @@ class Order_Controller extends Base_Controller {
         $logistics = array_keys(Config::get('application.logistics'));
 
         // 载入用户mark
-        $marks = Mark::getByUserId( 1 );
+        $marks = Mark::getByUserId( Sentry::user()->get('id') );
 
         // view
         return View::make('order.list')->with('orders', $orders)
@@ -57,7 +57,7 @@ class Order_Controller extends Base_Controller {
         */
 
         $options = [
-            'orders.user_id' => 1,
+            //'orders.user_id' => Sentry::user()->get('id'),
             'orders.confirm' => 0,
             'orders.order_status' => [self::PART_SEND_ORDER, self::ALL_SEND_ORDER, self::MARK_SEND_ORDER],
             ];
@@ -65,9 +65,9 @@ class Order_Controller extends Base_Controller {
         $orders = Order::getOrders(1, $options);
 
         $total = [
-            'order'  => SpiderLog::lastTotal(1),
-            'skumap' => count(Item::getNoSkuItems(1)),
-            'handle' => Logistics::getTotal(1),
+            'order'  => SpiderLog::lastTotal(Sentry::user()->get('id')),
+            'skumap' => count(Item::getNoSkuItems(Sentry::user()->get('id'))),
+            'handle' => Logistics::getTotal(Sentry::user()->get('id')),
             'confirm' => $orders->total,
             ];
 
@@ -78,7 +78,7 @@ class Order_Controller extends Base_Controller {
     // 订单sku映射设置列表
     public function action_skumap() {
 
-        $items = Item::getNoSkuItems(1);
+        $items = Item::getNoSkuItems(Sentry::user()->get('id'));
 
         return View::make('order.skumap.list')->with('items', $items)
                                         ->with('title', '产品设置');
@@ -116,9 +116,9 @@ class Order_Controller extends Base_Controller {
         }
 
         // SKU列表
-        $items = count(Item::getNoSkuItems(1));
+        $items = count(Item::getNoSkuItems(Sentry::user()->get('id')));
         if(empty($items)) {
-            if(Order::Match(1)) return Redirect::to('order/center');
+            if(Order::Match(Sentry::user()->get('id'))) return Redirect::to('order/center');
         } else {
             return Redirect::to('order/skumap');
         }
@@ -132,7 +132,7 @@ class Order_Controller extends Base_Controller {
             'birdsystem'
             ];
     
-        $user_id = 1;
+        $user_id = Sentry::user()->get('id');
         $files = Logistics::getXlsFile( $user_id, $logistics );
 
         return View::make('order.logistics.list')->with('files', $files)
@@ -164,7 +164,7 @@ class Order_Controller extends Base_Controller {
     public function action_confirm() {
 
         $options = [
-            'orders.user_id' => 1,
+            'orders.user_id' => Sentry::user()->get('id'),
             'orders.confirm' => 0,
             'orders.order_status' => [self::PART_SEND_ORDER, self::ALL_SEND_ORDER, self::MARK_SEND_ORDER],
             ];

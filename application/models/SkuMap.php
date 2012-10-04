@@ -13,7 +13,7 @@ class SkuMap {
             if(trim($option))
                 $obj = $obj->where($key, '=', $option);
         }
-
+        $obj = $obj->where('user_id','=',Sentry::user()->get('id'));
         return $obj->paginate( $per_page );
 
     }
