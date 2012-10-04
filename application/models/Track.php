@@ -19,6 +19,7 @@ class Track
 		$end_id=$start_id;
 		$lists=DB::table('shipped')
 		->where('id','>',$start_id)
+		->or_where_not_in('tracking_no',array('Latter','latter','later'))
 		->get(array('id','tracking_no','company','method'));
 		if(!empty($lists))
 		{
@@ -211,11 +212,12 @@ class Track
 		foreach($arr as $key=>$shipp)
 		{
 			if(!$key=='0'){
-				if(!Shipping::existTrackInfo($shipp[4]))
+			    
+			    $orderInfo=Shipping::getOrder('entry_id', $shipp[0]);
+			    $temp_id=empty($orderInfo)?0:$orderInfo->id;
+				if($temp_id!=0)
 				{
-				    $orderInfo=Shipping::getOrder('entry_id', $shipp[0]);
-				    //print_r(count($orderInfo));die;
-				    $temp_id=empty($orderInfo)?0:$orderInfo->id;
+
 					$input=array(
 							'entry_id'=>$shipp[0],
 							'item_id'=>empty($shipp[1])?0:$shipp[1],
@@ -230,7 +232,7 @@ class Track
 					DB::table('shipped')->insert_get_id($input);
 					
 					//更新订单状态
-					if($temp_id!=0)	Shipping::updateOrder($temp_id,array('order_status'=>self::ALL_SEND_ORDER));
+					Shipping::updateOrder($temp_id,array('order_status'=>self::ALL_SEND_ORDER));
 				}
 			}
 		}

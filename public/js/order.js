@@ -27,11 +27,14 @@ $(function(){
                         $(this).html(eval('data.'+ field));
                     }
                 });
-
-                 $('#track_info td').each(function(){
-                	 var field=($(this).attr('field'));                
-                 	$(this).html(eval('data.tracking[0].'+field));
-                  });
+               
+                if(data.tracking.length>0)
+                {
+                	$('#track_info td').each(function(){
+                		var field=($(this).attr('field'));                
+                		$(this).html(eval('data.tracking[0].'+field));
+                	});
+                }
 
                 // 产品列表
                 var items_count = data.items.length;

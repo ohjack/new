@@ -55,6 +55,8 @@ class Shipping{
 	{
 		return DB::table('shipped')->where('tracking_no','=',$tracking_no)->only('id');
 	}
+	
+	
 	/*
 	 * 手动录入发货信息
 	*
@@ -135,8 +137,7 @@ class Shipping{
 						$insert_item['quantity']=!empty($item['quantity'])?$item['quantity']:0;
 						$insert_item['created_at']=date("Y-m-d H:i:s");
 						$orderInfo=self::getOrder('id', $logKey);
-						//print_r($orderInfo);die;
-						$insert_item['entry_id']=$orderInfo[0]->entry_id;
+						$insert_item['entry_id']=$orderInfo->entry_id;
 						//if(!self::existTrackInfo($insert_item['tracking_no']))
 						//{
 							static::insertShipped($insert_item);
