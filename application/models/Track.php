@@ -2,6 +2,11 @@
 
 class Track
 {
+    const PENDING_ORDER   = 0; // 待处理
+    const HAD_MATCH_ORDER = 1; // 已分配物流
+    const PART_SEND_ORDER = 2; // 部分发货
+    const ALL_SEND_ORDER  = 3; // 全部发货
+    const MARK_SEND_ORDER = 4; // 先标记发货
 	/*
 	 * 从发货表复制物流信息
 	*
@@ -179,49 +184,15 @@ class Track
 		$end_id=self::copy($start_id);
 		self::resetStartID($end_id);
 	}
-
-
+    
+	
 	/*
-	 * 读取xls数据
-	*/
-	public static function runReadXls()
-	{
-		$filename=path('public').'data/upload/xls/demo.xls';
-		$PHPExcel=new PHPExcel();
-		$PHPRead=new PHPExcel_Reader_Excel2007();
-		if(!$PHPRead->canRead($filename))
-		{
-			$PHPRead=new PHPExcel_Reader_Excel5();
-			if(!$PHPRead->canRead($filename))
-			{
-				exit();
-			}
-		}
-		$PHPExcel=$PHPRead->load($filename);
-		$arr=$PHPExcel->getSheet(0)->toArray();
-		foreach($arr as $key=>$shipp)
-		{
-			if(!$key=='0'){
-				if(!Shipping::existTrackInfo($shipp[0]))
-				{
-				    $orderInfo=Shipping::getOrder('entry_id', $shipp[0]);
-				    $temp_id=empty($orderInfo)?0:$orderInfo['id'];
-					$input=array(
-							'entry_id'=>$shipp[0],
-							'item_id'=>$shipp[1],
-							'quantity'=>$shipp[2],
-							'company'=>$shipp[3],
-							'tracking_no'=>$shipp[4],
-							'method'=>$shipp[5],					        
-					        'order_id'=>$temp_id,
-					);
-					DB::table('shipped')->insert_get_id($input);
-				}
-			}
-		}
-		echo 'Done';
-
-	}
+	 * 
+	 * read xls to database
+	 * 
+	 * @param    $path    xls文件路径            
+	 * 
+	 */
 	public static function toDatabase($path)
 	{
 		$filename=$path;
@@ -240,21 +211,26 @@ class Track
 		foreach($arr as $key=>$shipp)
 		{
 			if(!$key=='0'){
-				if(!Shipping::existTrackInfo($shipp[0]))
+				if(!Shipping::existTrackInfo($shipp[4]))
 				{
 				    $orderInfo=Shipping::getOrder('entry_id', $shipp[0]);
-				    $temp_id=empty($orderInfo)?0:$orderInfo['id'];
+				    //print_r(count($orderInfo));die;
+				    $temp_id=empty($orderInfo)?0:$orderInfo->id;
 					$input=array(
 							'entry_id'=>$shipp[0],
-							'item_id'=>$shipp[1],
-							'quantity'=>$shipp[2],
+							'item_id'=>empty($shipp[1])?0:$shipp[1],
+							'quantity'=>empty($shipp[2])?0:$shipp[2],
 							'company'=>$shipp[3],
 							'tracking_no'=>$shipp[4],
-							'method'=>$shipp[5],					        
+							'method'=>empty($shipp[5])?0:$shipp[5],					        
 					        'order_id'=>$temp_id,
 							'created_at'=>date("Y-m-d H:i:s"),
 					);
+					//print_r($input);
 					DB::table('shipped')->insert_get_id($input);
+					
+					//更新订单状态
+					if($temp_id!=0)	Shipping::updateOrder($temp_id,array('order_status'=>self::ALL_SEND_ORDER));
 				}
 			}
 		}
