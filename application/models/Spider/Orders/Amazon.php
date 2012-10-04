@@ -14,7 +14,6 @@ class Spider_Orders_Amazon {
     private $_Key;
     private $_Url;
 
-    const ORDER_UNHANDLE = 0; // 未处理订单状态
     const SERVER_VERSION = '2011-01-01';  // API版本
 
     /**
@@ -375,7 +374,7 @@ class Spider_Orders_Amazon {
                 'payment_method'           => isset($data['PaymentMethod']) ? $data['PaymentMethod'] : '',
                 'from'                     => isset($data['SalesChannel']) ? $data['SalesChannel'] : '',
                 'status'                   => isset($data['OrderStatus']) ? $data['OrderStatus'] : '',
-                'order_status'             => self::ORDER_UNHANDLE,
+                'order_status'             => PENDING_ORDER,
                 'created_at'               => isset($data['PurchaseDate']) ? $data['PurchaseDate'] : '',
                 ];
 

@@ -1,13 +1,6 @@
 <?php
 
 class Order {
-
-    const PENDING_ORDER   = 0; // 待处理
-    const HAD_MATCH_ORDER = 1; // 已分配物流
-    const PART_SEND_ORDER = 2; // 部分发货
-    const ALL_SEND_ORDER  = 3; // 全部发货
-    const MARK_SEND_ORDER = 4; // 先标记发货
-
     
     /**
      * 获取订单
@@ -124,7 +117,7 @@ class Order {
      */
     public static function updateLogistics( $order_id, $logistics ) {
 
-        $option = [ 'logistics' => $logistics , 'order_status' => self::HAD_MATCH_ORDER ];
+        $option = [ 'logistics' => $logistics , 'order_status' => HAD_MATCH_ORDER ];
     
         DB::table('orders')->where('id', '=', $order_id)->update( $option );
     }
@@ -178,7 +171,12 @@ class Order {
      * return array
      */
     public static function getUnspiderOrders( $user_id ) {
-        return DB::table('orders')->where('user_id', '=', $user_id)->where_null('crawled_at')->get(['id', 'entry_id', 'from']);
+
+        $orders =  DB::table('orders')->where('user_id', '=', $user_id)
+                                      ->where_null('crawled_at')
+                                      ->get(['id', 'entry_id', 'from']);
+
+        return $orders;
     }
 
     /**
@@ -191,7 +189,7 @@ class Order {
      */
     public static function getShipOrders( $user_id, $from ) {
 
-        $status = [ self::PART_SEND_ORDER, self::ALL_SEND_ORDER, self::MARK_SEND_ORDER ];
+        $status = [ PART_SEND_ORDER, ALL_SEND_ORDER, MARK_SEND_ORDER ];
         $orders = DB::table('orders')->where('user_id', '=', $user_id)
                                      ->where('from' , '=', $from)
                                      ->where('confirm' , '=', 1)
@@ -227,7 +225,7 @@ class Order {
 
         DB::table('orders')->where('user_id', '=', $user_id)
                            ->where('confirm', '=', 0)
-                           ->where_in('order_status', [self::PART_SEND_ORDER, self::ALL_SEND_ORDER, self::MARK_SEND_ORDER])
+                           ->where_in('order_status', [PART_SEND_ORDER, ALL_SEND_ORDER, MARK_SEND_ORDER])
                            ->where_in('id', $ids)
                            ->update( $data );
     }
@@ -313,13 +311,13 @@ class Order {
             }
 
             $items = $table->where('orders.user_id', '=', $user_id)
-                           ->where('orders.order_status', '=', self::PENDING_ORDER)
+                           ->where('orders.order_status', '=', PENDING_ORDER)
                            ->get();
 
             foreach($items as $item) {
                 $skumap_exsits = SkuMap::chkMap($item->sku, $logistics);
                 if( $skumap_exsits && !in_array($item->order_id, $had_handle)) {
-                    self::updateLogistics($item->order_id, $logistics);
+                    Order::updateLogistics($item->order_id, $logistics);
                     $had_handle[] = $item->order_id;
                 }
             }

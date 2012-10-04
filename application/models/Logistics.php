@@ -2,9 +2,6 @@
 
 class Logistics {
 
-    const PENDING_ORDER   = 0;
-    const HAD_MATCH_ORDER = 1;
-
     /**
      * 统计两物流的数量
      *
@@ -17,7 +14,7 @@ class Logistics {
         $logistics = ['coolsystem', 'birdsystem'];
 
         return DB::table('orders')->where_in('logistics', $logistics)
-                                  ->where('order_status', '=', self::HAD_MATCH_ORDER)
+                                  ->where('order_status', '=', HAD_MATCH_ORDER)
                                   ->where('user_id', '=', $user_id)
                                   ->count();
     }
@@ -77,7 +74,7 @@ class Logistics {
                                        ->left_join('sku_map', 'items.sku', '=', 'sku_map.original_sku')
                                        ->where('orders.user_id', '=', $user_id)
                                        ->where('orders.logistics', '=', $logistic)
-                                       ->where('orders.order_status', '=', self::HAD_MATCH_ORDER)
+                                       ->where('orders.order_status', '=', HAD_MATCH_ORDER)
                                        ->where('sku_map.logistics', '=', $logistic)
                                        ->get($fields[$logistic]);
 
