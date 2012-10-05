@@ -16,9 +16,9 @@ class Order_Controller extends Base_Controller {
         $orders = Order::getOrders(15, $options);
 
         $logistics = array_keys(Config::get('application.logistics'));
-
+        $user_id=Sentry::user()->get('id');
         // 载入用户mark
-        $marks = Mark::getByUserId( Sentry::user()->get('id') );
+        $marks = Mark::getByUserId( $user_id );
 
         // view
         return View::make('order.list')->with('orders', $orders)
@@ -54,7 +54,6 @@ class Order_Controller extends Base_Controller {
 
     // 订单sku映射设置列表
     public function action_skumap() {
-
         $user_id = Sentry::user()->get('id');
 
         $items = Item::getNoSkuItems( $user_id );
@@ -76,7 +75,7 @@ class Order_Controller extends Base_Controller {
             'target_sku'   => 'required|min:1',
             'logistics'    => 'required|min:1'
             ];
-
+        $user_id=Sentry::user()->get('id');
         if( isset( $datas['original_sku'] ) ) {
             foreach ($datas['original_sku'] as $key => $value) {
                 $data = [
@@ -84,7 +83,8 @@ class Order_Controller extends Base_Controller {
                     'product_price' => $datas['product_price'][$key],
                     'target_sku'    => $datas['target_sku'][$key],
                     'original_sku'  => $datas['original_sku'][$key],
-                    'logistics'     => $datas['logistics'][$key]
+                    'logistics'     => $datas['logistics'][$key],
+                    'user_id'       =>$user_id,
                     ];
 
                 $validation = Validator::make($data, $rules);
