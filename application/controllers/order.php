@@ -2,12 +2,6 @@
 
 class Order_Controller extends Base_Controller {
 
-
-    const HAD_MATCH_ORDER = 1;
-    const PART_SEND_ORDER = 2; // 部分发货
-    const ALL_SEND_ORDER  = 3; // 全部发货
-    const MARK_SEND_ORDER = 4; // 先标记发货
-
     // 订单列表
     public function action_index() {
 
@@ -36,38 +30,21 @@ class Order_Controller extends Base_Controller {
 
     // 处理订单
     public function action_center() {
-        //Session::put('step', 'spiderOrder');
 
-        /*
-        $step = Session::get('step');
-        if($step == 'mapSetting') {
-            if( !count(Item::getNoSkuItems()) ) {
-                $step = 'matchLogistics';
-                Session::put('step', $step); 
-            }
-        } 
-        
-        if( $step == 'handleLogistics') {
-            if( !Logistics::getTotal() )
-                $step = 'spiderOrder';
-                Session::put('step', $step); 
-        }
-
-        Step::reset();
-        */
+        $user_id = Sentry::user()->get('id');
 
         $options = [
-            //'orders.user_id' => Sentry::user()->get('id'),
+            'orders.user_id' => $user_id,
             'orders.confirm' => 0,
-            'orders.order_status' => [self::PART_SEND_ORDER, self::ALL_SEND_ORDER, self::MARK_SEND_ORDER],
+            'orders.order_status' => [ PART_SEND_ORDER, ALL_SEND_ORDER, MARK_SEND_ORDER ],
             ];
 
         $orders = Order::getOrders(1, $options);
 
         $total = [
-            'order'  => SpiderLog::lastTotal(Sentry::user()->get('id')),
-            'skumap' => count(Item::getNoSkuItems(Sentry::user()->get('id'))),
-            'handle' => Logistics::getTotal(Sentry::user()->get('id')),
+            'order'  => SpiderLog::lastTotal( $user_id ),
+            'skumap' => count(Item::getNoSkuItems( $user_id )),
+            'handle' => Logistics::total( $user_id ),
             'confirm' => $orders->total,
             ];
 
@@ -78,15 +55,18 @@ class Order_Controller extends Base_Controller {
     // 订单sku映射设置列表
     public function action_skumap() {
 
-        $items = Item::getNoSkuItems(Sentry::user()->get('id'));
+        $user_id = Sentry::user()->get('id');
+
+        $items = Item::getNoSkuItems( $user_id );
 
         return View::make('order.skumap.list')->with('items', $items)
-                                        ->with('title', '产品设置');
+                                              ->with('title', '产品设置');
     
     }
 
     // 保存sku映射
     public function action_doskumap() {
+        $user_id = Sentry::user()->get('id');
     
         $datas = Input::get();
 
@@ -116,9 +96,9 @@ class Order_Controller extends Base_Controller {
         }
 
         // SKU列表
-        $items = count(Item::getNoSkuItems(Sentry::user()->get('id')));
+        $items = count(Item::getNoSkuItems( $user_id ));
         if(empty($items)) {
-            if(Order::Match(Sentry::user()->get('id'))) return Redirect::to('order/center');
+            if(Order::Match( $user_id )) return Redirect::to('order/center');
         } else {
             return Redirect::to('order/skumap');
         }
@@ -126,17 +106,27 @@ class Order_Controller extends Base_Controller {
 
     // 物流导出
     public function action_handle() {
-
-        $logistics = [
-            'coolsystem',
-            'birdsystem'
-            ];
-    
         $user_id = Sentry::user()->get('id');
-        $files = Logistics::getXlsFile( $user_id, $logistics );
 
-        return View::make('order.logistics.list')->with('files', $files)
+        $lists = Logistics::exportList( $user_id );
+        $histories = Logistics::histories( $user_id );
+        
+        return View::make('order.logistics.list')->with('lists', $lists)
+                                                 ->with('histories', $histories)
                                                  ->with('title', '物流导出');
+    }
+
+    public function action_export() {
+        $user_id = Sentry::user()->get('id');
+
+        $logistics = Input::get('logistics');
+        $filename  = Input::get('filename');
+
+        if($logistics)
+            Logistics::download($user_id, $logistics);
+        elseif($filename)
+            Logistics::downloadFile($filename);
+
     }
 
     // 跟踪信息录入
@@ -147,7 +137,7 @@ class Order_Controller extends Base_Controller {
 
         $options = [
             'entry_id' => Input::get('entry_id'),
-            'order_status'  => self::HAD_MATCH_ORDER,   
+            'order_status'  => HAD_MATCH_ORDER,   
             ];
 
         $orders = Order::getOrders( 15, $options );
@@ -166,7 +156,7 @@ class Order_Controller extends Base_Controller {
         $options = [
             'orders.user_id' => Sentry::user()->get('id'),
             'orders.confirm' => 0,
-            'orders.order_status' => [self::PART_SEND_ORDER, self::ALL_SEND_ORDER, self::MARK_SEND_ORDER],
+            'orders.order_status' => [ PART_SEND_ORDER, ALL_SEND_ORDER, MARK_SEND_ORDER],
             ];
 
         $orders = Order::getOrders(15, $options);

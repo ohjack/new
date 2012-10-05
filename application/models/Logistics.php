@@ -3,33 +3,78 @@
 class Logistics {
 
     /**
-     * 统计两物流的数量
+     * 统计新增的物流信息数量
      *
      * @param: $user_id integer 用户ID
      *
      * return integer
      */
-    public static function getTotal( $user_id ) {
+    public static function total( $user_id ) {
     
-        $logistics = ['coolsystem', 'birdsystem'];
+        $logistics = Config::get('application.logistics');
 
-        return DB::table('orders')->where_in('logistics', $logistics)
-                                  ->where('order_status', '=', HAD_MATCH_ORDER)
-                                  ->where('user_id', '=', $user_id)
-                                  ->count();
+        $total = 0;
+        foreach ($logistics as $code => $logistic) {
+            $total += static::count( $user_id, $code );
+        }
+
+        return $total;
     }
 
     /**
-     * 生成物流导入文件
+     * 导出物流信息列表
      *
-     * @param: $user_id array 用户ID
-     * @param: $systems array 系统 暂时是酷&鸟系统
-     *
+     * @param: $user_id integer 用户ID
+     * 
      * return array
      */
-    public static function getXlsFile($user_id, $logistics ) {
+    public static function exportList( $user_id ) {
+        $logistics = Config::get('application.logistics');
 
-        header('content-type:text/html;charset=utf-8');
+        $lists = [];
+        foreach ($logistics as $code => $logistic) {
+            $total = static::count($user_id, $code);
+            if($total) {
+                $lists[$code] = [
+                    'name'  => $logistic,
+                    'total' => $total
+                    ];
+            }
+        }
+
+        return $lists;
+    }
+
+    /**
+     * 统计指定物流新增记录
+     *
+     * @param: $user_id   integer 用户ID
+     * @param: $logistics string  物流名称
+     * 
+     * return integer
+     */
+    public static function count($user_id, $logistics) { 
+
+        $last_order_id = static::_lastExport( $user_id, $logistics);
+
+        $total = DB::table('orders')->where('id', '>', $last_order_id)
+                                    ->where('logistics', '=', $logistics)
+                                    ->where('order_status', '=', HAD_MATCH_ORDER)
+                                    ->where('user_id', '=', $user_id)
+                                    ->count();
+
+        return $total;
+    }
+
+    /**
+     * 生成并下载物流导出文件
+     *
+     * @param: $user_id array 用户ID
+     * @param: $systems array 系统 
+     *
+     * return void
+     */
+    public static function download($user_id, $logistics ) {
 
         $first_row = [
             'coolsystem' => [
@@ -46,6 +91,10 @@ class Logistics {
                 'ship-service-level','recipient-name','ship-address-1','ship-address-2','ship-address-3',
                 'ship-city','ship-state','ship-postal-code','ship-country','sales-channel'
                 ],
+            'micaosystem' => [
+                '投保易网邮保险服务', '邮件编号', '收件人姓名', '收件人地址', '收件人电话', '收件人国家',
+                '邮编', '件数', '重量', '海关品名', '物品数量', '申报单价', '币种', '产品标识【配货信息】'
+                ]
             ];
 
         $fields = [
@@ -64,141 +113,166 @@ class Logistics {
                 'orders.shipping_name', 'orders.shipping_address1', 'orders.shipping_address2',
                 'orders.shipping_address3', 'orders.shipping_city', 'orders.shipping_state_or_region',
                 'orders.shipping_postal_code', 'orders.shipping_country', 'orders.from'
+                ],
+            'micaosystem' => [
+                'orders.id', 'orders.shipping_name', 'orders.shipping_address3', 'orders.shipping_address2',
+                'orders.shipping_address1', 'orders.shipping_city', 'orders.shipping_state_or_region',
+                'orders.shipping_phone', 'orders.shipping_country', 'orders.shipping_postal_code',
+                'sku_map.product_name', 'items.quantity', 'sku_map.product_price', 'items.currency'
                 ]
             ];
 
-        // 排除掉之前导出的订单
-        static::_clearExport( $user_id ); // 清空7天前导出的数据
-        $order_ids = static::_exported( $user_id );
-        $ids = '';
-        $dot = '';
-        foreach ($order_ids as $order_id) {
-            $ids .= $dot . $order_id;
-            $dot = ',';
-        }
-        $exported_ids = explode(',', $ids);
 
-        $result = [];
-        $objPHPExcel = new PHPExcel();
-        $export_ids = [];
-        foreach($logistics as $logistic) {
-            $items = DB::table('items')->left_join('orders', 'items.order_id', '=', 'orders.id')
-                                       ->left_join('sku_map', 'items.sku', '=', 'sku_map.original_sku')
-                                       ->where('orders.user_id', '=', $user_id)
-                                       ->where('orders.logistics', '=', $logistic)
-                                       ->where('orders.order_status', '=', HAD_MATCH_ORDER)
-                                       ->where('sku_map.logistics', '=', $logistic)
-                                       ->where_not_in('orders.id', $exported_ids)
-                                       ->get($fields[$logistic]);
+        $order_id = static::_lastExport( $user_id, $logistics );
 
-            if( $items ) {
-                $filename = sprintf('%s_%s_%s.xls', $logistic, $user_id, date('Y_m_d'));
-                $filepath = path('public') . 'data' . DS . 'logistics_file' . DS . $filename;
-                $objPHPExcel->setActiveSheetIndex(0);
+        $items = DB::table('items')->left_join('orders', 'items.order_id', '=', 'orders.id')
+                                   ->left_join('sku_map', 'items.sku', '=', 'sku_map.original_sku')
+                                   ->where('orders.user_id', '=', $user_id)
+                                   ->where('orders.logistics', '=', $logistics)
+                                   ->where('orders.order_status', '=', HAD_MATCH_ORDER)
+                                   ->where('sku_map.logistics', '=', $logistics)
+                                   ->where('orders.id', '>', $order_id)
+                                   ->get($fields[$logistics]);
 
-                $i = 0;
-                foreach ($first_row[$logistic] as $row) {
-                    $i++;
-                    $cell = static::_autoCell($i) . '1';
+        if( $items ) {
+            $filename = sprintf('%s_%s_%s.xls', $logistics, $user_id, date('Y_m_d_H_i_s_') . rand(1, 1000));
+            $filepath = path('public') . 'data' . DS . 'logistics_file' . DS . $filename;
+            $objPHPExcel = new PHPExcel();
+            $objPHPExcel->setActiveSheetIndex(0);
+
+            // 写第一行
+            $i = 0;
+            foreach ($first_row[$logistics] as $row) {
+                $i++;
+                $cell = static::_autoCell($i) . '1';
+                $objPHPExcel->getActiveSheet()->setCellValueExplicit($cell, $row, PHPExcel_Cell_DataType::TYPE_STRING);
+            }
+
+            // 写表格内容
+            $i = 1;
+            foreach ($items as $item) {
+                $i++;
+                if($logistics == 'coolsystem') {
+                    $rows = [
+                        '', '', '', '', $item->order_id, '',
+                        $item->sku, '', $item->quantity, '', $item->item_id, '', '', '', '',
+                        $item->order_id, $item->shipping_name, $item->shipping_address1,
+                        $item->shipping_address3 . ' ' . $item->shipping_address2,
+                        $item->shipping_state_or_region, $item->shipping_city,
+                        $item->shipping_postal_code, '', $item->shipping_country,
+                        $item->shipping_phone,
+                      ];
+
+                }
+
+
+                if($logistics == 'birdsystem') {
+                    $time = new DateTime($item->created_at);
+                    $item->created_at = $time->format( DateTime::ISO8601 );
+                    $rows = [
+                        $item->order_id, $item->item_id, $item->created_at,
+                        $item->created_at, $item->created_at, $item->created_at,
+                        '', $item->email, $item->name, $item->phone, $item->sku,
+                        $item->product_name, $item->quantity, '0', $item->quantity,
+                        $item->shipment_level, $item->shipping_name, $item->shipping_address1,
+                        $item->shipping_address2, $item->shipping_address3, $item->shipping_city,
+                        $item->shipping_state_or_region, $item->shipping_postal_code,
+                        $item->shipping_country, $item->from
+                        ];
+                }
+
+                if($logistics == 'micaosystem') {
+                    $rows = [
+                        'N', '', $item->shipping_name, $item->shipping_address3 . ' ' . $item->shipping_address2 .
+                        ' ' . $item->shipping_address1 . ' ' . $item->shipping_city . ' ' . 
+                        $item->shipping_state_or_region, $item->shipping_phone, $item->shipping_country,
+                        $item->shipping_postal_code, '1', '0.5', $item->product_name, $item->quantity, 
+                        $item->product_price, $item->currency, ''
+                        ];
+                }
+
+                $j = 0;
+                foreach ($rows as $row) {
+                    $j++;
+                    $cell = static::_autoCell($j) . $i;
                     $objPHPExcel->getActiveSheet()->setCellValueExplicit($cell, $row, PHPExcel_Cell_DataType::TYPE_STRING);
                 }
-                $order_ids = [];
-                $i = 1;
-                foreach ($items as $item) {
-                    $i++;
-                    if($logistic == 'coolsystem') {
-                        $rows = [
-                            '', '', '', '', $item->order_id, '',
-                            $item->sku, '', $item->quantity, '', $item->item_id, '', '', '', '',
-                            $item->order_id, $item->shipping_name, $item->shipping_address1,
-                            $item->shipping_address3 . ' ' . $item->shipping_address2,
-                            $item->shipping_state_or_region, $item->shipping_city,
-                            $item->shipping_postal_code, '', $item->shipping_country,
-                            $item->shipping_phone,
-                          ];
 
-                    }
-
-
-                    if($logistic == 'birdsystem') {
-                        $time = new DateTime($item->created_at);
-                        $item->created_at = $time->format( DateTime::ISO8601 );
-                        $rows = [
-                            $item->order_id, $item->item_id, $item->created_at,
-                            $item->created_at, $item->created_at, $item->created_at,
-                            '', $item->email, $item->name, $item->phone, $item->sku,
-                            $item->product_name, $item->quantity, '0', $item->quantity,
-                            $item->shipment_level, $item->shipping_name, $item->shipping_address1,
-                            $item->shipping_address2, $item->shipping_address3, $item->shipping_city,
-                            $item->shipping_state_or_region, $item->shipping_postal_code,
-                            $item->shipping_country, $item->from
-                            ];
-
-                    }
-
-                    $j = 0;
-                    foreach ($rows as $row) {
-                        $j++;
-                        $cell = static::_autoCell($j) . $i;
-                        $objPHPExcel->getActiveSheet()->setCellValueExplicit($cell, $row, PHPExcel_Cell_DataType::TYPE_STRING);
-                    }
-
-                    $order_ids[] = $item->id;
-                    $export_ids[] = $item->id;
-
-                }
-
-
-
-                $PHPExcel_Writer = new  PHPExcel_Writer_Excel5($objPHPExcel);
-                $PHPExcel_Writer->save($filepath);
-
-                // 统计
-                $total = count( $order_ids );
-
-                $result[] = ['name' => $logistic, 'filename' => $filename, 'total' => $total];
+                $last_order_id = $item->id;
             }
-        }
 
-        // 物流信息导出记录
-        if(!empty($export_ids)) {
+            $PHPExcel_Writer = new  PHPExcel_Writer_Excel5($objPHPExcel);
+            $PHPExcel_Writer->save($filepath);
 
-            $data = ['ids' => implode(',', $export_ids), 'user_id' => $user_id, 'export_date' => date('Y-m-d H:i:s')];
+            // 物流信息导出记录
+            $data = [
+                'total'       => count($items), 
+                'filename'    => $filename, 
+                'user_id'     => $user_id, 
+                'logistics'   => $logistics,
+                'order_id'    => $last_order_id,
+                'export_date' => date('Y-m-d H:i:s')
+                ];
+
             DB::table('orders_export')->insert($data);
 
+            header('Content-type: application/vnd.ms-excel;charset=utf-8');
+            header('Content-Disposition: attachment; filename="' . $filename . '"');
+            readfile($filepath);  
         }
+    }
 
-        return $result;
+    public static function downloadFile( $filename ) {
+        $filepath = path('public') . 'data' . DS . 'logistics_file' . DS . $filename;
+
+        if(file_exists($filepath)) {
+            header('Content-type: application/vnd.ms-excel;charset=utf-8');
+            header('Content-Disposition: attachment; filename="' . $filename . '"');
+            readfile($filepath);
+        } else {
+            exit('没有此文件');
+        }
     }
 
     /**
-     * 获取导出记录
+     * 获取历史订单
      *
      * @param: $user_id integer 用户ID
      *
      * return array
      */
-    private static function _exported( $user_id ) {
-        $ids = DB::table('orders_export')->where('user_id', '=', $user_id)
-                                         ->lists('ids'); 
+    public static function histories( $user_id ) {
+        $logistics = Config::get('application.logistics');
 
-        return $ids;
+        $size = 5; // 取最近5条历史
+        $lists = [];
+        foreach ($logistics as $code => $logistic) {
+             $history = DB::table('orders_export')->where('user_id', '=', $user_id)
+                                                      ->where('logistics', '=', $code)
+                                                      ->take($size)
+                                                      ->get();
+             if($history) $lists[$code] = $history;
+        }
+
+        return $lists;
     }
 
     /**
-     * 删除7天前的导出记录
+     * 最后一次导出的order_id
      *
      * @param: $user_id integer 用户ID
      *
+     * return integer
      */
-    private static function _clearExport( $user_id) {
-        $date = date('Y-m-d', time() - (7 * 24 * 60 * 60));
+    private static function _lastExport( $user_id, $logistics ) {
 
-        DB::table('orders_export')->where('user_id', '=', $user_id)
-                                 ->where('export_date', '<', $date)
-                                 ->delete();
+        $order_id = DB::table('orders_export')->where('user_id', '=', $user_id)
+                                              ->where('logistics', '=', $logistics)
+                                              ->order_by('id', 'DESC')
+                                              ->take(1)
+                                              ->only('order_id'); 
 
-    
+        return $order_id ? $order_id : 0;
     }
 
     /**
