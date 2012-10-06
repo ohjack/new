@@ -251,6 +251,10 @@
               <td field='company'></td>
               </tr>
               <tr>
+              <th width="80em">物流方式：</th>
+              <td field='method'></td>
+              </tr>
+              <tr>
               <th width="80em">快递单号：</th>
               <td field='tracking_no'></td>
               </tr>
