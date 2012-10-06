@@ -6,6 +6,10 @@ class User_Controller extends Base_Controller {
         echo 'user controller';
         return ;
     }
+    public function action_platform()
+    {
+        return;
+    }
 }
 
 ?>
