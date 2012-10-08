@@ -4624,4 +4624,44 @@ table .dropdown-menu.pull-right { right: auto; left: 0; }
 
 .loginWrapper { top: 100px; margin-top: 0; }
 .logControl { padding-bottom: 50px; }
+
+/* start add by fu*/
+.SecMenu{
+position: absolute;
+background: url(../images/subArrow_2.png) no-repeat 10px 5px;
+font-size: 11px;
+width: 100px;
+top: 13px;
+padding-top: 10px;
+margin-left: 100px;
+display:none;
+}
+.SecMenuContent{
+width: 100px;
+border-bottom: 1px solid #343434;
+text-align: left;
+border-top: 1px solid #545454;
+margin-top:-10px;
+margin-left:16px;
+background: url(../images/backgrounds/sidebar.jpg);
+padding: 0;
+padding-left:10px;
+}
+
+.SecMenulink{
+width: 100px;
+height:28px
+}
+.SecMenuLink a{
+width: 100px;
+height:28px;
+line-height:28px;
+padding: 0 !important;
+text-decoration: none;
+color: #CCC !important;
+display: block;
+
+}
+/* end add by fu*/
+
 }
