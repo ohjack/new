@@ -60,38 +60,37 @@ class User {
         return $return;
     }
 
-    
-    
     /*
      * 用户登录
+     *
      */
-    
-    public static  function login($username,$password)
+    public static  function login( $username , $password )
     {
         
+        $result = [
+            'success'  => false,
+            'message' => '帐号或者密码错误'
+            ];
         try
         {
-            // log the user in
-            $valid_login = Sentry::login($username,$password, true);
+            $valid_login = Sentry::login( $username , $password , true);
             if ($valid_login)
             {
-                return true;
-                // the user is now logged in - do your own logic
-            }
-            else
-            {
-                return false;
-                // could not log the user in - do your bad login logic
+                $result['success'] = true;
             }
         }
         catch (Sentry\SentryException $e)
         {
-            // issue logging in via Sentry - lets catch the sentry error thrown
-            // store/set and display caught exceptions such as a suspended user with limit attempts feature.
             $errors = $e->getMessage();
-            echo $errors;
+            $result['message'] = $errors;
         }
+
+        return $result;
     }
+
+    /**
+     * 登出
+     */
     public static function logout()
     {
         Sentry::logout();

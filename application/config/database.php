@@ -69,7 +69,7 @@ return array(
 
         'mysql' => array(
             'driver'   => 'mysql',
-            'host'     => '192.168.1.104',
+            'host'     => '127.0.0.1',
             'database' => 'new',
             'username' => 'root',
             'password' => '123456',

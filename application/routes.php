@@ -31,11 +31,12 @@
 |       });
 |
 */
-Route::get('/', function() {
-    return Redirect::to('login');
-});
 
 Route::group(array('before' => 'sentry'), function(){
+
+    Route::get('/', function() {
+        return View::make('dashboard');
+    });
 
     Route::controller('user');
     Route::controller('spider.order');

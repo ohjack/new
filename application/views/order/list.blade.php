@@ -51,6 +51,16 @@
                   </td>
                 </tr>
                 <tr>
+                  <th>来源:</th>
+                  <td>
+                    <select name="from">
+                        <option value=''>--请选择--</option>
+                        <option value='Amazon.com'>Amazone.com</option>
+                        <option value='Amazon.co.uk'>Amazone.co.uk</option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
                   <td colspan="2">{{ Form::submit('搜索') }}</td>
                 </tr>
               </tbody>

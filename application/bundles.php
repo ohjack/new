@@ -34,6 +34,7 @@
 */
 
 return array(
-    'docs'   => ['handles' => 'docs'],
-    'sentry' => ['auto' => true]
+    'docs'        => ['handles' => 'docs'],
+    'sentry'     => ['auto' => true],
+    'datatables' => ['auto' => true],
 );

@@ -1,51 +1,57 @@
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-    <meta name="viewport" content="width=1024, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>用户登录</title>
-    <!--Stylesheets-->
-    {{ HTML::style('css/reset.css') }}
-    {{ HTML::style('css/icons.css') }}
-    {{ HTML::style('css/main.css') }}
-    {{ HTML::style('css/formalize.css') }}
-    <!--JavaScript-->
-    {{ HTML::script('js/jquery.js') }}
-    {{ HTML::script('js/jqueryui.min.js') }}
-    {{ HTML::script('js/jquery.validate.js') }}
-    <script src="/js/jquery.cookies.js"></script>
-    <script src="/js/jquery.pjax.js"></script>
-    <script src="/js/formalize.min.js"></script>
-    <script src="/js/jquery.metadata.js"></script>
-    <script src="/js/jquery.checkboxes.js"></script>
-    <script src="/js/jquery.chosen.js"></script>
-    <script src="/js/jquery.fileinput.js"></script>
-    <script src="/js/jquery.datatables.js"></script>
-    <script src="/js/jquery.sourcerer.js"></script>
-    <script src="/js/jquery.tipsy.js"></script>
-    <script src="/js/jquery.calendar.js"></script>
-    <script src="/js/jquery.inputtags.min.js"></script>
-    <script src="/js/jquery.wymeditor.js"></script>
-    <script src="/js/jquery.livequery.js"></script>
-    <script src="/js/jquery.flot.min.js"></script>
-    <script src="/js/application.js"></script>
-</head>
-<body id="login">
-  <div id="login_container">
-    <div id="login_form">
-    {{ Form::open('login/submit') }}
-      <p>
-        <input type="text" id="username" name="username" placeholder="帐号" class="{validate: {required: true}}">
-      </p>
-      <p>
-        <input type="password" id="password" name="password" placeholder="密码" class="{validate: {required: true}}" />
-      </p>
-      <button type="submit" class="button blue"><span class="glyph key"></span> 登录</button>
+@layout('layout')
+@section('script')
+{{ HTML::script('js/files/login.js') }}
+{{ HTML::script('js/files/functions.js') }}
+@endsection
+@section('content')
+<!-- Login wrapper begins -->
+<div class="loginWrapper">
+    <!-- Current user form -->
+    {{ Form::open('login/submit', 'POST', ['id' => 'login']) }}
+        <!--div class="loginPic">
+            <a href="#" title=""><img src="{{ URL::base() }}/images/userLogin.png" alt=""></a>
+            <span>Eimo</span>
+            <div class="loginActions">
+                <div><a href="#" title="切换用户" class="logleft flip"></a></div>
+                <div><a href="#" title="忘记密码?" class="logright"></a></div>
+            </div>
+        </div-->
+        
+        <input type="text" name="username" placeholder="帐号" class="validate[required] loginUsername" id="username">
+        <input type="password" name="password" placeholder="密码" class="validate[required] loginPassword" id="password">
+        
+        <div class="logControl">
+            <div class="memory">
+                <input name="remember" type="checkbox" checked="checked" class="check" id="remember1" style="opacity: 0; ">
+                <label for="remember1">下次自动登录</label>
+            </div>
+            <input type="submit" name="submit" value="登录" class="buttonM bBlue">
+            <div class="clear"></div>
+        </div>
     {{ Form::close() }}
-    </div>
-  </div>
+    
+    <!-- New user form -->
+    {{ Form::open('login/submit', 'POST', ['id' => 'recover']) }}
+        <div class="loginPic">
+            <a href="#" title=""><img src="{{ URL::base() }}/images/userLogin2.png" alt=""></a>
+            <div class="loginActions">
+                <div><a href="#" title="" class="logback flip"></a></div>
+                <div><a href="#" title="Forgot password?" class="logright"></a></div>
+            </div>
+        </div>
+            
+        <input type="text" name="username" placeholder="帐号" class="loginUsername">
+        <input type="password" name="password" placeholder="密码" class="loginPassword">
+        
+        <div class="logControl">
+            <div class="memory">
+                <input type="checkbox" checked="checked" class="check" id="remember2" style="opacity: 0; ">
+                <label for="remember2">下次自动登录</label>
+            </div>
+            <input type="submit" name="submit" value="登录" class="buttonM bBlue">
+        </div>
+    {{ Form::close() }}
+
 </div>
-</body>
-</html>
+<!-- Login wrapper ends -->
+@endsection

@@ -2,6 +2,14 @@
 
 class Order_Ajax_Controller extends Base_Controller {
 
+    public function action_list() {
+        $user_id = Sentry::user()->get('id');
+        $orders = Order::ajaxOrders( $user_id );
+
+        Datatables::of($orders)->make();
+    }
+
+
     // 获取订单详情
     public function action_info() {
         if( !Request::ajax() ) {

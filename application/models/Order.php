@@ -28,6 +28,31 @@ class Order {
     }
 
     /**
+     * ajax 获取订单列表
+     *
+     * @param: $user_id integer 用户ID
+     *
+     * return object
+     */
+    public static function ajaxOrders( $user_id ) {
+    
+        $fields = [
+            'orders.id', 'orders.created_at', 'orders.entry_id', 'orders.currency',
+            'orders.total', //'orders.shipment_level', 'orders.order_status', 'orders.shipping_name',
+            //'shipping_name', 'shipping_address1', 'shipping_address2', 'shipping_address3',
+            //'shipping_city', 'shipping_state_or_region', 'shipping_country', 'shipping_postal_code',
+            //'shipping_phone', 'payment_method', 'from'
+             ];
+
+        $table = DB::table('orders')->select($fields)
+                                    ->where('orders.user_id', '=', $user_id)
+                                    ->order_by('orders.order_status', 'ASC')
+                                    ->order_by('orders.created_at', 'DESC');
+
+        return $table;
+    }
+
+    /**
      * 获取订单列表
      *
      * @param: $per_page integer 每页记录数
@@ -45,7 +70,7 @@ class Order {
             'shipping_phone', 'payment_method', 'from'
              ];
 
-        $table = DB::table('orders');
+        $table = DB::table('orders')->select($fields);
 
         // 处理条件
         foreach ($options as $key => $option) {
@@ -69,7 +94,6 @@ class Order {
                        ->order_by('orders.created_at', 'DESC');
 
         $orders = $table->paginate( $per_page , $fields);
-
 
         // 整理列表需要的产品 标识等数据
         foreach ($orders->results as $order) {

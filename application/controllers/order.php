@@ -5,18 +5,20 @@ class Order_Controller extends Base_Controller {
     // 订单列表
     public function action_index() {
 
+        $user_id=Sentry::user()->get('id');
+
         // 搜索字段
         $options = [
             'entry_id'     => Input::get('order_id'),
             'mark_id'      => Input::get('mark_id'),
             'logistics'    => Input::get('logistics'),
             'order_status' => Input::get('order_status'),
+            'from'         => Input::get('from'),
             ];
 
         $orders = Order::getOrders(15, $options);
 
         $logistics = array_keys(Config::get('application.logistics'));
-        $user_id=Sentry::user()->get('id');
         // 载入用户mark
         $marks = Mark::getByUserId( $user_id );
 

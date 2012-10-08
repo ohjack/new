@@ -55,12 +55,13 @@ class Logistics {
      */
     public static function count($user_id, $logistics) { 
 
-        $last_order_id = static::_lastExport( $user_id, $logistics);
+        $last_item_id = static::_lastExport( $user_id, $logistics);
 
-        $total = DB::table('orders')->where('id', '>', $last_order_id)
-                                    ->where('logistics', '=', $logistics)
-                                    ->where('order_status', '=', HAD_MATCH_ORDER)
-                                    ->where('user_id', '=', $user_id)
+        $total = DB::table('items')->left_join('orders', 'items.order_id', '=', 'orders.id')
+                                    ->where('items.id', '>', $last_item_id)
+                                    ->where('orders.logistics', '=', $logistics)
+                                    ->where('orders.order_status', '=', HAD_MATCH_ORDER)
+                                    ->where('orders.user_id', '=', $user_id)
                                     ->count();
 
         return $total;
@@ -99,14 +100,14 @@ class Logistics {
 
         $fields = [
             'coolsystem' => [
-                'orders.id', 'orders.entry_id as order_id', 'sku_map.target_sku as sku', 'items.quantity', 
+                'items.id', 'orders.entry_id as order_id', 'sku_map.target_sku as sku', 'items.quantity', 
                 'orders.shipping_name', 'items.entry_id as item_id', 'orders.shipping_address1', 
                 'orders.shipping_address2', 'orders.shipping_address3', 'orders.shipping_state_or_region', 
                 'orders.shipping_city', 'orders.shipping_postal_code', 'orders.shipping_country', 
                 'orders.shipping_phone'
                 ],
             'birdsystem' => [
-                'orders.id', 'orders.entry_id as order_id', 'items.entry_id as item_id',
+                'items.id', 'orders.entry_id as order_id', 'items.entry_id as item_id',
                 'orders.created_at', 'orders.shipment_level', 'orders.email',
                 'orders.name', 'orders.shipping_phone as phone', 'sku_map.target_sku as sku',
                 'items.name as product_name', 'items.quantity', 'orders.shipment_level',
@@ -115,10 +116,11 @@ class Logistics {
                 'orders.shipping_postal_code', 'orders.shipping_country', 'orders.from'
                 ],
             'micaosystem' => [
-                'orders.id', 'orders.shipping_name', 'orders.shipping_address3', 'orders.shipping_address2',
-                'orders.shipping_address1', 'orders.shipping_city', 'orders.shipping_state_or_region',
-                'orders.shipping_phone', 'orders.shipping_country', 'orders.shipping_postal_code',
-                'sku_map.product_name', 'items.quantity', 'sku_map.product_price', 'items.currency'
+                'items.id', 'orders.entry_id as order_id', 'orders.shipping_name', 'orders.shipping_address3', 
+                'orders.shipping_address2', 'orders.shipping_address1', 'orders.shipping_city', 
+                'orders.shipping_state_or_region', 'orders.shipping_phone', 'orders.shipping_country', 
+                'orders.shipping_postal_code', 'sku_map.product_name', 'items.quantity', 'sku_map.product_price', 
+                'items.currency'
                 ]
             ];
 
@@ -131,7 +133,7 @@ class Logistics {
                                    ->where('orders.logistics', '=', $logistics)
                                    ->where('orders.order_status', '=', HAD_MATCH_ORDER)
                                    ->where('sku_map.logistics', '=', $logistics)
-                                   ->where('orders.id', '>', $order_id)
+                                   ->where('items.id', '>', $order_id)
                                    ->get($fields[$logistics]);
 
         if( $items ) {
@@ -183,7 +185,7 @@ class Logistics {
 
                 if($logistics == 'micaosystem') {
                     $rows = [
-                        'N', '', $item->shipping_name, $item->shipping_address3 . ' ' . $item->shipping_address2 .
+                        'N', $item->order_id, $item->shipping_name, $item->shipping_address3 . ' ' . $item->shipping_address2 .
                         ' ' . $item->shipping_address1 . ' ' . $item->shipping_city . ' ' . 
                         $item->shipping_state_or_region, $item->shipping_phone, $item->shipping_country,
                         $item->shipping_postal_code, '1', '0.5', $item->product_name, $item->quantity, 
@@ -198,7 +200,7 @@ class Logistics {
                     $objPHPExcel->getActiveSheet()->setCellValueExplicit($cell, $row, PHPExcel_Cell_DataType::TYPE_STRING);
                 }
 
-                $last_order_id = $item->id;
+                $last_item_id = $item->id;
             }
 
             $PHPExcel_Writer = new  PHPExcel_Writer_Excel5($objPHPExcel);
@@ -210,7 +212,7 @@ class Logistics {
                 'filename'    => $filename, 
                 'user_id'     => $user_id, 
                 'logistics'   => $logistics,
-                'order_id'    => $last_order_id,
+                'item_id'     => $last_item_id,
                 'export_date' => date('Y-m-d H:i:s')
                 ];
 
@@ -248,9 +250,9 @@ class Logistics {
         $lists = [];
         foreach ($logistics as $code => $logistic) {
              $history = DB::table('orders_export')->where('user_id', '=', $user_id)
-                                                      ->where('logistics', '=', $code)
-                                                      ->take($size)
-                                                      ->get();
+                                                  ->where('logistics', '=', $code)
+                                                  ->take($size)
+                                                  ->get();
              if($history) $lists[$code] = $history;
         }
 
@@ -266,13 +268,13 @@ class Logistics {
      */
     private static function _lastExport( $user_id, $logistics ) {
 
-        $order_id = DB::table('orders_export')->where('user_id', '=', $user_id)
+        $item_id = DB::table('orders_export')->where('user_id', '=', $user_id)
                                               ->where('logistics', '=', $logistics)
                                               ->order_by('id', 'DESC')
                                               ->take(1)
-                                              ->only('order_id'); 
+                                              ->only('item_id'); 
 
-        return $order_id ? $order_id : 0;
+        return $item_id ? $item_id : 0;
     }
 
     /**
