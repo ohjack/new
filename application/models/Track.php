@@ -228,7 +228,7 @@ class Track
 					        'order_id'=>$temp_id,
 							'created_at'=>date("Y-m-d H:i:s"),
 					);
-					//print_r($input);
+					//print_r($input);die;
 					DB::table('shipped')->insert_get_id($input);
 					
 					//更新订单状态

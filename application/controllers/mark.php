@@ -8,7 +8,8 @@ class Mark_Controller extends Base_Controller
         $user_id=Sentry::user()->get('id');
         $marks=Mark::getByUserId($user_id);
         return View::make('mark')
-                        ->with('marks',$marks);
+                        ->with('marks',$marks)
+                        ->with('title','标识设置');
     }
    
     public function action_delete()

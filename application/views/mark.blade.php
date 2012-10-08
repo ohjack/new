@@ -1,7 +1,8 @@
-{{ HTML::script('js/jquery.js')}}
+@layout('layout')
+@section('script')
 {{ HTML::script('js/mark.js')}}
-{{ HTML::style('css/style.css') }}
-<div class='content'>
+@endsection
+@section('content')
 {{Form::open('mark/submit','POST')}}
     <table id='mark'  class='table'>
     <tr>
@@ -35,8 +36,6 @@
 <table>
 <input type='button' id='add' value="+"><input type='button' id='subtract' value='-'><input type="submit" value='提交更新'>
 <input type='button' id='delete' value='删除所选'>
-
 {{ Form::close() }}
-</div>
-
+@endsection
 
