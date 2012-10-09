@@ -185,3 +185,8 @@ foreach(Config::get('application.order_status') as $index => $status) {
     if(!empty($status['define']) && !defined($status['define']))
         define($status['define'], $index);
 }
+
+/**
+ * 加载系统设置
+ */
+Setting::init();

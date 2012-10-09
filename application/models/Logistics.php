@@ -125,7 +125,7 @@ class Logistics {
             ];
 
 
-        $order_id = static::_lastExport( $user_id, $logistics );
+        $item_id = static::_lastExport( $user_id, $logistics );
 
         $items = DB::table('items')->left_join('orders', 'items.order_id', '=', 'orders.id')
                                    ->left_join('sku_map', 'items.sku', '=', 'sku_map.original_sku')
@@ -133,7 +133,7 @@ class Logistics {
                                    ->where('orders.logistics', '=', $logistics)
                                    ->where('orders.order_status', '=', HAD_MATCH_ORDER)
                                    ->where('sku_map.logistics', '=', $logistics)
-                                   ->where('items.id', '>', $order_id)
+                                   ->where('items.id', '>', $item_id)
                                    ->get($fields[$logistics]);
 
         if( $items ) {
@@ -152,6 +152,7 @@ class Logistics {
 
             // 写表格内容
             $i = 1;
+            $last_item_id = 0;
             foreach ($items as $item) {
                 $i++;
                 if($logistics == 'coolsystem') {
@@ -200,7 +201,7 @@ class Logistics {
                     $objPHPExcel->getActiveSheet()->setCellValueExplicit($cell, $row, PHPExcel_Cell_DataType::TYPE_STRING);
                 }
 
-                $last_item_id = $item->id;
+                $last_item_id = max($last_item_id, $item->id) // 最大的item id记录
             }
 
             $PHPExcel_Writer = new  PHPExcel_Writer_Excel5($objPHPExcel);

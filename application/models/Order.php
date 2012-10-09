@@ -35,15 +35,55 @@ class Order {
      * return object
      */
     public static function ajaxOrders( $user_id ) {
-    
+
+        $system_fields = Config::get('order_list_fields');
+
+        $fields = [];
+        foreach($system_fields as $key => $system_field) {
+            if(is_array($system_field['field'])) {
+                $fields[] = DB::raw('CONCAT (' . implode(',\' \',', $system_field['field']) . ') as ' . $key);
+            } else {
+                $fields[] = $system_field['field'] . ' as ' . $key;
+            }
+        
+        }
+
+        /*
         $fields = [
             'orders.id', 'orders.created_at', 'orders.entry_id', 'orders.currency',
             'orders.total', //'orders.shipment_level', 'orders.order_status', 'orders.shipping_name',
             //'shipping_name', 'shipping_address1', 'shipping_address2', 'shipping_address3',
             //'shipping_city', 'shipping_state_or_region', 'shipping_country', 'shipping_postal_code',
             //'shipping_phone', 'payment_method', 'from'
-             ];
+            ];
+         */
 
+        /*
+        // 系统设置字段
+        $fields = [
+            'order_id'       => ['name'=>'', 'field' => 'orders.id'],
+            'order_entry_id' => ['name'=>'订单ID', 'field' => 'orders.entry_id'],
+            'purchased_at'   => ['name'=>'购买时间', 'field' => 'orders.created_at'],
+            'order_total'    => ['name'=>'订单金额', 'field' => ['orders.currency', 'orders.total']],
+            'shipment_level' => ['name'=>'配送等级', 'field'=> 'orders.shipment_level'],
+            'order_status'   => ['name'=>'订单状态', 'field'=> 'orders.order_status'],
+            'shipping_name'  => ['name'=>'收货人', 'field'=> 'orders.shipping_name'],
+            'shipping_address'  => ['name'=>'发货地址', 'field'=> ['orders.shipping_address3', 'orders.shipping_address2', 'orders.shipping_address1']],
+            'shipping_city'  => ['name' => '发货城市', 'field'=>'orders.shipping_city'],
+            'shipping_state_or_region'  => ['name' => '发货州/区', 'field'=>'orders.shipping_state_or_region'],
+            'shipping_country'  => ['name' => '发货国家', 'field'=>'orders.shipping_country'],
+            'shipping_postal_code'  => ['name' => '邮编', 'field'=>'orders.shipping_postal_code'],
+            'shipping_phone'  => ['name' => '电话', 'field'=>'orders.shipping_phone'],
+            'from'  => ['name' => '来源', 'field'=>'orders.from'],
+            ];
+        echo serialize($fields);
+        die;
+         */
+
+        // user setting
+        //$f = ['order_entry_id', 'purchased_at'];
+        //echo serialize($f);
+        //die;
         $table = DB::table('orders')->select($fields)
                                     ->where('orders.user_id', '=', $user_id)
                                     ->order_by('orders.order_status', 'ASC')
