@@ -79,13 +79,31 @@
                                 <label for="titleCheck">全选</label>
                             </th>
                             @else
-                            <th>{{ $field['name'] }}</th>
+                            <th key="{{$key}}">{{ $field['name'] }}</th>
                             @endif
                             @endforeach
                         </tr>
                     </thead>
                     <tbody>
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
                 </table>
                 </div>
             <div class="clear"></div> 
@@ -102,21 +120,31 @@
                     "bFilter": true,
                     "bServerSide": true,
                     "bJQueryUI": false,
-                    "bAutoWidth": false,
+                    "bAutoWidth": true,
                     "sPaginationType": "full_numbers",
                     "sAjaxSource": "/order/ajax/list",
-                    "sDom": '<"H"<"#olist_options"<"#olist_length"l><"clear"><"divider"><"#olist_fields">><"#olist_search"<"#price_fitter">>>tr<"F"ip>',
+                    "sDom": '<"H"<"#olist_options"<"#olist_length"l><"clear"><"divider"><"#olist_fields">><"#olist_search"<"#filter_olist_order_entry_id"><"#filter_olist_order_status"><"#filter_olist_from">>>tr<"F"ip>',
                     "fnDrawCallback": function() {
                         reset_order_list();
                     }
-                });/*.columnFilter({aoColumns:[
-                            null,
-                            null,//{ sSelector: "#order_id_fitter", type:"text"}
-                            null,
-                            null,
-                            { sSelector: "#price_fitter", type:"text"}
-                            ]
-            });*/
+                }).columnFilter({
+                    aoColumns:[
+                        null,
+                        { sSelector: "#filter_olist_order_entry_id",type:"text"  },
+                        null,
+                        null,
+                        null,
+                        { sSelector: "#filter_olist_order_status",type:"select"  },
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        { sSelector: "#filter_olist_from",type:"select", values:['Amazon.com', 'Amazon.co.uk'] }
+                        ]
+                });
                     $('#olist_fields :checkbox').live('click',function(){
                         var colname = $(this).parent().parent().next().text();
                         if($(this).attr('checked')) {
@@ -160,7 +188,9 @@
 
             // 隐藏显示列
             function reset_order_list(){
-                $('#order_list_table').find('th, td').hide(); 
+                $('#order_list_table').find('tr').each(function(){
+                    $(this).children('th, td').not(':first').hide();
+                }); 
                 $('#order_list_table').find('th').each(function(){
                     var colname =  $(this).text();
                     for ( var index in colnums) {

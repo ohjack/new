@@ -7,7 +7,13 @@ class Order_Ajax_Controller extends Base_Controller {
         $user_id = Sentry::user()->get('id');
         $orders = Order::ajaxOrders( $user_id );
 
-        Datatables::of($orders)->make();
+        $data = Datatables::of($orders)->make();
+
+        foreach ($data['aaData'] as $key => $order) {
+            $data['aaData'][$key][5] = Config::get('application.order_status')[$order[5]]['desc'];
+        }
+
+        return Response::json( $data );
     }
 
     // 订单列设置

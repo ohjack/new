@@ -45,7 +45,7 @@ class Datatables
     /**
      *  Organizes works
      *
-     *  @return null
+     *  @return array
      */
 
     public function make()
@@ -56,7 +56,7 @@ class Datatables
         $this->init_columns();
         $this->regulate_array();
 
-        $this->output();
+        return $this->output();
     }
 
 
@@ -312,7 +312,6 @@ class Datatables
     private function ordering()
     {
         
-        
         if(!is_null(Input::get('iSortCol_0')))
         {
 
@@ -363,7 +362,7 @@ class Datatables
         {
             if (Input::get('bSearchable_'.$i) == "true" && Input::get('sSearch_'.$i) != '')
             {
-                $this->query->where($this->columns[$i],'LIKE','%'.Input::get('sSearch_'.$i).'%');
+                $this->query->where($this->getColumnName($this->columns[$i]),'LIKE','%'.Input::get('sSearch_'.$i).'%');
             }
         }
     }
@@ -420,6 +419,6 @@ class Datatables
             "aaData" => $this->result_array_r
         );
 
-        echo json_encode($output);
+        return $output;
     }
 }
