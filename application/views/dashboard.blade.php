@@ -50,32 +50,42 @@
 
         <!--orders begins-->
         <div class="widget">
-            <div class="whead"><span class="titleIcon check"><input type="checkbox" id="titleCheck" name="titleCheck" /></span><h6>订单列表</h6><div class="clear"></div></div>
+            <div class="whead"><h6>订单列表</h6><div class="clear"></div></div>
             <div id="order_list" class="hiddenpars">
                 <a href="javascript:;" id="order_list_fullscreen" class="tOptions1 tipS" title="全屏"><img src="{{URL::base()}}/images/icons/fullscreen" alt=""/></a>
                 <a href="javascript:;" id="order_list_search" class="tOptions2 tipS" title="搜索"><img src="{{URL::base()}}/images/icons/search" alt=""/></a>
                 <a href="javascript:;" id="order_list_options" class="tOptions3 tipS" title="设置"><img src="{{URL::base()}}/images/icons/options" alt=""/></a>
+                <div id="olist_fieds_hide" style="display:none">
+                    <h6 class="mb20">列设置</h6>
+                    <div class="fields">
+                        @foreach(Config::get('order_list_fields') as $key => $field)
+                        @if($field['name'])
+                        <dd style="width: 20%" class="floatL">
+                            <input type="checkbox" id="{{$key}}" @if(in_array($key, $order_list_columns))checked="checked"@endif>
+                            <label for="{{$key}}" class="mr20">{{$field['name']}}</label>
+                        </dd>
+                        @endif
+                        @endforeach
+                        <span class="clear"></span>
+                    </div>
+                </div>
                 <table cellpadding="0" cellspacing="0" border="0" class="dTable" id="order_list_table">
                     <thead>
                         <tr>
-                            <td><img src="images/elements/other/tableArrows.png" alt="" /></td>
-                            <td>标识</td>
-                            <td>订单ID</td>
-                            <td>SKUs</td>
-                            <td>状态</td>
+                            @foreach(Config::get('order_list_fields') as $key => $field)
+                            @if($key == 'order_id')
+                            <th>
+                                <input class="check" type="checkbox" id="titleCheck" name="titleCheck" />
+                                <label for="titleCheck">全选</label>
+                            </th>
+                            @else
+                            <th>{{ $field['name'] }}</th>
+                            @endif
+                            @endforeach
                         </tr>
                     </thead>
                     <tbody>
                     </tbody>
-                    <tfoot>
-                      <tr>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                      </tr>
-                    </tfoot>
                 </table>
                 </div>
             <div class="clear"></div> 
@@ -84,6 +94,7 @@
         <!--orders table script begins-->
         <script type="text/javascript">
             $(function(){
+                colnums = new Array;
                 // 表格初始化
                 oTable = $('#order_list_table').dataTable({
                     "bSort": false,
@@ -94,16 +105,76 @@
                     "bAutoWidth": false,
                     "sPaginationType": "full_numbers",
                     "sAjaxSource": "/order/ajax/list",
-                    "sDom": '<"H"<"#olist_options"<"#olist_length"l>><"#olist_search"<"#price_fitter">>>tr<"F"ip>'
-                }).columnFilter({aoColumns:[
+                    "sDom": '<"H"<"#olist_options"<"#olist_length"l><"clear"><"divider"><"#olist_fields">><"#olist_search"<"#price_fitter">>>tr<"F"ip>',
+                    "fnDrawCallback": function() {
+                        reset_order_list();
+                    }
+                });/*.columnFilter({aoColumns:[
                             null,
                             null,//{ sSelector: "#order_id_fitter", type:"text"}
                             null,
                             null,
                             { sSelector: "#price_fitter", type:"text"}
                             ]
-                });
+            });*/
+                    $('#olist_fields :checkbox').live('click',function(){
+                        var colname = $(this).parent().parent().next().text();
+                        if($(this).attr('checked')) {
+                            colnums[colnums.length] = colname;
+                        } else {
+                            for (var index in colnums) {
+                                if(colnums[index] == colname) {
+                                    colnums.splice(index,1);
+                                }
+                            }
+                        }
+
+                        // ajax 更新用户配置
+                        var fields = '';
+                        var dot = '';
+                        $('#olist_fields :checkbox').each(function(){
+                            if($(this).attr('checked')) {
+                                fields += dot + $(this).attr('id');
+                                dot = ',';
+                            }
+                        });
+
+                        $.ajax({
+                            url: '/order/ajax/setting',
+                            data: {fields:fields}
+                        });
+
+                        // 表格重画
+                        oTable.fnDraw();
+                    });
+
+                // 加载用户配置
+                <?php $i = 0;?>
+                @foreach($order_list_columns as $order_list_column)
+                    @if(isset(Config::get('order_list_fields')[$order_list_column]['name']))
+                    colnums[{{$i}}] = '{{ Config::get('order_list_fields')[$order_list_column]['name'] }}';
+                    <?php $i++; ?>
+                    @endif
+                @endforeach
             }); 
+
+            // 隐藏显示列
+            function reset_order_list(){
+                $('#order_list_table').find('th, td').hide(); 
+                $('#order_list_table').find('th').each(function(){
+                    var colname =  $(this).text();
+                    for ( var index in colnums) {
+                        if(colnums[index] == colname) {
+                            $(this).show();
+                            var index = $(this).index();
+                            $('#order_list_table').find('tr').each(function(){
+                                $(this).children('td').eq(index).show();
+                            });
+                            break;
+                        }
+                    }
+                });
+            }
         </script>
         <!--orders table script ends-->
     </div>

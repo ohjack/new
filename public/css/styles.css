@@ -2125,7 +2125,7 @@ input, textarea { -webkit-appearance: none; -webkit-border-radius: 0; }
 
 @media only screen and (min-width: 481px) {
 .altMenu { display: none!important; }
-#sidebar { display: block!important; }
+#sidebar { display: block; } /* weelion remove !important*/
 }
 
 @media only screen and (max-width: 768px) {
@@ -4440,7 +4440,7 @@ input, textarea { -webkit-appearance: none; -webkit-border-radius: 0; }
 
 @media only screen and (min-width: 481px) {
 .altMenu { display: none!important; }
-#sidebar { display: block!important; }
+#sidebar { display: block; } /* weelion remove !important */
 }
 
 @media only screen and (max-width: 768px) {
@@ -4664,4 +4664,27 @@ display: block;
 }
 /* end add by fu*/
 
+}
+
+
+/***********  add by weelion *******************/
+
+.remove_position {
+    position: static!important;
+}
+
+.hide_important {
+    display: none!important;
+}
+
+.fullscreen {
+    width: 100%;
+    position: absolute;
+    top: 14px;
+    left: 0;
+    z-index: 1000;
+}
+
+#olist_fields {
+    margin-bottom: 20px;
 }

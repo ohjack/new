@@ -2,6 +2,7 @@
 
 class Order_Ajax_Controller extends Base_Controller {
 
+    // 订单列表
     public function action_list() {
         $user_id = Sentry::user()->get('id');
         $orders = Order::ajaxOrders( $user_id );
@@ -9,6 +10,15 @@ class Order_Ajax_Controller extends Base_Controller {
         Datatables::of($orders)->make();
     }
 
+    // 订单列设置
+    public function action_setting() {
+        $user_id = Sentry::user()->get('id');
+        $fields = Input::get('fields');
+        if($fields !== null) {
+            Setting::setUserSetting( $user_id, 'order_list_fields', explode(',', $fields));
+        }
+    
+    }
 
     // 获取订单详情
     public function action_info() {

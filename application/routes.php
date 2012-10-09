@@ -35,7 +35,12 @@
 Route::group(array('before' => 'sentry'), function(){
 
     Route::get('/', function() {
-        return View::make('dashboard');
+
+        $user_id = Sentry::user()->get('id');
+
+        $order_list_columns = Setting::getUserSetting($user_id, 'order_list_fields');
+
+        return View::make('dashboard')->with('order_list_columns', $order_list_columns);
     });
 
     Route::controller('user');
