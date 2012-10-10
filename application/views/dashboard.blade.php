@@ -49,7 +49,7 @@
         </ul>
 
         <!--orders begins-->
-        <div class="widget">
+        <div class="widget fluid">
             <div class="whead"><h6>订单列表</h6><div class="clear"></div></div>
             <div id="order_list" class="hiddenpars">
                 <a href="javascript:;" id="order_list_fullscreen" class="tOptions1 tipS" title="全屏"><img src="{{URL::base()}}/images/icons/fullscreen" alt=""/></a>
@@ -86,7 +86,7 @@
                     </thead>
                     <tbody>
                     </tbody>
-                    <tfoot>
+                    <tfoot style="display: none;"><!--悲催的colnums filter插件用-->
                         <tr>
                             <td></td>
                             <td></td>
@@ -126,7 +126,15 @@
                     "sDom": '<"H"<"#olist_options"<"#olist_length"l><"clear"><"divider"><"#olist_fields">><"#olist_search"<"#filter_olist_order_entry_id"><"#filter_olist_order_status"><"#filter_olist_from">>>tr<"F"ip>',
                     "fnDrawCallback": function() {
                         reset_order_list();
-                    }
+                    },
+                    "fnInitComplete": function() {
+                        init_order_search();
+                    },
+                    aoColumns: [
+                        { "fnRender": function( oObj ){
+                            return '<input type="checkbox" class="check" name="ids[]" value ="' + oObj.aData[0] + '">';
+                        } },null,null,null,null,null,null,null,null,null,null,null,null,null
+                    ]
                 }).columnFilter({
                     aoColumns:[
                         null,
@@ -134,7 +142,7 @@
                         null,
                         null,
                         null,
-                        { sSelector: "#filter_olist_order_status",type:"select"  },
+                        { sSelector: "#filter_olist_order_status", type:"select" },
                         null,
                         null,
                         null,
@@ -187,7 +195,7 @@
             }); 
 
             // 隐藏显示列
-            function reset_order_list(){
+            function reset_order_list() {
                 $('#order_list_table').find('tr').each(function(){
                     $(this).children('th, td').not(':first').hide();
                 }); 
@@ -204,6 +212,37 @@
                         }
                     }
                 });
+                $("#order_list_table .check").not('#titleCheck').uniform();
+            }
+
+            // 格式化搜索
+            function init_order_search() {
+                $('#olist_search div').each(function(){
+                    var filter = $(this);
+                    var key = filter.attr('id').replace('filter_olist_', '');
+                    $('#order_list_table').find('th').each(function() {
+                        if($(this).attr('key') == key) {
+                            var filter_name = $(this).html();
+                            filter.find('span').addClass('grid3');
+                            filter.prepend('<div class="grid2" style="line-height: 26px">' + filter_name + ':</div>');
+                            filter.append('<div class="clear"></div>');
+                            filter.parent().addClass('formRow').css('border', '0');
+                        }
+                    });
+                });
+
+                // 订单状态
+                <?php $options = '<option value="">--请选择--</option>'; ?>
+                @foreach(Config::get('application.order_status') as $key => $status)
+                    <?php $options .= '<option value=' . $key . '>' . $status['desc'] . '</option>'; ?>
+                @endforeach
+                var options = '<?php echo $options;?>';
+
+                $('#filter_olist_order_status select').html(options);
+
+                $("#olist_search select").uniform();
+                $("#olist_search select").prev().html('--请选择--');
+                $("#olist_search option.search_init").html('--请选择--');
             }
         </script>
         <!--orders table script ends-->

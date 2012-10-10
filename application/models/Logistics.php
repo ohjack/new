@@ -201,7 +201,7 @@ class Logistics {
                     $objPHPExcel->getActiveSheet()->setCellValueExplicit($cell, $row, PHPExcel_Cell_DataType::TYPE_STRING);
                 }
 
-                $last_item_id = max($last_item_id, $item->id) // 最大的item id记录
+                $last_item_id = max($last_item_id, $item->id); // 最大的item id记录
             }
 
             $PHPExcel_Writer = new  PHPExcel_Writer_Excel5($objPHPExcel);
@@ -252,6 +252,7 @@ class Logistics {
         foreach ($logistics as $code => $logistic) {
              $history = DB::table('orders_export')->where('user_id', '=', $user_id)
                                                   ->where('logistics', '=', $code)
+                                                  ->order_by('id', 'DESC')
                                                   ->take($size)
                                                   ->get();
              if($history) $lists[$code] = $history;

@@ -362,7 +362,9 @@ class Datatables
         {
             if (Input::get('bSearchable_'.$i) == "true" && Input::get('sSearch_'.$i) != '')
             {
-                $this->query->where($this->getColumnName($this->columns[$i]),'LIKE','%'.Input::get('sSearch_'.$i).'%');
+                $column = explode(' as ', $this->columns[$i]);
+                $column = array_shift($column);
+                $this->query->where($column, 'LIKE','%'.Input::get('sSearch_'.$i).'%');
             }
         }
     }

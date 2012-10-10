@@ -23,6 +23,7 @@ class Item {
                                    ->where('orders.user_id', '=', $user_id)
                                    ->group_by('items.sku')
                                    ->group_by('orders.from')
+                                   ->group_by('orders.shipping_country')
                                    ->get($fields);
 
         // 按照简单规则匹配物流
@@ -34,7 +35,6 @@ class Item {
                 $item->logistics = 'birdsystem';
             else
                 $item->logistics = 'micaosystem';
-
             if( !SkuMap::chkMap($item->sku, $item->logistics) ) {
                 $items_unhandled[] = $item;
             }

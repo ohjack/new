@@ -4689,7 +4689,10 @@ display: block;
     margin-bottom: 20px;
 }
 
-#olist_search{
-    height: 30px;
+#olist_search > div[id]{
+    line-height: 29px;
+    height: 29px;
+    padding: 5px 0;
+    clear: both;
 }
 /***********  end by weelion *******************/
