@@ -41,18 +41,28 @@
     <!-- Main content -->
     <div class="wrapper">
         <ul class="middleNavR">
-            <li><a href="javascript:;" title="抓取订单" class="tipN"><span class="iconb step" data-icon=""></span></a></li>
-            <li><a href="javascript:;" title="分析订单" class="tipN"><span class="iconb step" data-icon=""></span></a><strong>8</strong></li>
-            <li><a href="javascript:;" title="处理订单" class="tipN"><span class="iconb step" data-icon=""></span></a></li>
+            <li><a id="spider" href="javascript:;" title="抓取订单" class="tipN"><span class="iconb step" data-icon=""></span></a></li>
+            <li><a href="{{ URL::base() }}/skumap" title="分析订单" class="tipN"><span class="iconb step" data-icon=""></span></a><strong>8</strong></li>
+            <li><a href="/skumap" title="处理订单" class="tipN"><span class="iconb step" data-icon=""></span></a></li>
             <li><a href="javascript:;" title="跟踪订单" class="tipN"><span class="iconb step" data-icon=""></span></a></li>
             <li><a href="javascript:;" title="完成订单" class="tipN"><span class="iconb step" data-icon=""></span></a></li>
         </ul>
 
+        <!-- tips begins-->
+        <div id="spider_tips" title="抓取提示" style="display:none">
+            <div id="spider_orders"><span style="line-height: 16px"><img src="images/elements/loaders/10s.gif" style="float: left;" alt="">抓取订单中...</span></div>
+            <div id="spider_orders_info"></div>
+            <div id="spider_items"><span style="line-height: 16px"><img src="images/elements/loaders/10s.gif" style="float: left;" alt="">抓取产品中...</span></div>
+            <div id="spider_items_info"></div>
+            <div id="spider_success">抓取完成，请关闭</div>
+        </div>
+        <!-- tips ends -->
+
         <!--orders begins-->
-        <div class="widget fluid">
+        <div class="widget fluid" id="olist">
             <div class="whead"><h6>订单列表</h6><div class="clear"></div></div>
             <div id="order_list" class="hiddenpars">
-                <a href="javascript:;" id="order_list_fullscreen" class="tOptions1 tipS" title="全屏"><img src="{{URL::base()}}/images/icons/fullscreen" alt=""/></a>
+                <a href="javascript:;" class="tOptions1 tipS doFullscreen" key="olist" title="全屏"><img src="{{URL::base()}}/images/icons/fullscreen" alt=""/></a>
                 <a href="javascript:;" id="order_list_search" class="tOptions2 tipS" title="搜索"><img src="{{URL::base()}}/images/icons/search" alt=""/></a>
                 <a href="javascript:;" id="order_list_options" class="tOptions3 tipS" title="设置"><img src="{{URL::base()}}/images/icons/options" alt=""/></a>
                 <div id="olist_fieds_hide" style="display:none">

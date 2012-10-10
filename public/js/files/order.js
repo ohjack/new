@@ -38,17 +38,6 @@ $(function(){
         }
     });
 
-    // 全屏
-    $('#order_list_fullscreen').toggle(function() {
-        $('.widget').addClass('fullscreen');
-        $('#content').addClass('remove_position');
-        $('#sidebar').addClass('hide_important');
-    }, function() {
-        $('.widget').removeClass('fullscreen');
-        $('#content').removeClass('remove_position');
-        $('#sidebar').removeClass('hide_important');
-    });
-
 });
 
 function set_options() {

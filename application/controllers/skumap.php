@@ -5,14 +5,10 @@ class Skumap_Controller extends Base_Controller {
     public $restful = true;
 
     public function get_index() {
+        $user_id = Sentry::user()->get('id');
 
         // 获取问题SKU
-        $items = Item::getNoSkuItems();
-        if(empty($items)) {
-            $current_step = Session::get('step');
-            if($current_step == 'mapSetting')
-                Session::put('step', 'matchLogistics');
-        }
+        $items = Item::getNoSkuItems( $user_id );
 
         return View::make('skumap.list')->with('items', $items)
                                         ->with('title', '产品设置');
