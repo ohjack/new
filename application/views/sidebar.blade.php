@@ -46,15 +46,15 @@ text-decoration: none;
 </style>
 <script type="text/javascript">
 $(function(){
-	$(".nav li").mouseover(function(){
-	   //alert($(this).text());
-	    $(this).find(".SecMenu").css('display','block');
-	    $(this).mouseout(function(){
-	    	$(this).find(".SecMenu").css('display','none');
-		    
-		    });
-		});
-	
+    $(".nav li").mouseover(function(){
+       //alert($(this).text());
+        $(this).find(".SecMenu").css('display','block');
+        $(this).mouseout(function(){
+            $(this).find(".SecMenu").css('display','none');
+            
+            });
+        });
+    
 }); 
 </script>
 <div id="sidebar">
@@ -62,13 +62,6 @@ $(function(){
         <!-- Main nav -->
         <ul class="nav">
             <li><a href="{{ URL::base() }}" title="" class="active"><img src="{{ URL::base() }}/images/icons/mainnav/dashboard.png" alt="仪表盘" /><span>仪表盘</span></a>
-                <div class='SecMenu'>
-                    <div class='SecMenuContent'>
-                        <div class="SecMenuLink"><a href="#">设置用户平台</a></div>
-                        <div class="SecMenuLink"><a href="#">设置显示标识</a></div>
-                        <div class="SecMenuLink"><a href="#">修改密码</a></div>
-                    </div>
-                </div>
             </li>
             <li>
                 <a href="{{ URL::base() }}" title="" class="active"><img src="{{ URL::base() }}/images/icons/mainnav/tables.png" alt="仪表盘" /><span>设置2</span></a>

@@ -1,6 +1,5 @@
 @layout('layout')
 @section('script')
-{{ HTML::script('js/files/common.js') }}
 {{ HTML::script('js/files/dashboard.js') }}
 {{ HTML::script('js/files/order.js') }}
 @endsection
@@ -12,23 +11,8 @@
 <div id="content">
     <div class="contentTop">
         <span class="pageTitle"><span class="icon-screen"></span>仪表盘</span>
-        <ul class="quickStats">
-            <li>
-                <a href="" class="blueImg"><img src="images/icons/quickstats/plus.png" alt="" /></a>
-                <div class="floatR"><strong class="blue">5489</strong><span>visits</span></div>
-            </li>
-            <li>
-                <a href="" class="redImg"><img src="images/icons/quickstats/user.png" alt="" /></a>
-                <div class="floatR"><strong class="blue">4658</strong><span>users</span></div>
-            </li>
-            <li>
-                <a href="" class="greenImg"><img src="images/icons/quickstats/money.png" alt="" /></a>
-                <div class="floatR"><strong class="blue">1289</strong><span>orders</span></div>
-            </li>
-        </ul>
-        <div class="clear"></div>
+        @render('tinfo')
     </div>
-    
     <!-- Breadcrumbs line -->
     <div class="breadLine">
         <div class="bc">
@@ -41,10 +25,10 @@
     <!-- Main content -->
     <div class="wrapper">
         <ul class="middleNavR">
-            <li><a id="spider" href="javascript:;" title="抓取订单" class="tipN"><span class="iconb step" data-icon=""></span></a></li>
-            <li><a href="{{ URL::base() }}/skumap" title="分析订单" class="tipN"><span class="iconb step" data-icon=""></span></a><strong>8</strong></li>
-            <li><a href="/skumap" title="处理订单" class="tipN"><span class="iconb step" data-icon=""></span></a></li>
-            <li><a href="javascript:;" title="跟踪订单" class="tipN"><span class="iconb step" data-icon=""></span></a></li>
+            <li><a id="spider" href="javascript:;" title="抓取订单" class="tipN"><span class="iconb step" data-icon=""></span></a>@if($total['order'])<strong>{{ $total['order'] }}</strong>@endif</li>
+            <li><a href="{{ URL::base() }}/skumap" title="分析订单" class="tipN"><span class="iconb step" data-icon=""></span></a>@if($total['skumap'])<strong>{{ $total['skumap']}}</strong>@endif</li>
+            <li><a href="{{ URL::base() }}/order/handle" title="处理订单" class="tipN"><span class="iconb step" data-icon=""></span></a>@if($total['handle'])<strong>{{ $total['handle']}}</strong>@endif</li>
+            <li><a href="{{ URL::base() }}/order/tracking" title="跟踪订单" class="tipN"><span class="iconb step" data-icon=""></span></a>@if($total['handle'])<strong>{{ $total['handle']}}</strong>@endif</li>
             <li><a href="javascript:;" title="完成订单" class="tipN"><span class="iconb step" data-icon=""></span></a></li>
         </ul>
 

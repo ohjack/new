@@ -65,7 +65,7 @@
     <script type="text/javascript" src="/js/plugins/ui/jquery.easytabs.min.js"></script>
         {{ HTML::script('js/files/bootstrap.js') }}
 
-        {{ HTML::script('js/common.js') }}
+        {{ HTML::script('js/files/common.js') }}
         @yield('script')
 </head>
     <body>

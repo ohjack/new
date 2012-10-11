@@ -190,3 +190,4 @@ foreach(Config::get('application.order_status') as $index => $status) {
  * 加载系统设置
  */
 Setting::init();
+

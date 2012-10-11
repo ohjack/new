@@ -19,6 +19,7 @@ $(function(){
         $('#content').css('position', 'relative');
         $('#sidebar').removeClass('hide_important');
     });
+
     // table初始化
     //$('.table').dataTable();
 

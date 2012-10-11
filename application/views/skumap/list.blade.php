@@ -1,6 +1,5 @@
 @layout('layout')
 @section('script')
-{{ HTML::script('js/files/common.js') }}
 {{ HTML::script('js/skumap.js') }}
 @endsection
 @section('sidebar')
@@ -10,22 +9,8 @@
 <!-- content begins -->
 <div id="content">
     <div class="contentTop">
-        <span class="pageTitle"><span class="icon-github-4"></span>订单处理</span>
-        <ul class="quickStats">
-            <li>
-                <a href="" class="blueImg"><img src="images/icons/quickstats/plus.png" alt="" /></a>
-                <div class="floatR"><strong class="blue">5489</strong><span>visits</span></div>
-            </li>
-            <li>
-                <a href="" class="redImg"><img src="images/icons/quickstats/user.png" alt="" /></a>
-                <div class="floatR"><strong class="blue">4658</strong><span>users</span></div>
-            </li>
-            <li>
-                <a href="" class="greenImg"><img src="images/icons/quickstats/money.png" alt="" /></a>
-                <div class="floatR"><strong class="blue">1289</strong><span>orders</span></div>
-            </li>
-        </ul>
-        <div class="clear"></div>
+        <span class="pageTitle"><span class="icon-github-4"></span>分析订单</span>
+        @render('tinfo')
     </div>
     
     <!-- Breadcrumbs line -->
@@ -33,16 +18,15 @@
         <div class="bc">
             <ul id="breadcrumbs" class="breadcrumbs">
                 <li><a href="{{ URL::base() }}">仪表盘</a></li>
-                <li><a href="{{ URL::base() }}/skumap">订单处理</a></li>
+                <li><a href="{{ URL::base() }}/skumap">分析订单</a></li>
             </ul>
         </div>
     </div>
 
     <!-- main content-->
     <div class="wrapper">
-<div style="display: none"><a href="{{ URL::to('skumap/manage') }}"  style="float: right; margin-right: 10px">产品设置管理</a></div>
         <div class="widget fluid" id="slist">
-            <div class="whead"><h6>产品设置</h6><div class="clear"></div></div>
+            <div class="whead"><h6>分析订单</h6><div class="clear"></div></div>
                 <a href="javascript:;" class="tOptions1 tipS doFullscreen" key="slist" title="全屏"><img src="{{URL::base()}}/images/icons/fullscreen" alt=""/></a>
             {{ Form::open('skumap', 'POST') }}
                 <table class="table tDefault formRow">
@@ -79,7 +63,7 @@
                   </tbody>
                   <tfoot>
                     <tr>
-                      <td colspan="8" class="textR"><input type="submit" value="保存" class="buttonS bBlue"/></td>
+                      <td colspan="8" class="textC"><input type="submit" value="保存" class="buttonS bBlue m10"/></td>
                     </tr>
                   </tfoot>
                 </table>

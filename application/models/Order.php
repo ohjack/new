@@ -31,32 +31,22 @@ class Order {
      * ajax 获取订单列表
      *
      * @param: $user_id integer 用户ID
+     * @param: $options array   筛选条件
      *
      * return object
      */
-    public static function ajaxOrders( $user_id ) {
+    public static function ajaxOrders( $user_id, $table_fields = [], $options = [] ) {
 
-        $system_fields = Config::get('order_list_fields');
+        $table_fields = empty($table_fields) ? Config::get('order_list_fields') : $table_fields;
 
         $fields = [];
-        foreach($system_fields as $key => $system_field) {
-            if(is_array($system_field['field'])) {
-                $fields[] = DB::raw('CONCAT (' . implode(',\' \',', $system_field['field']) . ') as ' . $key);
+        foreach($table_fields as $key => $field) {
+            if(is_array($field['field'])) {
+                $fields[] = DB::raw('CONCAT (' . implode(',\' \',', $field['field']) . ') as ' . $key);
             } else {
-                $fields[] = $system_field['field'] . ' as ' . $key;
+                $fields[] = $field['field'] . ' as ' . $key;
             }
-        
         }
-
-        /*
-        $fields = [
-            'orders.id', 'orders.created_at', 'orders.entry_id', 'orders.currency',
-            'orders.total', //'orders.shipment_level', 'orders.order_status', 'orders.shipping_name',
-            //'shipping_name', 'shipping_address1', 'shipping_address2', 'shipping_address3',
-            //'shipping_city', 'shipping_state_or_region', 'shipping_country', 'shipping_postal_code',
-            //'shipping_phone', 'payment_method', 'from'
-            ];
-         */
 
         /*
         // 系统设置字段
@@ -80,10 +70,6 @@ class Order {
         die;
          */
 
-        // user setting
-        //$f = ['order_entry_id', 'purchased_at'];
-        //echo serialize($f);
-        //die;
         $table = DB::table('orders')->select($fields)
                                     ->where('orders.user_id', '=', $user_id)
                                     ->order_by('orders.order_status', 'ASC')

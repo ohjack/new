@@ -6,7 +6,7 @@ class Login_Controller extends Base_Controller
     {
         if (Sentry::check())
         {
-            return Redirect::to('order');
+            return Redirect::to('/');
         }
         return View::make('login');
     }
@@ -19,9 +19,7 @@ class Login_Controller extends Base_Controller
         $result = User::login($username, $password);
         if($result['success'])
         {
-            $message = '登录成功，跳转中...';
-            $button = ['name' => '确定', 'link' => URL::base() ];
-            return View::make('message')->with('message', $message)->with('button', $button);
+            return Redirect::to('/');
         } else {
             return View::make('message')->with('message', $result['message']);
         }

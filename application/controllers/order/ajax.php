@@ -23,7 +23,42 @@ class Order_Ajax_Controller extends Base_Controller {
         if($fields !== null) {
             Setting::setUserSetting( $user_id, 'order_list_fields', explode(',', $fields));
         }
+    }
+
+    // 跟踪信息录入
+    public function action_tracking() {
+        $user_id = Sentry::user()->get('id');
+
+        $options = [
+            'order_status'  => HAD_MATCH_ORDER,   
+            ];
+
+        $fields = [
+            'order_id' => ['name' => '', 'field' => 'orders.id'],
+            'order_entry_id' => ['name' => '订单ID', 'field' => 'orders.entry_id'],
+            ];
     
+        $orders = Order::ajaxOrders( $user_id, $fields, $options );
+
+        $data = Datatables::of($orders)->make();
+
+        $logistic_company = Config::get('application.logistic_company');
+
+        $companies = array_keys($logistic_company);
+        $companies = array_combine($companies, $companies);
+        $company_info = Form::select('{company}', $companies);
+
+        foreach ($data['aaData'] as $key => $order) {
+
+            $order_id = $data['aaData'][$key][0];
+            array_shift($data['aaData'][$key]);
+            $data['aaData'][$key][1] = str_replace('{company}', 'logistic[' . $order_id . '][company]', $company_info);
+            $data['aaData'][$key][2] = Form::text('logistic[' . $order_id . '][method]');
+            $data['aaData'][$key][3] = Form::text('logistic[' . $order_id . '][tracking_no]');
+            $data['aaData'][$key][4] = Form::checkbox('logistic[' . $order_id . '][ship_first]');
+        }
+
+        return Response::json( $data );
     }
 
     // 获取订单详情

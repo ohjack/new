@@ -144,8 +144,6 @@ class Order_Controller extends Base_Controller {
 
         $orders = Order::getOrders( 15, $options );
 
-        $logistic_company = Config::get('application.logistic_company');
-
         return View::make('order.tracking.list')->with('orders', $orders)
                                                 ->with('logistic_company', $logistic_company)
                                                 ->with('title', '跟踪数据录入');
