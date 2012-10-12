@@ -51,6 +51,7 @@
                       <td>{{ $item->from }}</td>
                       <td>
                           {{ Config::get('application.logistics')[$item->logistics] }}
+                          {{ Form::hidden('logistics[]', $item->logistics) }}
                       </td>
                       <td>{{ Form::text('product_name[]') }}</td>
                       <td>{{ Form::text('product_price[]') }}</td>

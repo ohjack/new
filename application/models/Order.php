@@ -71,9 +71,16 @@ class Order {
          */
 
         $table = DB::table('orders')->select($fields)
-                                    ->where('orders.user_id', '=', $user_id)
-                                    ->order_by('orders.order_status', 'ASC')
-                                    ->order_by('orders.created_at', 'DESC');
+                                    ->where('orders.user_id', '=', $user_id);
+
+        if($options) {
+            foreach ($options as $key => $value) {
+                $table = $table->where($key, '=', $value);
+            }
+        }
+
+        $table = $table->order_by('orders.order_status', 'ASC')
+                       ->order_by('orders.created_at', 'DESC');
 
         return $table;
     }
@@ -233,6 +240,18 @@ class Order {
     }
 
     /**
+     * 统计需要录入物流信息订单
+     */
+    public static function totalInputLogistic( $user_id ) {
+        $total = DB::table('orders')->where('user_id', '=', $user_id)
+                                    ->where('order_status', '=', HAD_MATCH_ORDER)
+                                    ->where('logistics', '!=', '')
+                                    ->count();
+
+        return $total;
+    }
+
+    /**
      * 获取可以确定的订单
      *
      * @param: $user_id integer 用户ID
@@ -243,44 +262,26 @@ class Order {
     public static function getShipOrders( $user_id, $from ) {
 
         $status = [ PART_SEND_ORDER, ALL_SEND_ORDER, MARK_SEND_ORDER ];
-        $orders = DB::table('orders')->where('user_id', '=', $user_id)
+        $fields = [
+            'orders.id', 'orders.entry_id', 'order_status',
+            'shipped.company', 'shipped.tracking_no', 'shipped.method'
+            ];
+        $orders = DB::table('orders')->left_join('shipped', 'orders.id', '=', 'shipped.order_id')
+                                     ->where('user_id', '=', $user_id)
                                      ->where('from' , '=', $from)
-                                     ->where('confirm' , '=', 1)
                                      ->where_in('order_status', $status)
-                                     ->get(['id', 'entry_id', 'order_status']);
+                                     ->get($fields);
 
 
+        // 产品发货信息
         foreach($orders as $order) {
             $fields = [
-                'items.entry_id', 'shipped.tracking_no', 'shipped.method', 'shipped.company',
-                'shipped.quantity as shipped_quantity', 'items.id as item_id,'
+                'items.entry_id', 'quantity', 'items.id as item_id,'
                 ];
-            $order->items = DB::table('items')->left_join('shipped', 'items.id', '=', 'shipped.item_id')
-                                              ->where('items.order_id', '=', $order->id)->get($fields);
+            $order->items = DB::table('items')->where('order_id', '=', $order->id)->get($fields);
         }
 
         return $orders;
-    }
-
-    /**
-     * 标记为可确认订单
-     *
-     * @param: $user_id integer 用户ID
-     * @param: $ids     array   订单IDs
-     *
-     * return void
-     */
-    public static function confirm( $user_id, $ids ) {
-
-        if(empty($ids)) return;
-
-        $data = ['confirm' => 1];
-
-        DB::table('orders')->where('user_id', '=', $user_id)
-                           ->where('confirm', '=', 0)
-                           ->where_in('order_status', [ PART_SEND_ORDER, ALL_SEND_ORDER, MARK_SEND_ORDER ])
-                           ->where_in('id', $ids)
-                           ->update( $data );
     }
 
     /**

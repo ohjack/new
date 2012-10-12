@@ -61,10 +61,14 @@ $(function(){
     <div class="mainNav">
         <!-- Main nav -->
         <ul class="nav">
-            <li><a href="{{ URL::base() }}" title="" class="active"><img src="{{ URL::base() }}/images/icons/mainnav/dashboard.png" alt="仪表盘" /><span>仪表盘</span></a>
+            <li>
+                <a href="{{ URL::base() }}" title="" class="active"><img src="{{ URL::base() }}/images/icons/mainnav/dashboard.png" alt="仪表盘" /><span>仪表盘</span></a>
             </li>
             <li>
-                <a href="{{ URL::base() }}" title="" class="active"><img src="{{ URL::base() }}/images/icons/mainnav/tables.png" alt="仪表盘" /><span>设置2</span></a>
+                <a href="{{ URL::base() }}" title="" class="active"><img src="{{ URL::base() }}/images/icons/mainnav/dashboard.png" alt="仪表盘" /><span>库存</span></a>
+            </li>
+            <li>
+                <a href="{{ URL::base() }}" title="" class="active"><img src="{{ URL::base() }}/images/icons/mainnav/tables.png" alt="仪表盘" /><span>设置</span></a>
                 <div class='SecMenu'>
                     <div class='SecMenuContent'>
                         <div class="SecMenuLink"><a href="#">设置用户平台</a></div>

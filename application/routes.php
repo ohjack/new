@@ -48,10 +48,10 @@ Route::group(array('before' => 'sentry'), function(){
         $orders = Order::getOrders(1, $options);
 
         $total = [
-            'order'  => SpiderLog::lastTotal( $user_id ),
-            'skumap' => count(Item::getNoSkuItems( $user_id )),
-            'handle' => Logistics::total( $user_id ),
-            'confirm' => $orders->total,
+            'order'     => SpiderLog::lastTotal( $user_id ),
+            'skumap'    => count(Item::getNoSkuItems( $user_id )),
+            'handle'    => Logistics::total( $user_id ),
+            'logistics' => Order::totalInputLogistic( $user_id ),
             ];
 
         return View::make('dashboard')->with('order_list_columns', $order_list_columns)

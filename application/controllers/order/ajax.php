@@ -30,7 +30,7 @@ class Order_Ajax_Controller extends Base_Controller {
         $user_id = Sentry::user()->get('id');
 
         $options = [
-            'order_status'  => HAD_MATCH_ORDER,   
+            'orders.order_status'  => HAD_MATCH_ORDER,
             ];
 
         $fields = [
@@ -55,7 +55,6 @@ class Order_Ajax_Controller extends Base_Controller {
             $data['aaData'][$key][1] = str_replace('{company}', 'logistic[' . $order_id . '][company]', $company_info);
             $data['aaData'][$key][2] = Form::text('logistic[' . $order_id . '][method]');
             $data['aaData'][$key][3] = Form::text('logistic[' . $order_id . '][tracking_no]');
-            $data['aaData'][$key][4] = Form::checkbox('logistic[' . $order_id . '][ship_first]');
         }
 
         return Response::json( $data );

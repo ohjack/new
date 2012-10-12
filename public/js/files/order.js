@@ -1,46 +1,40 @@
 $(function(){
 
-    // 订单列表选项样式修改
-    $('.tOptions2, .tOptions3').click(function () {
-		$(this).toggleClass("act");
-	});
-
-    // 展开订单列表设置
-    $('#order_list_options').click(function(){
-        set_options();
-        if($('#order_list_search').hasClass('act')) {
-            $('#order_list_search').removeClass('act');
-            $('#order_list .tablePars').slideUp(200, function(){
-                $('#olist_search').hide();
-                $('#olist_options').show();
-                $('#order_list .tablePars').slideToggle(200);
-            });
+    // 更新列
+    $('#olist_fields :checkbox').live('click',function(){
+        var colname = $(this).parent().parent().next().text();
+        if($(this).attr('checked')) {
+            colnums[colnums.length] = colname;
         } else {
-            $('#olist_search').hide();
-            $('#olist_options').show();
-            $('#order_list .tablePars').slideToggle(200);
+            for (var index in colnums) {
+                if(colnums[index] == colname) {
+                    colnums.splice(index,1);
+                }
+            }
         }
-    });
 
-    // 展开订单列表搜索
-    $('#order_list_search').click(function(){
-        if($('#order_list_options').hasClass('act')) {
-            $('#order_list_options').removeClass('act');
-            $('#order_list .tablePars').slideUp(200, function(){
-                $('#olist_options').hide();
-                $('#olist_search').show();
-                $('#order_list .tablePars').slideToggle(200);
-            });
-        } else {
-            $('#olist_options').hide();
-            $('#olist_search').show();
-            $('#order_list .tablePars').slideToggle(200);
-        }
+        // ajax 更新用户配置
+        var fields = '';
+        var dot = '';
+        $('#olist_fields :checkbox').each(function(){
+            if($(this).attr('checked')) {
+                fields += dot + $(this).attr('id');
+                dot = ',';
+            }
+        });
+        $.ajax({
+            url: '/order/ajax/setting',
+            data: {fields:fields}
+        });
+
+        // 表格重画
+        oTable.fnDraw();
     });
 
 });
 
-function set_options() {
+// 初始化列实现选项
+function init_options() {
     if(!$('#olist_fields').html()) {
         $('#olist_fields').html($('#olist_fieds_hide').html());
         $('#olist_fieds_hide').remove();
@@ -49,7 +43,4 @@ function set_options() {
     }
 }
 
-function set_search() {
-
-}
 

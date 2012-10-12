@@ -1015,11 +1015,13 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 .titleToolbar > li > a .iconb { float: none; margin-top: 0; }
 .titleToolbar > li.drd > a { padding: 8px 10px 7px 10px; }
 .titleOpt > a { padding: 6px 10px 7px 10px; border-left: 1px solid #c3c3c3; display: block; color: #636363; clear: both; }
-.widget .tOptions { float: right; cursor: pointer; position: absolute; top: 0; right: 0; padding: 11px 12px 10px 12px; border-left: 1px solid #cdcdcd; }
+.widget .cOptions { position: absolute; top: 0; right: 0; }
+.widget .tOptions { float: right; cursor: pointer; padding: 11px 12px 10px 12px; border-left: 1px solid #cdcdcd; }
 .widget .tOptions1 { float: right; cursor: pointer; position: absolute; top: 0; right: 0; padding: 11px 12px 10px 12px; border-left: 1px solid #cdcdcd; }
 .widget .tOptions2 { float: right; cursor: pointer; position: absolute; top: 0; right: 40px; padding: 11px 12px 10px 12px; border-left: 1px solid #cdcdcd; }
 .widget .tOptions3 { float: right; cursor: pointer; position: absolute; top: 0; right: 80px; padding: 11px 12px 10px 12px; border-left: 1px solid #cdcdcd; }
-.widget .tOptions1 img, .widget .tOptions2 img, .widget .tOptions3 img{ width: 15px;height: 16px}
+.widget .tOptions4 { float: right; cursor: pointer; position: absolute; top: 0; right: 120px; padding: 11px 12px 10px 12px; border-left: 1px solid #cdcdcd; }
+.widget .tOptions1 img, .widget .tOptions2 img, .widget .tOptions3 img .widget .tOptions4{ width: 15px;height: 16px}
 .widget .tOptions:active, .act { background: #f5f5f5; }
 /* by weelion add tOption 1-3 */
 .act { box-shadow: 0 1px 0 #eaeaea; -webkit-box-shadow: 0 1px 0 #eaeaea; -moz-box-shadow: 0 1px 0 #eaeaea; -webkit-border-top-right-radius: 3px; -moz-border-radius-topright: 3px; }
@@ -2382,5 +2384,17 @@ display: block;
     height: 29px;
     padding: 5px 0;
     clear: both;
+}
+
+.tablePars{
+    font-size: 12px!important;
+}
+
+#tracking_table_length {
+    margin: 0;
+}
+
+#track_list .tableFooter, #tlist_options .formRow {
+    border: 0;
 }
 /***********  end by weelion *******************/

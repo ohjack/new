@@ -20,8 +20,28 @@ $(function(){
         $('#sidebar').removeClass('hide_important');
     });
 
-    // table初始化
-    //$('.table').dataTable();
+    // 展开表格列表
+    $('.tOptions[ckey]').click(function(){
+
+        var ckey = $(this).attr('ckey');
+
+        if($(this).hasClass("act")) {
+            $('.tablePars').slideUp(200);
+        } else {
+            $('.tablePars').slideUp(200, function(){
+                $('.tOptions[ckey]').each(function(){
+                    var this_ckey =  $(this).attr('ckey');
+                    $('#' + this_ckey).hide();
+                });
+                $('#' + ckey).show();
+            });
+            $('.tablePars').slideDown(200);
+        }
+
+		$(this).toggleClass("act");
+        $('.tOptions[ckey]').not(this).removeClass('act');
+    });
+
 
     // 抓取订单
     $('#spider').click(function() {
@@ -90,6 +110,7 @@ function spiderItems() {
                     tips = '本次共抓取' + message.total + '个产品';
                 }
                 $('#spider_items_info').html(tips);
+                $('#spider_success').show();
             } else if ( data.status == 'error') {
                 $('#spider_items_info').html('<span style="color:#7D2A1C">' + data.message + '<span>');
             }

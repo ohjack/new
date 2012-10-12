@@ -57,26 +57,31 @@ class Shipping{
     }
     
     
-    /*
-     * 手动录入发货信息
+   /*
+    * 手动录入发货信息
     *
-    *@param:物流信息数组
+    * @param:物流信息数组
     */
     public static function handleInsert($logistics)
     {
-        $order_status=self::ALL_SEND_ORDER;
-        $item_status=self::ALL_SEND_ORDER;
-        $order=array();
-        $quantity_match_number=0;
-        $unset_item_number=0;
-        $insert_item=array();
+        $order_status = self::ALL_SEND_ORDER;
 
-        foreach ($logistics as $logKey=> $logistic)
+        foreach ($logistics as $order_id => $logistic)
         {
+            $shiped = [
+                'order_id'    => $order_id,
+                'company'     => $logistic['company'],
+                'method'      => $logistic['method'],
+                'tracking_no' => $logistic['tracking_no'],
+                'created_at'  => date('Y-m-d H:i:s')
+                ];
+
             //进入循环前先重置统计数
-            $quantiy_match_number=0;
-            $unset_item_number=0;
-            $insert_item=null;
+            //$quantiy_match_number = 0;
+            //$unset_item_number    = 0;
+            //$insert_item          = null;
+
+            /*
             foreach ($logistic['items'] as $key => $item)
             {
                 if($item['quantity']==$item['ship_quantity'])
@@ -147,16 +152,19 @@ class Shipping{
                     }
                 }
             }
-            $order['order_status']=!empty($logistic['ship_first'])?self::MARK_SEND_ORDER:$order['order_status'];
+            */
+            $order['order_status'] = $logistic['tracking_no'] == 'Letter' ? MARK_SEND_ORDER : $order_status;
             if(!empty($logistic['method'])&&!empty($logistic['company']))
             {
+                // 保存发货信息
+                static::insertShipped($shiped);
+
                 //更新orders中order的状态
-                static::updateOrder($logKey,$order);
+                static::updateOrder($order_id, $order);
             }
         }
+
         return 'done';
-
-
     }
     
     /*
@@ -169,7 +177,7 @@ class Shipping{
      */
     public static function getOrder($column,$value)
     {
-        return DB::table('orders')->where($column,'=',$value)
-                                 ->first();   
+        return DB::table('orders')->where($column, '=', $value)
+                                  ->first();   
     }
 }

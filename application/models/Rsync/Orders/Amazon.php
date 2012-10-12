@@ -8,6 +8,8 @@ class Rsync_Orders_Amazon {
     
     public function confirmOrders( $options, $order) {
 
+        if(empty($order)) return;
+
         $option = [
             'AWSAccessKeyId'         => $options['AWSAccessKeyId'],
             'Merchant'               => $options['SellerId'],
@@ -24,16 +26,12 @@ class Rsync_Orders_Amazon {
 
         $param = $this->_getParam( $option );
 
-        $message_id = str_replace('.', '', microtime(true));
-        $order_id = $order->entry_id;
-        $timestamp = gmdate("Y-m-d\TH:i:s.\\0\\0\\0\\Z", time());
-
-        // 遍历发货信息
-        foreach($order->items as $item) {
-            $company     = $item->company;
-            $method      = $item->method;
-            $tracking_no = $item->tracking_no;
-        }
+        $message_id  = str_replace('.', '', microtime(true));
+        $order_id    = $order->entry_id;
+        $company     = $order->company;
+        $method      = $order->method;
+        $tracking_no = $order->tracking_no;
+        $timestamp   = gmdate("Y-m-d\TH:i:s.\\0\\0\\0\\Z", time());
 
         $filename = path('public') . 'data/rsync/' . md5(time() . rand(0,1000)) . '.xml';
 
@@ -85,7 +83,7 @@ class Rsync_Orders_Amazon {
             $xml->text($item->entry_id);
             $xml->endElement();
             $xml->startElement('Quantity');
-            $xml->text($item->shipped_quantity);
+            $xml->text($item->quantity);
             $xml->endElement();
             $xml->endElement();
         }

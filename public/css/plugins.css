@@ -114,8 +114,8 @@ div.ie6.bottom-left { left:     expression( ( 0 + ( ignoreMe2 = document.documen
 div.ie6.center { left:  expression( ( 0 + ( ignoreMe2 = document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft ) ) + 'px' ); top:     expression( ( 0 + ( ignoreMe = document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop ) ) + 'px' ); width:   100%; }
 div.jGrowl { position:  absolute; }
 body > div.jGrowl { position:   fixed; }
-div.jGrowl.top-left { left:     0px; top: 0px; }
-div.jGrowl.top-right { right: 0px; top: 0px; }
+div.jGrowl.top-left { left: 0px; top: 0px; }
+div.jGrowl.top-right { right: 0px; top: 42px; }
 div.jGrowl.bottom-left { left: 0px; bottom: 0px; }
 div.jGrowl.bottom-right { right: 0px; bottom: 0px; }
 div.jGrowl.center { top: 0px; width:    50%; left: 25%; }
@@ -300,7 +300,7 @@ li.plupload_droptext { background: url(../images/elements/uploader/drag.png) no-
 /* ===== Datatables ===== */
 
 table.dataTable { margin: 0 auto; clear: both; width: 100%; }
-table.dataTable thead th { padding: 3px 18px 2px 10px; font-weight: normal; color: #909090; cursor: pointer; *cursor: hand; font-size: 11px; box-shadow: 0 1px 0px #fff inset; -webkit-box-shadow: 0 1px 0px #fff inset; -moz-box-shadow: 0 1px 0px #fff inset; }
+table.dataTable thead th { padding: 3px 18px 2px 10px; font-weight: normal; color: #555; cursor: pointer; *cursor: hand; font-size: 13px; box-shadow: 0 1px 0px #fff inset; -webkit-box-shadow: 0 1px 0px #fff inset; -moz-box-shadow: 0 1px 0px #fff inset; }
 table.dataTable tfoot th { padding: 3px 18px 3px 10px;font-weight: bold; }
 table.dataTable td { padding: 7px 11px; }
 table.dataTable td.center, table.dataTable td.dataTables_empty { text-align: center; }
