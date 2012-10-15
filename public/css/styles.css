@@ -1252,6 +1252,7 @@ html ul.tabs li.activeTab  { background-color: #f7f7f7; height: 38px; box-shadow
 html ul.tabs li.activeTab a { color: #2E6B9B; } 
 
 .rightTabs ul.tabs li, .tableTabs ul.tabs li { border-left: 1px solid #cdcdcd; border-right: none; float: right; }
+.tableTabs ul.tabs li { border-left: 1px solid #cdcdcd; border-right: none; float: left} /* add by weelion */
 
 /* Sidebar tabs */
 
