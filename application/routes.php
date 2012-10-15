@@ -40,7 +40,22 @@ Route::group(array('before' => 'sentry'), function(){
 
         $order_list_columns = Setting::getUserSetting($user_id, 'order_list_fields');
 
-        return View::make('dashboard')->with('order_list_columns', $order_list_columns);
+        $options = [
+            'orders.user_id' => $user_id,
+            'orders.order_status' => [ PART_SEND_ORDER, ALL_SEND_ORDER, MARK_SEND_ORDER ],
+            ];
+
+        $orders = Order::getOrders(1, $options);
+
+        $total = [
+            'order'     => SpiderLog::lastTotal( $user_id ),
+            'skumap'    => count(Item::getNoSkuItems( $user_id )),
+            'handle'    => Logistics::total( $user_id ),
+            'logistics' => Order::totalInputLogistic( $user_id ),
+            ];
+
+        return View::make('dashboard')->with('order_list_columns', $order_list_columns)
+                                      ->with('total', $total);
     });
 
     Route::controller('user');
