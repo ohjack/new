@@ -3,7 +3,7 @@
 /*左侧二级菜单样式*/
 .SecMenu{
 position: absolute;
-background: url(../images/subArrow_2.png) no-repeat 10px 5px;
+background: url(../images/subArrow_2.png) no-repeat 10px -1px;
 font-size: 11px;
 width: 170px;
 top: 13px;
@@ -24,7 +24,7 @@ padding: 0;
 -webkit-border-top-right-radius: 2px; -webkit-border-top-left-radius: 2px; -moz-border-radius-topright: 2px; -moz-border-radius-topleft: 2px; border-top: none; padding-top: 1px; 
 -webkit-border-bottom-right-radius: 2px; -webkit-border-bottom-left-radius: 2px; -moz-border-radius-bottomright: 2px; -moz-border-radius-bottomleft: 2px; 
 }
-
+ 
 .SecMenuLink{
 width: 170px;
 height:28px;
@@ -62,20 +62,13 @@ $(function(){
         <!-- Main nav -->
         <ul class="nav">
             <li><a href="{{ URL::base() }}" title="" class="active"><img src="{{ URL::base() }}/images/icons/mainnav/dashboard.png" alt="仪表盘" /><span>仪表盘</span></a>
-                <div class='SecMenu'>
-                    <div class='SecMenuContent'>
-                        <div class="SecMenuLink"><a href="#">设置用户平台</a></div>
-                        <div class="SecMenuLink"><a href="#">设置显示标识</a></div>
-                        <div class="SecMenuLink"><a href="#">修改密码</a></div>
-                    </div>
-                </div>
             </li>
             <li>
-                <a href="{{ URL::base() }}" title="" class="active"><img src="{{ URL::base() }}/images/icons/mainnav/tables.png" alt="仪表盘" /><span>设置2</span></a>
+                <a href="{{ URL::base() }}" title="" class="active"><img src="{{ URL::base() }}/images/icons/mainnav/tables.png" alt="仪表盘" /><span>设置</span></a>
                 <div class='SecMenu'>
                     <div class='SecMenuContent'>
                         <div class="SecMenuLink"><a href="#">设置用户平台</a></div>
-                        <div class="SecMenuLink"><a href="#">设置显示标识</a></div>
+                        <div class="SecMenuLink"><a href="mark">设置显示标识</a></div>
                         <div class="SecMenuLink"><a href="#">修改密码</a></div>
                     </div>
                 </div>
