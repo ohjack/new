@@ -63,14 +63,14 @@ $(function(){
         <ul class="nav">
             <li><a href="{{ URL::base() }}" title="" class="active"><img src="{{ URL::base() }}/images/icons/mainnav/dashboard.png" alt="仪表盘" /><span>仪表盘</span></a>
             <li>
-                <a href="{{ URL::base() }}" title="" class="active"><img src="{{ URL::base() }}/images/icons/mainnav/dashboard.png" alt="库存" /><span>库存</span></a>
+                <a href="{{ URL::base() }}/stock" title="" class="active"><img src="{{ URL::base() }}/images/icons/mainnav/dashboard.png" alt="库存" /><span>库存</span></a>
             </li>
             <li>
-                <a href="{{ URL::base() }}" title="" class="active"><img src="{{ URL::base() }}/images/icons/mainnav/dashboard.png" alt="设置" /><span>设置</span></a>
+                <a href="#" title="" class="active"><img src="{{ URL::base() }}/images/icons/mainnav/tables.png" alt="设置" /><span>设置</span></a>
                 <div class='SecMenu'>
                     <div class='SecMenuContent'>
-                        <div class="SecMenuLink"><a href="#">设置用户平台</a></div>
-                        <div class="SecMenuLink"><a href="mark">设置显示标识</a></div>
+                        <div class="SecMenuLink"><a href="{{ URL::base() }}/user/platform">设置用户平台</a></div>
+                        <div class="SecMenuLink"><a href="{{ URL::base() }}/mark">设置显示标识</a></div>
                         <div class="SecMenuLink"><a href="#">修改密码</a></div>
                     </div>
                 </div>

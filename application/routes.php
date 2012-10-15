@@ -32,7 +32,7 @@
 |
 */
 
-Route::group(array('before' => 'sentry'), function(){
+Route::group(array('before' => 'sentry'), function() {
 
     Route::get('/', function() {
 
@@ -65,14 +65,16 @@ Route::group(array('before' => 'sentry'), function(){
     Route::controller('order.ajax');
     Route::controller('order');
     Route::controller('item');
-
     Route::controller('skumap.manage');
     Route::controller('skumap');
     Route::controller('shipping');
     Route::controller('track');
     Route::controller('mark');
+    Route::controller('stock');
+
 
 });
+
 Route::controller('login');
 Route::controller('register');
 Route::controller('logout');
