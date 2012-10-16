@@ -32,10 +32,7 @@ class Spider_Report_Amazon {
         // 请求库存报告
         $options['Action']  = 'RequestReport';
 
-        if($options['SellerId'] == 'A3LMXTNFZ71A3Q')
-            $report_id = '5860540838';
-        else
-            $report_id = $this->_requestReport( $options );
+        $report_id = $this->_requestReport( $options );
 
         echo "report id: {$report_id} \n";
 
