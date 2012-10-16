@@ -7,7 +7,6 @@ class Rsync_Orders_Amazon {
     const SERVER_VERSION = '2009-01-01';
     
     public function confirmOrders( $options, $order) {
-
         if(empty($order)) return;
 
         $option = [

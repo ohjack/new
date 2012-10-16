@@ -1,6 +1,7 @@
 <?php
-
-
+/**
+ * 库存信息
+ */
 class Stock_Controller extends Base_Controller {
 
     public function action_index() {

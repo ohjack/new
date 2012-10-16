@@ -23,6 +23,7 @@ class Order_Ajax_Controller extends Base_Controller {
         if($fields !== null) {
             Setting::setUserSetting( $user_id, 'order_list_fields', explode(',', $fields));
         }
+    
     }
 
     // 跟踪信息录入
@@ -58,7 +59,7 @@ class Order_Ajax_Controller extends Base_Controller {
         }
 
         return Response::json( $data );
-    }
+     }
 
     // 获取订单详情
     public function action_info() {

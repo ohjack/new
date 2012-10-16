@@ -252,6 +252,43 @@ $(function(){
         $(this).next().toggle('slow');
     });
 
+    // 导入文件
+    $('#import_logistic').click(function() {
+        var tips = $('#upload_tips');
+        if($('#import_file').val()) {
+            tips.html('<font style="color: blue">[上传中...]</font>');
+            tips.fadeIn();
+            $.ajaxFileUpload({
+                url: '/order/ajax/import_logistic',
+                secureuri: false,
+                fileElementId: 'import_file',
+                dataType: 'json',
+                success: function( data, status ) {
+                    var tips = $('#upload_tips');
+                    if( typeof(data.error) != 'undefined') {
+                        if(data.error != '') {
+                            tips.html('<font style="color: red">[' + data.error + ']</font>');
+                        } else {
+                            tips.html('<font style="color: green">[' + data.msg + ']</font>');
+                        }
 
+                        tips.fadeIn();
+                    }
+                    tips.delay(2000).fadeOut();
+                },
+                error: function( data, status, e) {
+                    var tips = $('#upload_tips');
+                    tips.html('<font style="color: red">[' + e + ']</font>');
+                    tips.fadeIn().delay(2000).fadeOut();
+                    
+                }
+            });
+        
+        } else {
+            tips.html('<font style="color: red">请先选择文件</font>');
+            tips.fadeIn().delay(2000).fadeOut();
+        }
+    
+    });
 });
 

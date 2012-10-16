@@ -10,14 +10,15 @@
 <!-- Content begins -->
 <div id="content">
     <div class="contentTop">
-        <span class="pageTitle"><span class="icon-screen"></span>仪表盘</span>
+        <span class="pageTitle"><span class="icon-screen"></span>控制中心</span>
         @render('tinfo')
     </div>
+    
     <!-- Breadcrumbs line -->
     <div class="breadLine">
         <div class="bc">
             <ul id="breadcrumbs" class="breadcrumbs">
-                <li><a href="{{ URL::base() }}">仪表盘</a></li>
+                <li><a href="{{ URL::base() }}">控制中心</a></li>
             </ul>
         </div>
     </div>
@@ -34,9 +35,9 @@
 
         <!-- tips begins-->
         <div id="spider_tips" title="抓取提示" style="display:none">
-            <div id="spider_orders"><span style="line-height: 16px"><img src="images/elements/loaders/10s.gif" style="float: left;" alt="">抓取订单中...</span></div>
+            <div id="spider_orders"><span style="line-height: 16px"><img src="{{ URL::base() }}/images/elements/loaders/10s.gif" style="float: left;" alt="">抓取订单中...</span></div>
             <div id="spider_orders_info"></div>
-            <div id="spider_items"><span style="line-height: 16px"><img src="images/elements/loaders/10s.gif" style="float: left;" alt="">抓取产品中...</span></div>
+            <div id="spider_items"><span style="line-height: 16px"><img src="{{ URL::base() }}/images/elements/loaders/10s.gif" style="float: left;" alt="">抓取产品中...</span></div>
             <div id="spider_items_info"></div>
             <div id="spider_success" style="display: none">抓取完成，请关闭</div>
         </div>
@@ -160,6 +161,12 @@
                 @endforeach
             }); 
 
+            // 初始化
+            function init() {
+                init_options();
+                init_search();
+            }
+
             // 隐藏显示列
             function reset_list() {
                 $('#order_list_table').find('tr').each(function(){
@@ -181,13 +188,7 @@
                 $("#order_list_table .check").not('#titleCheck').uniform();
             }
 
-            // 初始化
-            function init() {
-                init_options();
-                init_search();
-            }
-
-            // 初始化搜索
+            // 格式化搜索
             function init_search() {
                 $('#olist_search div').each(function(){
                     var filter = $(this);
@@ -209,7 +210,9 @@
                     <?php $options .= '<option value=' . $key . '>' . $status['desc'] . '</option>'; ?>
                 @endforeach
                 var options = '<?php echo $options;?>';
+
                 $('#filter_olist_order_status select').html(options);
+
                 $("#olist_search select").uniform();
                 $("#olist_search select").prev().html('--请选择--');
                 $("#olist_search option.search_init").html('--请选择--');
@@ -222,3 +225,4 @@
 </div>
 <!-- Content ends -->
 @endsection
+

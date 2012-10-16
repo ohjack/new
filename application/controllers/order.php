@@ -106,7 +106,7 @@ class Order_Controller extends Base_Controller {
         }
     }
 
-    // 物流导出
+    // 物流处理
     public function action_handle() {
         $user_id = Sentry::user()->get('id');
 
@@ -118,6 +118,7 @@ class Order_Controller extends Base_Controller {
                                                  ->with('title', '物流导出');
     }
 
+    // 物流信息导出
     public function action_export() {
         $user_id = Sentry::user()->get('id');
 
@@ -143,6 +144,8 @@ class Order_Controller extends Base_Controller {
             ];
 
         $orders = Order::getOrders( 15, $options );
+
+        $logistic_company = Config::get('application.logistic_company');
 
         return View::make('order.tracking.list')->with('orders', $orders)
                                                 ->with('logistic_company', $logistic_company)

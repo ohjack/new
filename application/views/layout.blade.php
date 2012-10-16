@@ -42,11 +42,9 @@
     <script type="text/javascript" src="/js/plugins/uploader/plupload.html5.js"></script>
     <script type="text/javascript" src="/js/plugins/uploader/jquery.plupload.queue.js"></script>
 
-
     <script type="text/javascript" src="/js/plugins/wizards/jquery.form.wizard.js"></script>
     <script type="text/javascript" src="/js/plugins/wizards/jquery.validate.js"></script>
     <script type="text/javascript" src="/js/plugins/wizards/jquery.form.js"></script>
-
 
     {{ HTML::script('js/plugins/ui/jquery.collapsible.min.js') }}
     {{ HTML::script('js/plugins/ui/jquery.breadcrumbs.js') }}
@@ -64,7 +62,6 @@
 
     <script type="text/javascript" src="/js/plugins/ui/jquery.easytabs.min.js"></script>
         {{ HTML::script('js/files/bootstrap.js') }}
-
         {{ HTML::script('js/files/common.js') }}
         @yield('script')
 </head>

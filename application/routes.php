@@ -69,7 +69,9 @@ Route::group(array('before' => 'sentry'), function() {
     Route::controller('skumap');
     Route::controller('shipping');
     Route::controller('track');
+    Route::controller('mark');
     Route::controller('stock');
+
 
 });
 

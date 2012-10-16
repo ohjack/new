@@ -18,7 +18,7 @@
     <div class="breadLine">
         <div class="bc">
             <ul id="breadcrumbs" class="breadcrumbs">
-                <li><a href="{{ URL::base() }}">仪表盘</a></li>
+                <li><a href="{{ URL::base() }}">控制中心</a></li>
                 <li><a href="{{ URL::base() }}/order/tracking">跟踪订单</a></li>
             </ul>
         </div>

@@ -1,5 +1,6 @@
 @layout('layout')
 @section('script')
+{{ HTML::script('js/files/common.js') }}
 {{ HTML::script('js/skumap.js') }}
 @endsection
 @section('sidebar')
@@ -17,7 +18,7 @@
     <div class="breadLine">
         <div class="bc">
             <ul id="breadcrumbs" class="breadcrumbs">
-                <li><a href="{{ URL::base() }}">仪表盘</a></li>
+                <li><a href="{{ URL::base() }}">控制中心</a></li>
                 <li><a href="{{ URL::base() }}/skumap">分析订单</a></li>
             </ul>
         </div>
@@ -25,9 +26,12 @@
 
     <!-- main content-->
     <div class="wrapper">
+<div style="display: none"><a href="{{ URL::to('skumap/manage') }}"  style="float: right; margin-right: 10px">产品设置管理</a></div>
         <div class="widget fluid" id="slist">
-            <div class="whead"><h6>分析订单</h6><div class="clear"></div></div>
-                <a href="javascript:;" class="tOptions1 tipS doFullscreen" key="slist" title="全屏"><img src="{{URL::base()}}/images/icons/fullscreen" alt=""/></a>
+            <div class="whead"><h6>产品设置</h6><div class="clear"></div></div>
+                <div class="cOptions">
+                    <a href="javascript:;" class="tOptions tipS doFullscreen" key="slist" title="全屏"><img src="{{URL::base()}}/images/icons/fullscreen" alt=""/></a>
+                </div>
             {{ Form::open('skumap', 'POST') }}
                 <table class="table tDefault formRow">
                   <thead>
@@ -64,7 +68,7 @@
                   </tbody>
                   <tfoot>
                     <tr>
-                      <td colspan="8" class="textC"><input type="submit" value="保存" class="buttonS bBlue m10"/></td>
+                      <td colspan="8" class="textR"><input type="submit" value="保存" class="m10 mr10 buttonS bBlue"/></td>
                     </tr>
                   </tfoot>
                 </table>

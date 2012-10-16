@@ -19,6 +19,7 @@ class Order_Task extends Task {
     public function run( $arguments = [] ) {
         if (! count($arguments)) $this->_help();
 
+
         $command = ($arguments[0] !=='') ? $arguments[0] : 'help';
         $args = array_slice($arguments, 1);
 

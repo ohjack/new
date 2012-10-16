@@ -24,7 +24,6 @@ class Skumap_Controller extends Base_Controller {
             'target_sku'   => 'required|min:1',
             'logistics'    => 'required|min:1'
             ];
-
         $user_id=Sentry::user()->get('id');
         if( isset( $datas['original_sku'] ) ) {
             foreach ($datas['original_sku'] as $key => $value) {

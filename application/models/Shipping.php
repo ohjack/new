@@ -15,9 +15,9 @@ class Shipping{
     * 
     * return:数据库行号
     */
-    public static function insertShipped($Item)
+    public static function insertShipped($item)
     {
-        return DB::table('shipped')->insert_get_id($Item);
+        return DB::table('shipped')->insert_get_id($item);
     }
 
     /*
@@ -28,7 +28,7 @@ class Shipping{
      * 
      * return:
     */
-    public static function updateOrder($order_id,$arr)
+    public static function updateOrder($order_id, $arr)
     {
         return DB::table('orders')->where('id','=',$order_id)->update($arr);
     }
@@ -57,17 +57,21 @@ class Shipping{
     }
     
     
-   /*
-    * 手动录入发货信息
+    /*
+     * 手动录入发货信息
     *
-    * @param:物流信息数组
+    *@param:物流信息数组
     */
     public static function handleInsert($logistics)
     {
-        $order_status = self::ALL_SEND_ORDER;
+        $order_status=self::ALL_SEND_ORDER;
+        $item_status=self::ALL_SEND_ORDER;
+        $order=array();
+        $quantity_match_number=0;
+        $unset_item_number=0;
+        $insert_item=array();
 
-        foreach ($logistics as $order_id => $logistic)
-        {
+        foreach ( $logistics as $order_id => $logistic ) {
             $shiped = [
                 'order_id'    => $order_id,
                 'company'     => $logistic['company'],
@@ -75,12 +79,10 @@ class Shipping{
                 'tracking_no' => $logistic['tracking_no'],
                 'created_at'  => date('Y-m-d H:i:s')
                 ];
-
             //进入循环前先重置统计数
-            //$quantiy_match_number = 0;
-            //$unset_item_number    = 0;
-            //$insert_item          = null;
-
+            //$quantiy_match_number=0;
+            //$unset_item_number=0;
+            //$insert_item=null;
             /*
             foreach ($logistic['items'] as $key => $item)
             {
@@ -151,8 +153,8 @@ class Shipping{
                         static::updateItem($key,$item_status);
                     }
                 }
-            }
-            */
+            }*/
+
             $order['order_status'] = $logistic['tracking_no'] == 'Letter' ? MARK_SEND_ORDER : $order_status;
             if(!empty($logistic['method'])&&!empty($logistic['company']))
             {
@@ -175,9 +177,8 @@ class Shipping{
      * 
      * return    
      */
-    public static function getOrder($column,$value)
-    {
-        return DB::table('orders')->where($column, '=', $value)
+    public static function getOrder( $column, $value ) {
+        return DB::table('orders')->where($column,'=',$value)
                                   ->first();   
     }
 }

@@ -104,7 +104,7 @@ class Logistics {
                 'orders.shipping_name', 'items.entry_id as item_id', 'orders.shipping_address1', 
                 'orders.shipping_address2', 'orders.shipping_address3', 'orders.shipping_state_or_region', 
                 'orders.shipping_city', 'orders.shipping_postal_code', 'orders.shipping_country', 
-                'orders.shipping_phone'
+                'orders.shipping_phone', 'orders.shipment_level'
                 ],
             'birdsystem' => [
                 'items.id', 'orders.entry_id as order_id', 'items.entry_id as item_id',
@@ -113,14 +113,14 @@ class Logistics {
                 'items.name as product_name', 'items.quantity', 'orders.shipment_level',
                 'orders.shipping_name', 'orders.shipping_address1', 'orders.shipping_address2',
                 'orders.shipping_address3', 'orders.shipping_city', 'orders.shipping_state_or_region',
-                'orders.shipping_postal_code', 'orders.shipping_country', 'orders.from'
+                'orders.shipping_postal_code', 'orders.shipping_country', 'orders.from', 'orders.shipment_level'
                 ],
             'micaosystem' => [
                 'items.id', 'orders.entry_id as order_id', 'orders.shipping_name', 'orders.shipping_address3', 
                 'orders.shipping_address2', 'orders.shipping_address1', 'orders.shipping_city', 
                 'orders.shipping_state_or_region', 'orders.shipping_phone', 'orders.shipping_country', 
                 'orders.shipping_postal_code', 'sku_map.product_name', 'items.quantity', 'sku_map.product_price', 
-                'items.currency'
+                'items.currency', 'orders.shipment_level'
                 ]
             ];
 
@@ -154,6 +154,7 @@ class Logistics {
             $i = 1;
             $last_item_id = 0;
             foreach ($items as $item) {
+
                 $i++;
                 if($logistics == 'coolsystem') {
                     $rows = [
@@ -199,7 +200,16 @@ class Logistics {
                     $j++;
                     $cell = static::_autoCell($j) . $i;
                     $objPHPExcel->getActiveSheet()->setCellValueExplicit($cell, $row, PHPExcel_Cell_DataType::TYPE_STRING);
+
+                    // 加急订单标记颜色
+                    if($item->shipment_level == 'Expedited') {
+                        $column = static::_autoCell($j).$i;
+                        $objPHPExcel->getActiveSheet()->getStyle($column)->getFont()->getColor()->setARGB(PHPExcel_Style_Color::COLOR_RED);
+                    }
+
                 }
+
+
 
                 $last_item_id = max($last_item_id, $item->id); // 最大的item id记录
             }
