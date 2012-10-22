@@ -2,7 +2,12 @@
 @section('script')
 {{ HTML::script('js/skumap.js') }}
 @endsection
+@section('sidebar')
+    @include('sidebar')
+@endsection
 @section('content')
+<!-- content begins -->
+<div id="content">
 <div><a href="{{ URL::to('order/handle') }}"  style="float: right; margin-right: 10px">返回</a></div>
 <div id="search">
     {{ Form::open('skumap/manage', 'GET') }}
@@ -69,4 +74,6 @@
         </tr>
       </tfoot>
     </table>
+</div>
+<!-- content ends -->
 @endsection

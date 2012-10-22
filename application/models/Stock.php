@@ -16,6 +16,29 @@ class Stock {
                                  ->get();
     }
 
+    /**
+     * ajax获取平台库存信息
+     *
+     * @param: $uesr_id     integer 用户ID
+     * @param: $platform_id integer 平台ID
+     *
+     * return object
+     */
+    public static function ajaxList( $user_id, $platform_id ) {
+
+        $fields = [
+            'sku', 
+            DB::raw('(select product_name from sku_map where original_sku = stock.sku and user_id = ' . $user_id . ' order by product_name desc limit 1) as product_name'), 
+            'quantity', 
+            'status', 
+            'id'
+            ];
+
+        return DB::table('stock')->select($fields)
+                                 ->where('stock.user_id', '=', $user_id)
+                                 ->where('stock.platform_id', '=', $platform_id);
+    }
+
    /**
     * 从仓储获取库存
     *

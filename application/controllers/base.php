@@ -2,6 +2,12 @@
 
 class Base_Controller extends Controller {
 
+    public $user_id = null;
+
+    public function __construct() {
+        if(Sentry::check()) $this->user_id = Sentry::user()->get('id');
+    }
+
     /**
      * Catch-all method for requests that can't be matched.
      *

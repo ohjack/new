@@ -17,6 +17,25 @@ class Spider_Orders_Amazon {
     const SERVER_VERSION = '2011-01-01';  // API版本
 
     /**
+     * 获取同步取消订单配置
+     *
+     * @param: $platform_id integer 平台ID
+     * @param: $option      array   基本配置
+     *
+     */
+    public function getRsyncOption( $platform_id, $option ) {
+        $lasttime = SpiderLog::getLastSpider('order', $platform_id);
+        if( !$lasttime ) return;
+
+        $option['LastUpdatedAfter'] = date("c", strtotime($lasttime));
+        $option['OrderStatus.Status.1'] = 'Canceled';
+        $option['FulfillmentChannel.Channel.1'] = 'MFN';
+        $option['Action'] =  'ListOrders';
+
+        return $option;
+    }
+
+    /**
      * 抓取订单API配置
      *
      * @param: $platform_id integer 平台ID

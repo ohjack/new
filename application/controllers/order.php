@@ -21,6 +21,7 @@ class Order_Controller extends Base_Controller {
         $logistics = array_keys(Config::get('application.logistics'));
         // 载入用户mark
         $marks = Mark::getByUserId( $user_id );
+        exit;
 
         // view
         return View::make('order.list')->with('orders', $orders)

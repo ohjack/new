@@ -58,11 +58,11 @@ class Logistics {
         $last_item_id = static::_lastExport( $user_id, $logistics);
 
         $total = DB::table('items')->left_join('orders', 'items.order_id', '=', 'orders.id')
-                                    ->where('items.id', '>', $last_item_id)
-                                    ->where('orders.logistics', '=', $logistics)
-                                    ->where('orders.order_status', '=', HAD_MATCH_ORDER)
-                                    ->where('orders.user_id', '=', $user_id)
-                                    ->count();
+                                   ->where('orders.user_id', '=', $user_id)
+                                   ->where('items.id', '>', $last_item_id)
+                                   ->where('orders.logistics', '=', $logistics)
+                                   ->where('orders.order_status', '=', HAD_MATCH_ORDER)
+                                   ->count();
 
         return $total;
     }
@@ -209,8 +209,6 @@ class Logistics {
 
                 }
 
-
-
                 $last_item_id = max($last_item_id, $item->id); // 最大的item id记录
             }
 
@@ -281,10 +279,10 @@ class Logistics {
     private static function _lastExport( $user_id, $logistics ) {
 
         $item_id = DB::table('orders_export')->where('user_id', '=', $user_id)
-                                              ->where('logistics', '=', $logistics)
-                                              ->order_by('id', 'DESC')
-                                              ->take(1)
-                                              ->only('item_id'); 
+                                             ->where('logistics', '=', $logistics)
+                                             ->order_by('id', 'DESC')
+                                             ->take(1)
+                                             ->only('item_id'); 
 
         return $item_id ? $item_id : 0;
     }

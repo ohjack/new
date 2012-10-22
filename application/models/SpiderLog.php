@@ -45,7 +45,7 @@ class SpiderLog {
 
         $data = [
             'lasttime' => date('Y-m-d H:i:s'),
-            'total'    => $total
+            'total'    => $total,
             ];
 
         DB::table('spider_log')->where('type', '=', $type)

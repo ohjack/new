@@ -216,7 +216,8 @@ return array(
         '4'  => ['desc' => '先确定发货', 'define' => 'MARK_SEND_ORDER'],
         '5'  => ['desc' => '部分发货',   'define' => ''],
         '6'  => ['desc' => '已发货',     'define' => ''],
-        '7'  => ['desc' => '先确定发货', 'define' => '']
+        '7'  => ['desc' => '先确定发货', 'define' => ''],
+        '8'  => ['desc' => '已取消',     'define' => 'CHANNEL_ORDER']
     ],
         
     /**

@@ -296,7 +296,7 @@ class Order {
         // 初始化返回
         $result = [
             'status'  => 'success',
-            'message' => [ 'total' => 0 ]
+            'message' => [ 'total' => 0, 'new' => 0, 'rsync' => 0 ]
             ];
 
         // 遍历平台进行抓取
@@ -308,8 +308,30 @@ class Order {
 
             // 获取配置
             $base_option = array_merge(unserialize($user_platform->option), unserialize($user_platform->user_option));
-            $option = $order_spider->getOrderOption( $user_platform->id, $base_option);
 
+            // 同步取消订单option
+            $option = $order_spider->getRsyncOption( $user_platform->id, $base_option );
+
+            if(empty($option)) continue; // 如果为空跳过抓取
+
+            if($option) {
+                $orders = $order_spider->getOrders($option);
+                if($orders) {
+                    foreach( $orders as $order) {
+                        $data = [
+                            'order_status' => CHANNEL_ORDER,
+                            ];
+                        $order_id = static::getIdByEntryId($order['entry_id']);
+                        if($order_id) {
+                            static::updateOrder( $order_id, $data);
+                        }
+                        $result['message']['rsync']++;
+                    }
+                }
+            }
+
+            // 抓取订单option
+            $option = $order_spider->getOrderOption( $user_platform->id, $base_option );
             if(empty($option)) continue; // 如果为空跳过抓取
 
             // 抓取订单
@@ -326,8 +348,9 @@ class Order {
             // 订单入库
             foreach ($orders as $order) {
                 $order_id = static::getIdByEntryId($order['entry_id']);
+                $result['message']['total']++;
                 if( empty($order_id) ) {
-                    $result['message']['total']++;
+                    $result['message']['new']++;
                     $order['user_id'] = $user_platform->user_id;
                     $order_id = static::saveOrder($order);
                 }

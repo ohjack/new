@@ -66,5 +66,12 @@ class Spider_Orders {
     public function getOrderOption( $platform_id, $base_option ) {
         return $this->_order->getOrderOption($platform_id, $base_option);
     }
+
+    /**
+     * 获取同步订单参数
+     */
+    public function getRsyncOption( $platform_id, $base_option ) {
+        return $this->_order->getRsyncOption($platform_id, $base_option);
+    }
 }
 ?>

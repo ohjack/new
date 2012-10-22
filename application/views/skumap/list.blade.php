@@ -1,6 +1,5 @@
 @layout('layout')
 @section('script')
-{{ HTML::script('js/files/common.js') }}
 {{ HTML::script('js/skumap.js') }}
 @endsection
 @section('sidebar')

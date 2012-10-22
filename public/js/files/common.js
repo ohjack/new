@@ -89,10 +89,10 @@ $(function(){
                 $('#spider_orders').hide();
                 if( data.status == 'success' ) {
                     var message = data.message;
-                    if(message.total == 0) {
-                        var tips = '没有抓取到任何订单或者抓取过于频繁。';
+                    if(message.new == 0) {
+                        var tips = '没有新增订单，已同步' + message.rsync + '个订单';
                     } else {
-                        var tips = '本次共抓取' + message.total + '个订单';
+                        var tips = '新增' + message.new + '个订单，已同步' + message.rsync + '个订单' ;
                     }
                     $('#spider_orders_info').html(tips);
                     spiderItems();

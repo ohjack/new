@@ -71,7 +71,7 @@
                         <tr>
                             @foreach(Config::get('order_list_fields') as $key => $field)
                             @if($key == 'order_id')
-                            <th>
+                            <th width="40px">
                                 <input class="check" type="checkbox" id="titleCheck" name="titleCheck" />
                                 <label for="titleCheck">全选</label>
                             </th>
@@ -128,18 +128,36 @@
                         init();
                     },
                     aoColumns: [
-                        { "fnRender": function( oObj ){
+                        { "fnRender": function( oObj ) {
                             return '<input type="checkbox" class="check" name="ids[]" value ="' + oObj.aData[0] + '">';
-                        } },null,null,null,null,null,null,null,null,null,null,null,null,null
-                    ]
+                        } },null,null,null,
+                        { "fnRender": function( oObj ) {
+                            if(oObj.aData[4] == 'Expedited') {
+                                return '<span class="red">' + oObj.aData[4] + '</span>';    
+                            } else {
+                                return oObj.aData[4];
+                            }
+                        } },
+                        { "fnRender": function( oObj ) {
+                            if(oObj.aData[5] == '等待处理') {
+                                return '<span class="red">' + oObj.aData[5] + '</span>';
+                            } else {
+                                return oObj.aData[5];
+                            }
+                        
+                        } },null,null,null,null,null,null,null,null
+                     ],
+                    aoSearchCols: [
+                        null,null,null,null, null, {"sSearch": "0"}, null,null,null,null,null,null,null,null
+                        ]
                 }).columnFilter({
                     aoColumns:[
                         null,
-                        { sSelector: "#filter_olist_order_entry_id",type:"text"  },
+                        { sSelector: "#filter_olist_order_entry_id",type:"text"},
                         null,
                         null,
                         null,
-                        { sSelector: "#filter_olist_order_status", type:"select" },
+                        { sSelector: "#filter_olist_order_status", type:"select"},
                         null,
                         null,
                         null,
